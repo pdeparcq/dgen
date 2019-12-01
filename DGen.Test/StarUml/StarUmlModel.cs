@@ -41,6 +41,9 @@ namespace DGen.Test.StarUml
         [JsonProperty(PropertyName = "attributes")]
         public List<Element> Attributes { get; set; }
 
+        [JsonProperty(PropertyName = "type")]
+        public string AttributeType { get; set; }
+
         [JsonProperty(PropertyName = "literals")]
         public List<Element> Literals { get; set; }
 

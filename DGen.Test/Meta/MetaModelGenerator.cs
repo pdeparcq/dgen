@@ -9,25 +9,50 @@ namespace DGen.Test.Meta
         {
             return new MetaModel
             {
-                Services = model.OwnedElements.Where(e => e.Type == ElementType.UMLModel).Select(ToModule).ToList()
+                Services = model.OwnedElements.Where(e => e.Type == ElementType.UMLModel).Select(ToService).ToList()
             };
         }
 
-        private static Module ToModule(Element s)
+        private static Service ToService(Element s)
         {
-            return new Module
+            return ToModule<Service>(s);
+        }
+
+        private static T ToModule<T>(Element m) where T : Module, new()
+        {
+            return new T()
             {
-                Name = s.Name,
-                Modules = s.OwnedElements.Where(e => e.Type == ElementType.UMLPackage).Select(ToModule).ToList(),
-                Aggregates = s.OwnedElements.Where(e => e.Type == ElementType.UMLClass && e.Stereotype.ToLower() == "aggregate").Select(ToAggregate).ToList()
+                Name = m.Name,
+                Modules = m.OwnedElements.Where(e => e.Type == ElementType.UMLPackage).Select(ToModule<Module>).ToList(),
+                Aggregates = m.OwnedElements.Where(e => e.Type == ElementType.UMLClass && e.Stereotype.ToLower() == "aggregate").Select(ToAggregate).ToList(),
+                Entities = m.OwnedElements.Where(e => e.Type == ElementType.UMLClass && e.Stereotype.ToLower() == "entity").Select(ToEntity<Entity>).ToList(),
+                Values = m.OwnedElements.Where(e => e.Type == ElementType.UMLClass && e.Stereotype.ToLower() == "value").Select(ToValue).ToList()
             };
         }
 
         private static Aggregate ToAggregate(Element a)
         {
-            return new Aggregate
+            return ToEntity<Aggregate>(a);
+        }
+
+        private static T ToEntity<T>(Element e) where T : Entity, new()
+        {
+            return new T()
             {
-                Name = a.Name
+                Name = e.Name,
+                Properties = e.Attributes?.Where(p => p.Type == ElementType.UMLAttribute).Select(p => new Property
+                {
+                    Name = p.Name,
+                    Type = p.AttributeType
+                }).ToList()
+            };
+        }
+
+        public static Value ToValue(Element v)
+        {
+            return new Value
+            {
+                Name = v.Name
             };
         }
     }
