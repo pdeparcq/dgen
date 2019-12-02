@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace DGen.Test.StarUml
 {
@@ -41,8 +42,10 @@ namespace DGen.Test.StarUml
         [JsonProperty(PropertyName = "attributes")]
         public List<Element> Attributes { get; set; }
 
-        [JsonProperty(PropertyName = "type")]
-        public string AttributeType { get; set; }
+        public string AttributeSimpleType { get; set; }
+
+        [JsonProperty(PropertyName = "type", IsReference = true)]
+        public Element AttributeElementType { get; set; }
 
         [JsonProperty(PropertyName = "literals")]
         public List<Element> Literals { get; set; }
@@ -58,5 +61,22 @@ namespace DGen.Test.StarUml
 
         [JsonProperty(PropertyName = "multiplicity")]
         public string Multiplicity { get; set; }
+
+
+        [OnDeserialized]
+        internal void OnDeserializedMethod(StreamingContext context)
+        {
+            if (AttributeElementType == null)
+            {
+                AttributeSimpleType = "string";
+            }
+        }
+
+        [OnError]
+        internal void OnError(StreamingContext context, ErrorContext errorContext)
+        {
+            errorContext.Handled = true;
+        }
+
     }
 }

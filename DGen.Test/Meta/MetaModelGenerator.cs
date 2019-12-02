@@ -9,7 +9,7 @@ namespace DGen.Test.Meta
         {
             return new MetaModel
             {
-                Services = model.OwnedElements.Where(e => e.Type == ElementType.UMLModel).Select(ToService).ToList()
+                Services = model.OwnedElements?.Where(e => e.Type == ElementType.UMLModel).Select(ToService).ToList()
             };
         }
 
@@ -23,10 +23,10 @@ namespace DGen.Test.Meta
             return new T()
             {
                 Name = m.Name,
-                Modules = m.OwnedElements.Where(e => e.Type == ElementType.UMLPackage).Select(ToModule<Module>).ToList(),
-                Aggregates = m.OwnedElements.Where(e => e.Type == ElementType.UMLClass && e.Stereotype.ToLower() == "aggregate").Select(ToAggregate).ToList(),
-                Entities = m.OwnedElements.Where(e => e.Type == ElementType.UMLClass && e.Stereotype.ToLower() == "entity").Select(ToEntity<Entity>).ToList(),
-                Values = m.OwnedElements.Where(e => e.Type == ElementType.UMLClass && e.Stereotype.ToLower() == "value").Select(ToValue).ToList()
+                Modules = m.OwnedElements?.Where(e => e.Type == ElementType.UMLPackage).Select(ToModule<Module>).ToList(),
+                Aggregates = m.OwnedElements?.Where(e => e.Type == ElementType.UMLClass && e.Stereotype.ToLower() == "aggregate").Select(ToAggregate).ToList(),
+                Entities = m.OwnedElements?.Where(e => e.Type == ElementType.UMLClass && e.Stereotype.ToLower() == "entity").Select(ToEntity<Entity>).ToList(),
+                Values = m.OwnedElements?.Where(e => e.Type == ElementType.UMLClass && e.Stereotype.ToLower() == "value").Select(ToValue).ToList()
             };
         }
 
@@ -43,7 +43,7 @@ namespace DGen.Test.Meta
                 Properties = e.Attributes?.Where(p => p.Type == ElementType.UMLAttribute).Select(p => new Property
                 {
                     Name = p.Name,
-                    Type = p.AttributeType
+                    Type = p.AttributeSimpleType ?? p.AttributeElementType?.Name
                 }).ToList()
             };
         }

@@ -12,9 +12,6 @@ namespace DGen.Test.StarUml
             _settings = new JsonSerializerSettings()
             {
                 MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
-                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                Formatting = Formatting.Indented
             };
         }
 
