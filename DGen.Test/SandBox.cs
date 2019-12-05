@@ -3,7 +3,13 @@ using DGen.Test.StarUml;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using DGen.Test.Generation;
+using DGen.Test.Generation.Application;
+using DGen.Test.Generation.Domain;
+using DGen.Test.Generation.Infrastructure;
+using DGen.Test.Generation.Presentation;
 
 namespace DGen.Test
 {
@@ -26,11 +32,20 @@ namespace DGen.Test
         }
 
         [Test]
-        public void CanGenerateCodeFromMetaModel()
+        public async Task CanGenerateCodeFromMetaModel()
         {
             var model = new StarUmlReader().Read(@"C:\dev\poc\HelloCustomer.mdj");
             var metaModel = new MetaModelGenerator().Generate(model);
-            new CodeGenerator().Generate(metaModel, @"C:\dev\poc\generated");
+
+            var generators = new List<ICodeGenerator>
+            {
+                new DomainCodeGenerator(),
+                new InfrastructureCodeGenerator(),
+                new ApplicationCodeGenerator(),
+                new PresentationCodeGenerator()
+            };
+
+            await new CodeGenerator(generators).Generate(metaModel, @"C:\dev\poc\generated");
         }
     }
 }
