@@ -5,7 +5,7 @@ namespace DGen.Test.Generation
 {
     public class CodeGenerationContext
     {
-        public MetaModel Model { get; set; }
+        public Service Service { get; set; }
         public DirectoryInfo Directory { get; set; }
     }
 }

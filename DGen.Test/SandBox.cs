@@ -34,7 +34,7 @@ namespace DGen.Test
         [Test]
         public async Task CanGenerateCodeFromMetaModel()
         {
-            var model = new StarUmlReader().Read(@"C:\dev\poc\HelloCustomer.mdj");
+            var model = new StarUmlReader().Read(@"C:\dev\poc\MyLunch.mdj");
             var metaModel = new MetaModelGenerator().Generate(model);
 
             var generators = new List<ICodeGenerator>

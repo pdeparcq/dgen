@@ -20,13 +20,21 @@ namespace DGen.Test.Generation
         {
             var di = CreateDirectoryIfNotExists(path);
 
-            foreach (var generator in _generators)
+            if(model.Services != null && model.Services.Any())
             {
-                await generator.Generate(new CodeGenerationContext
+                foreach(var service in model.Services)
                 {
-                    Model = model,
-                    Directory = di.CreateSubdirectory(generator.Name)
-                });
+                    var serviceDirectory = di.CreateSubdirectory(service.Name);
+
+                    foreach (var generator in _generators)
+                    {
+                        await generator.Generate(new CodeGenerationContext
+                        {
+                            Service = service,
+                            Directory = serviceDirectory.CreateSubdirectory(generator.Name)
+                        });
+                    }
+                }
             }
         }
 
