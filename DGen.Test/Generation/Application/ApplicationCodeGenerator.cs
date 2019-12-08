@@ -8,7 +8,6 @@ namespace DGen.Test.Generation.Application
 
         public async Task Generate(CodeGenerationContext context)
         {
-            
         }
     }
 }

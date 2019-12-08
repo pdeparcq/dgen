@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DGen.Test.Meta;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace DGen.Test.Generation.Domain
 {
@@ -13,21 +13,35 @@ namespace DGen.Test.Generation.Domain
 
         public async Task Generate(CodeGenerationContext context)
         {
-            foreach(var module in context.Service.Modules) 
+            foreach(var module in context.Service.Modules)
             {
-                var di = context.Directory.CreateSubdirectory(module.Name);
-
-                GenerateAggregates(module.Aggregates, di);
+                GenerateModule(context.Directory, module);
             }
         }
 
-        private void GenerateAggregates(List<Aggregate> aggregates, DirectoryInfo di)
+        private void GenerateModule(DirectoryInfo di, Module module)
         {
-            if(aggregates != null && aggregates.Any())
+            di = di.CreateSubdirectory(module.Name);
+
+            GenerateAggregates(module, di);
+
+            module.Modules?.ForEach(m =>
             {
-                foreach(var aggregate in aggregates)
+                GenerateModule(di, m);
+            });
+        }
+
+        private void GenerateAggregates(Module module, DirectoryInfo di)
+        {
+            if(module.Aggregates != null && module.Aggregates.Any())
+            {
+                foreach(var aggregate in module.Aggregates)
                 {
-                    File.CreateText(Path.Combine(di.FullName, $"{aggregate.Name}.cs"));
+                    using (var sw = File.CreateText(Path.Combine(di.FullName, $"{aggregate.Name}.cs")))
+                    {
+                        var ns = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(module.FullName));
+                        sw.Write(ns.NormalizeWhitespace().ToFullString());
+                    }
                 }
             }
         }

@@ -18,16 +18,20 @@ namespace DGen.Test.Meta
             return ToModule<Service>(s);
         }
 
-        private static T ToModule<T>(Element m) where T : Module, new()
+        private static T ToModule<T>(Element m, Module parent = null) where T : Module, new()
         {
-            return new T()
+            var generated = new T()
             {
                 Name = m.Name,
-                Modules = m.OwnedElements?.Where(e => e.Type == ElementType.UMLPackage).Select(ToModule<Module>).ToList(),
-                Aggregates = m.OwnedElements?.Where(e => e.Type == ElementType.UMLClass && e.Stereotype.ToLower() == "aggregate").Select(ToAggregate).ToList(),
-                Entities = m.OwnedElements?.Where(e => e.Type == ElementType.UMLClass && e.Stereotype.ToLower() == "entity").Select(ToEntity<Entity>).ToList(),
-                Values = m.OwnedElements?.Where(e => e.Type == ElementType.UMLClass && e.Stereotype.ToLower() == "value").Select(ToValue).ToList()
+                ParentModule = parent
             };
+
+            generated.Modules = m.OwnedElements?.Where(e => e.Type == ElementType.UMLPackage).Select(e => ToModule<Module>(e, generated)).ToList();
+            generated.Aggregates = m.OwnedElements?.Where(e => e.Type == ElementType.UMLClass && e.Stereotype?.ToLower() == "aggregate").Select(ToAggregate).ToList();
+            generated.Entities = m.OwnedElements?.Where(e => e.Type == ElementType.UMLClass && e.Stereotype?.ToLower() == "entity").Select(ToEntity<Entity>).ToList();
+            generated.Values = m.OwnedElements?.Where(e => e.Type == ElementType.UMLClass && e.Stereotype?.ToLower() == "value").Select(ToValue).ToList();
+
+            return generated;
         }
 
         private static Aggregate ToAggregate(Element a)
