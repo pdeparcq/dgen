@@ -13,21 +13,16 @@ namespace DGen.Test.Generation.Domain
 
         public async Task Generate(CodeGenerationContext context)
         {
-            foreach(var module in context.Service.Modules)
-            {
-                GenerateModule(context.Directory, module);
-            }
+            GenerateModule(context.Directory, context.Service);
         }
 
         private void GenerateModule(DirectoryInfo di, Module module)
         {
-            di = di.CreateSubdirectory(module.Name);
-
             GenerateAggregates(module, di);
 
             module.Modules?.ForEach(m =>
             {
-                GenerateModule(di, m);
+                GenerateModule(di.CreateSubdirectory(m.Name), m);
             });
         }
 
