@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DGen.Test.Meta;
+using Microsoft.CodeAnalysis;
 
 namespace DGen.Test.Generation
 {
@@ -30,6 +31,7 @@ namespace DGen.Test.Generation
                     {
                         await generator.Generate(new CodeGenerationContext
                         {
+                            Workspace = new AdhocWorkspace(),
                             Service = service,
                             Directory = serviceDirectory.CreateSubdirectory(generator.Name)
                         });

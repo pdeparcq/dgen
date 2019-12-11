@@ -3,41 +3,52 @@ using System.Linq;
 using System.Threading.Tasks;
 using DGen.Test.Meta;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Editing;
 
 namespace DGen.Test.Generation.Domain
 {
     public class DomainCodeGenerator : ICodeGenerator
     {
+        private SyntaxGenerator _generator;
+        
         public string Name => "Domain";
 
         public async Task Generate(CodeGenerationContext context)
         {
-            GenerateModule(context.Directory, context.Service);
+            _generator = SyntaxGenerator.GetGenerator(context.Workspace, LanguageNames.CSharp);
+            await GenerateModule(context.Service, context.Directory);
         }
 
-        private void GenerateModule(DirectoryInfo di, Module module)
+        private async Task GenerateModule(Module module, DirectoryInfo di)
         {
-            GenerateAggregates(module, di);
+            await GenerateAggregates(module, di);
 
-            module.Modules?.ForEach(m =>
+            module.Modules?.ForEach(async m =>
             {
-                GenerateModule(di.CreateSubdirectory(m.Name), m);
+                await GenerateModule(m, di.CreateSubdirectory(m.Name));
             });
         }
 
-        private void GenerateAggregates(Module module, DirectoryInfo di)
+        private async Task GenerateAggregates(Module module, DirectoryInfo di)
         {
             if(module.Aggregates != null && module.Aggregates.Any())
             {
-                foreach(var aggregate in module.Aggregates)
+                foreach (var aggregate in module.Aggregates)
                 {
-                    using (var sw = File.CreateText(Path.Combine(di.FullName, $"{aggregate.Name}.cs")))
-                    {
-                        var ns = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(module.FullName));
-                        sw.Write(ns.NormalizeWhitespace().ToFullString());
-                    }
+                    await GenerateAggregate(module, di, aggregate);
                 }
+            } 
+        }
+
+        private async Task GenerateAggregate(Module module, DirectoryInfo di, Aggregate aggregate)
+        {
+            using (var sw = File.CreateText(Path.Combine(di.FullName, $"{aggregate.Name}.cs")))
+            {
+                var builder = new ClassBuilder(_generator, module.FullName, aggregate.Name);
+                builder.AddNamespaceImportDeclaration("System");
+                builder.AddBaseType("AggregateRoot");
+                aggregate.Properties?.ForEach(p => builder.AddAutoProperty(p.Name, p.Type));
+                await sw.WriteAsync(builder.ToString());
             }
         }
     }
