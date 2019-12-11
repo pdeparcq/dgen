@@ -3,11 +3,14 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace DGen.Test.Generation
 {
     public class ClassBuilder
     {
+        private static readonly Regex AutoPropRegex = new Regex(@"\s*\{\s*get;\s*set;\s*}\s");
+
         private readonly SyntaxGenerator _generator;
         private readonly List<SyntaxNode> _usings;
         private NamespaceDeclarationSyntax _namespace;
@@ -17,7 +20,7 @@ namespace DGen.Test.Generation
         {
             _generator = generator;
             _usings = new List<SyntaxNode>();
-            _class = _generator.ClassDeclaration(className) as ClassDeclarationSyntax;
+            _class = _generator.ClassDeclaration(className, accessibility: Accessibility.Public) as ClassDeclarationSyntax;
             _namespace = _generator.NamespaceDeclaration(namespaceName) as NamespaceDeclarationSyntax;
         }
 
@@ -48,11 +51,16 @@ namespace DGen.Test.Generation
 
         public override string ToString()
         {
-            _namespace = _namespace.AddMembers(_class);
+            var ns = _namespace.AddMembers(_class);
             var declarations = new List<SyntaxNode>(_usings);
-            declarations.Add(_namespace);
+            declarations.Add(ns);
             var compilationUnit = _generator.CompilationUnit(declarations).NormalizeWhitespace();
-            return compilationUnit.ToFullString();
+            return FormatAutoPropertiesOnOneLine(compilationUnit.ToFullString());
+        }
+
+        private string FormatAutoPropertiesOnOneLine(string str)
+        {
+            return AutoPropRegex.Replace(str, " { get; set; }");
         }
     }
 }

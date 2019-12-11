@@ -51,5 +51,6 @@ namespace DGen.Test.Generation.Domain
                 await sw.WriteAsync(builder.ToString());
             }
         }
+
     }
 }
