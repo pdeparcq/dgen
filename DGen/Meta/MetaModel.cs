@@ -18,10 +18,18 @@ namespace DGen.Meta
         public List<Value> Values { get; set; }
     }
 
+
+
+    public class PropertyType
+    {
+        public string SystemType { get; set; }
+        public BaseType Type { get; set; }
+    }
+
     public class Property
     {
         public string Name { get; set; }
-        public string Type { get; set; }
+        public PropertyType Type { get; set; }
     }
 
     public class Service : Module
@@ -29,19 +37,24 @@ namespace DGen.Meta
 
     }
 
-    public class Entity
+    public abstract class BaseType
     {
+        public Module Module { get; set; }
         public string Name { get; set; }
         public List<Property> Properties { get; set; }
     }
 
+    public class Value : BaseType
+    {
+    }
+
+    public class Entity : BaseType
+    {
+    }
+
     public class Aggregate : Entity
     {
-
     }
 
-    public class Value
-    {
-        public string Name { get; set; }
-    }
+    
 }

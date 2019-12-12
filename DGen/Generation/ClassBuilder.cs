@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -33,7 +34,12 @@ namespace DGen.Generation
 
         public ClassBuilder AddNamespaceImportDeclaration(string name)
         {
-            _usings.Add(_generator.NamespaceImportDeclaration(name));
+            var declaration = _generator.NamespaceImportDeclaration(name);
+
+            if (_usings.All(u => u != declaration))
+            {
+                _usings.Add(declaration);
+            };
 
             return this;
         }

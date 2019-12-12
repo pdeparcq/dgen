@@ -45,9 +45,20 @@ namespace DGen.Generation.Domain
             using (var sw = File.CreateText(Path.Combine(di.FullName, $"{aggregate.Name}.cs")))
             {
                 var builder = new ClassBuilder(_generator, module.FullName, aggregate.Name);
-                builder.AddNamespaceImportDeclaration("System");
                 builder.AddBaseType("AggregateRoot");
-                aggregate.Properties?.ForEach(p => builder.AddAutoProperty(p.Name, p.Type));
+                aggregate.Properties?.ForEach(p =>
+                {
+                    if (p.Type.Type != null)
+                    {
+                        builder.AddNamespaceImportDeclaration(p.Type.Type.Module.FullName);
+                        builder.AddAutoProperty(p.Name, p.Type.Type.Name);
+                    }
+                    else
+                    {
+                        builder.AddNamespaceImportDeclaration("System");
+                        builder.AddAutoProperty(p.Name, p.Type.SystemType ?? "Undefined");
+                    }
+                });
                 await sw.WriteAsync(builder.ToString());
             }
         }

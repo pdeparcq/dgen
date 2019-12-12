@@ -1,24 +1,28 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using DGen.StarUml;
 
 namespace DGen.Meta
 {
     public class MetaModelGenerator
     {
+        private Dictionary<string, BaseType> _types;
+
         public MetaModel Generate(Element model)
         {
+            _types = new Dictionary<string, BaseType>();
             return new MetaModel
             {
                 Services = model.OwnedElements?.Where(e => e.Type == ElementType.UMLModel).Select(ToService).ToList()
             };
         }
 
-        private static Service ToService(Element s)
+        private Service ToService(Element s)
         {
             return ToModule<Service>(s);
         }
 
-        private static T ToModule<T>(Element m, Module parent = null) where T : Module, new()
+        private T ToModule<T>(Element m, Module parent = null) where T : Module, new()
         {
             var generated = new T()
             {
@@ -27,37 +31,63 @@ namespace DGen.Meta
             };
 
             generated.Modules = m.OwnedElements?.Where(e => e.Type == ElementType.UMLPackage).Select(e => ToModule<Module>(e, generated)).ToList();
-            generated.Aggregates = m.OwnedElements?.Where(e => e.Type == ElementType.UMLClass && e.Stereotype?.ToLower() == "aggregate").Select(ToAggregate).ToList();
-            generated.Entities = m.OwnedElements?.Where(e => e.Type == ElementType.UMLClass && e.Stereotype?.ToLower() == "entity").Select(ToEntity<Entity>).ToList();
-            generated.Values = m.OwnedElements?.Where(e => e.Type == ElementType.UMLClass && e.Stereotype?.ToLower() == "value").Select(ToValue).ToList();
-
+            generated.Values = m.OwnedElements?.Where(e => e.Type == ElementType.UMLClass && e.Stereotype?.ToLower() == "value").Select(v => ToValue(v, generated)).ToList();
+            generated.Entities = m.OwnedElements?.Where(e => e.Type == ElementType.UMLClass && e.Stereotype?.ToLower() == "entity").Select(e => ToEntity<Entity>(e, generated)).ToList();
+            generated.Aggregates = m.OwnedElements?.Where(e => e.Type == ElementType.UMLClass && e.Stereotype?.ToLower() == "aggregate").Select(a => ToAggregate(a, generated)).ToList();
+            
             return generated;
         }
 
-        private static Aggregate ToAggregate(Element a)
+        private Value ToValue(Element v, Module m)
         {
-            return ToEntity<Aggregate>(a);
+            return ToBaseType<Value>(v, m);
         }
 
-        private static T ToEntity<T>(Element e) where T : Entity, new()
+        private T ToEntity<T>(Element e, Module m) where T : Entity, new()
         {
-            return new T()
+            return ToBaseType<T>(e, m);
+        }
+
+        private Aggregate ToAggregate(Element a, Module m)
+        {
+            return ToEntity<Aggregate>(a, m);
+        }
+
+        private T ToBaseType<T>(Element e, Module m) where T : BaseType, new()
+        {
+            var t = new T()
             {
+                Module = m,
                 Name = e.Name,
-                Properties = e.Attributes?.Where(p => p.Type == ElementType.UMLAttribute).Select(p => new Property
-                {
-                    Name = p.Name,
-                    Type = p.AttributeSimpleType ?? p.AttributeElementType?.Name
-                }).ToList()
             };
+
+            // Store type in registry
+            _types[e.FullName] = t;
+
+            // Generate properties
+            t.Properties = e.Attributes?.Where(p => p.Type == ElementType.UMLAttribute).Select(p => new Property
+            {
+                Name = p.Name,
+                Type = new PropertyType
+                {
+                    SystemType = p.AttributeSimpleType,
+                    Type = GetPropertyType(p.AttributeElementType)
+                }
+            }).ToList();
+
+            return t;
         }
 
-        public static Value ToValue(Element v)
+        private BaseType GetPropertyType(Element element)
         {
-            return new Value
+            if (element != null)
             {
-                Name = v.Name
-            };
+                if (_types.ContainsKey(element.FullName))
+                {
+                    return _types[element.FullName];
+                }
+            }
+            return null;
         }
     }
 }

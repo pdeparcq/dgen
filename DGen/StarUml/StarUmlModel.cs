@@ -30,6 +30,8 @@ namespace DGen.StarUml
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
 
+        public string FullName => Parent == null ? Name : $"{Parent.Name}.{Name}";
+
         [JsonProperty(PropertyName = "_parent", IsReference = true)]
         public Element Parent { get; set; }
 
