@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace DGen.Test.Generation.Infrastructure
+namespace DGen.Generation.Infrastructure
 {
     public class InfrastructureCodeGenerator : ICodeGenerator
     {

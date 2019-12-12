@@ -2,10 +2,10 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using DGen.Test.Meta;
+using DGen.Meta;
 using Microsoft.CodeAnalysis;
 
-namespace DGen.Test.Generation
+namespace DGen.Generation
 {
     public class CodeGenerator
     {

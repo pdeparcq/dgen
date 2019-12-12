@@ -1,8 +1,8 @@
 ﻿using System.IO;
-using DGen.Test.Meta;
+using DGen.Meta;
 using Microsoft.CodeAnalysis;
 
-namespace DGen.Test.Generation
+namespace DGen.Generation
 {
     public class CodeGenerationContext
     {

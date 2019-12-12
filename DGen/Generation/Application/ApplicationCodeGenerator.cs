@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace DGen.Test.Generation.Application
+namespace DGen.Generation.Application
 {
     public class ApplicationCodeGenerator : ICodeGenerator
     {

@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using System.IO;
+﻿using System.IO;
+using Newtonsoft.Json;
 
-namespace DGen.Test.StarUml
+namespace DGen.StarUml
 {
     public class StarUmlReader
     {

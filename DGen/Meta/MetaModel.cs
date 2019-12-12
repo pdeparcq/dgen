@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DGen.Test.Meta
+namespace DGen.Meta
 {
     public class MetaModel
     {

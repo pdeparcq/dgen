@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29409.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DGen.Test", "DGen.Test\DGen.Test.csproj", "{038463D3-B47C-4690-A874-E973DD2657B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DGen.Test", "DGen.Test\DGen.Test.csproj", "{038463D3-B47C-4690-A874-E973DD2657B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DGen", "DGen\DGen.csproj", "{F86D521F-32D1-4C39-B8FE-7FB435367072}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{038463D3-B47C-4690-A874-E973DD2657B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{038463D3-B47C-4690-A874-E973DD2657B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{038463D3-B47C-4690-A874-E973DD2657B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F86D521F-32D1-4C39-B8FE-7FB435367072}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F86D521F-32D1-4C39-B8FE-7FB435367072}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F86D521F-32D1-4C39-B8FE-7FB435367072}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F86D521F-32D1-4C39-B8FE-7FB435367072}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

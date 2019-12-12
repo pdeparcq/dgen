@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DGen\DGen.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="MyLunch.mdj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

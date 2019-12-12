@@ -1,7 +1,7 @@
-﻿using DGen.Test.StarUml;
-using System.Linq;
+﻿using System.Linq;
+using DGen.StarUml;
 
-namespace DGen.Test.Meta
+namespace DGen.Meta
 {
     public class MetaModelGenerator
     {

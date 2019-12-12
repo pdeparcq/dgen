@@ -1,17 +1,17 @@
-﻿using DGen.Test.Meta;
-using DGen.Test.StarUml;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DGen.Test.Generation;
-using DGen.Test.Generation.Application;
-using DGen.Test.Generation.Domain;
-using DGen.Test.Generation.Infrastructure;
-using DGen.Test.Generation.Presentation;
 using System.Reflection;
 using System.IO;
+using DGen.Generation;
+using DGen.Generation.Application;
+using DGen.Generation.Domain;
+using DGen.Generation.Infrastructure;
+using DGen.Generation.Presentation;
+using DGen.Meta;
+using DGen.StarUml;
 
 namespace DGen.Test
 {

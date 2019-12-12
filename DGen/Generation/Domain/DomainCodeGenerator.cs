@@ -1,11 +1,11 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using DGen.Test.Meta;
+using DGen.Meta;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
 
-namespace DGen.Test.Generation.Domain
+namespace DGen.Generation.Domain
 {
     public class DomainCodeGenerator : ICodeGenerator
     {
