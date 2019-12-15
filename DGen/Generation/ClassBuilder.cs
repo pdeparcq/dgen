@@ -36,7 +36,7 @@ namespace DGen.Generation
         {
             var declaration = _generator.NamespaceImportDeclaration(name);
 
-            if (_usings.All(u => u != declaration))
+            if (_usings.All(u => u.ToString() != declaration.ToString()))
             {
                 _usings.Add(declaration);
             };

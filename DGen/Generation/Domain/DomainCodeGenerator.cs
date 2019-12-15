@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DGen.Meta;
@@ -36,8 +37,24 @@ namespace DGen.Generation.Domain
                 foreach (var aggregate in module.Aggregates)
                 {
                     await GenerateAggregate(module, di, aggregate);
+
+                    foreach(var de in aggregate.DomainEvents)
+                    {
+                        await GenerateDomainEvent(module, di.CreateSubdirectory("DomainEvents"), de);
+                    }
                 }
             } 
+        }
+
+        private async Task GenerateDomainEvent(Module module, DirectoryInfo di, DomainEvent de)
+        {
+            using (var sw = File.CreateText(Path.Combine(di.FullName, $"{de.Name}.cs")))
+            {
+                var builder = new ClassBuilder(_generator, module.FullName, de.Name);
+                builder.AddBaseType("DomainEvent");
+                GenerateProperties(de, builder);
+                await sw.WriteAsync(builder.ToString());
+            }
         }
 
         private async Task GenerateAggregate(Module module, DirectoryInfo di, Aggregate aggregate)
@@ -46,21 +63,26 @@ namespace DGen.Generation.Domain
             {
                 var builder = new ClassBuilder(_generator, module.FullName, aggregate.Name);
                 builder.AddBaseType("AggregateRoot");
-                aggregate.Properties?.ForEach(p =>
-                {
-                    if (p.Type.Type != null)
-                    {
-                        builder.AddNamespaceImportDeclaration(p.Type.Type.Module.FullName);
-                        builder.AddAutoProperty(p.Name, p.Type.Type.Name);
-                    }
-                    else
-                    {
-                        builder.AddNamespaceImportDeclaration("System");
-                        builder.AddAutoProperty(p.Name, p.Type.SystemType ?? "Undefined");
-                    }
-                });
+                GenerateProperties(aggregate, builder);
                 await sw.WriteAsync(builder.ToString());
             }
+        }
+
+        private static void GenerateProperties(BaseType t, ClassBuilder builder)
+        {
+            t.Properties?.ForEach(p =>
+            {
+                if (p.Type.Type != null)
+                {
+                    builder.AddNamespaceImportDeclaration(p.Type.Type.Module.FullName);
+                    builder.AddAutoProperty(p.Name, p.Type.Type.Name);
+                }
+                else
+                {
+                    builder.AddNamespaceImportDeclaration("System");
+                    builder.AddAutoProperty(p.Name, p.Type.SystemType ?? "Undefined");
+                }
+            });
         }
 
     }
