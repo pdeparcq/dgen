@@ -34,7 +34,7 @@ namespace DGen.Meta
             generated.Values = m.OwnedElements?.Where(e => e.Type == ElementType.UMLClass && e.Stereotype?.ToLower() == "value").Select(v => ToValue(v, generated)).ToList();
             generated.Entities = m.OwnedElements?.Where(e => e.Type == ElementType.UMLClass && e.Stereotype?.ToLower() == "entity").Select(e => ToEntity<Entity>(e, generated)).ToList();
             generated.Aggregates = m.OwnedElements?.Where(e => e.Type == ElementType.UMLClass && e.Stereotype?.ToLower() == "aggregate").Select(a => ToAggregate(a, generated)).ToList();
-            
+
             return generated;
         }
 
@@ -50,7 +50,29 @@ namespace DGen.Meta
 
         private Aggregate ToAggregate(Element a, Module m)
         {
-            return ToEntity<Aggregate>(a, m);
+            var aggregate = ToEntity<Aggregate>(a, m);
+            aggregate.DomainEvents = a.OwnedElements?
+                    .Where(e => e.Type == ElementType.UMLDependency && e.Source == a && e.Target?.Stereotype?.ToLower() == "domainevent")
+                    .Select(de => ToDomainEvent(de, aggregate)).ToList();
+            return aggregate;
+        }
+
+        private DomainEvent ToDomainEvent(Element de, Aggregate aggregate)
+        {
+            var domainEvent = ToBaseType<DomainEvent>(de.Target, aggregate.Module);
+            switch (de.Stereotype?.ToLower())
+            {
+                case "create":
+                    domainEvent.Type = DomainEventType.Create;
+                    break;
+                case "delete":
+                    domainEvent.Type = DomainEventType.Delete;
+                    break;
+                default:
+                    domainEvent.Type = DomainEventType.Update;
+                    break;
+            }
+            return domainEvent;
         }
 
         private T ToBaseType<T>(Element e, Module m) where T : BaseType, new()

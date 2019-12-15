@@ -44,6 +44,20 @@ namespace DGen.Meta
         public List<Property> Properties { get; set; }
     }
 
+
+    public enum DomainEventType
+    {
+        Create,
+        Update,
+        Delete
+    }
+
+    public class DomainEvent : BaseType
+    {
+        public Aggregate Aggregate { get; set; }
+        public DomainEventType Type { get; set; }
+    }
+
     public class Value : BaseType
     {
     }
@@ -54,6 +68,7 @@ namespace DGen.Meta
 
     public class Aggregate : Entity
     {
+        public List<DomainEvent> DomainEvents { get; set; }
     }
 
     

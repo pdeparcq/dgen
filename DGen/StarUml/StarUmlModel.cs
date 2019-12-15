@@ -55,6 +55,12 @@ namespace DGen.StarUml
         [JsonProperty(PropertyName = "reference", IsReference = true)]
         public Element Reference { get; set; }
 
+        [JsonProperty(PropertyName = "source", IsReference = true)]
+        public Element Source { get; set; }
+
+        [JsonProperty(PropertyName = "target", IsReference = true)]
+        public Element Target { get; set; }
+
         [JsonProperty(PropertyName = "end1")]
         public Element AssociationEndFrom { get; set; }
 
