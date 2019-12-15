@@ -72,15 +72,15 @@ namespace DGen.Generation.Domain
         {
             t.Properties?.ForEach(p =>
             {
-                if (p.Type.Type != null)
+                if (p.Type != null)
                 {
-                    builder.AddNamespaceImportDeclaration(p.Type.Type.Module.FullName);
-                    builder.AddAutoProperty(p.Name, p.Type.Type.Name);
+                    builder.AddNamespaceImportDeclaration(p.Type.Module.FullName);
+                    builder.AddAutoProperty(p.Name, p.Type.Name);
                 }
                 else
                 {
                     builder.AddNamespaceImportDeclaration("System");
-                    builder.AddAutoProperty(p.Name, p.Type.SystemType ?? "Undefined");
+                    builder.AddAutoProperty(p.Name, p.SystemType ?? "Undefined");
                 }
             });
         }

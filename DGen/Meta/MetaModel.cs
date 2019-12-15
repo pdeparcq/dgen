@@ -18,18 +18,11 @@ namespace DGen.Meta
         public List<Value> Values { get; set; }
     }
 
-
-
-    public class PropertyType
-    {
-        public string SystemType { get; set; }
-        public BaseType Type { get; set; }
-    }
-
     public class Property
     {
         public string Name { get; set; }
-        public PropertyType Type { get; set; }
+        public string SystemType { get; set; }
+        public BaseType Type { get; set; }
     }
 
     public class Service : Module

@@ -90,11 +90,8 @@ namespace DGen.Meta
             t.Properties = e.Attributes?.Where(p => p.Type == ElementType.UMLAttribute).Select(p => new Property
             {
                 Name = p.Name,
-                Type = new PropertyType
-                {
-                    SystemType = p.AttributeType?.SystemType,
-                    Type = GetPropertyType(p.AttributeType?.ReferenceType)
-                }
+                SystemType = p.AttributeType?.SystemType,
+                Type = GetPropertyType(p.AttributeType?.ReferenceType)
             }).ToList();
 
             return t;
