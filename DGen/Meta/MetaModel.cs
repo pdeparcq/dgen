@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DGen.Meta
 {
@@ -18,12 +19,35 @@ namespace DGen.Meta
         public List<Value> Values { get; set; }
     }
 
-    public class Property
+    public class PropertyType : System.IEquatable<PropertyType>
+    {
+        public string SystemType { get; set; }
+        public BaseType Type { get; set; }
+
+        public string Name => SystemType ?? Type?.Name;
+
+        public bool Equals([AllowNull] PropertyType other)
+        {
+            if (other == null)
+                return false;
+
+            return (other.SystemType == SystemType) && (other.Type?.Name == Type?.Name);
+        }
+    }
+
+    public class Property : System.IEquatable<Property>
     {
         public bool IsIdentifier { get; set; }
         public string Name { get; set; }
-        public string SystemType { get; set; }
-        public BaseType Type { get; set; }
+        public PropertyType Type { get; set; }
+
+        public bool Equals([AllowNull] Property other)
+        {
+            if (other == null)
+                return false;
+
+            return other.Name == Name && other.Type.Equals(Type);
+        }
     }
 
     public class Service : Module

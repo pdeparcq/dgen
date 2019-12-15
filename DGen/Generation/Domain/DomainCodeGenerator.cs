@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using DGen.Meta;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 
 namespace DGen.Generation.Domain
@@ -64,7 +66,25 @@ namespace DGen.Generation.Domain
                 var builder = new ClassBuilder(_generator, module.FullName, aggregate.Name);
                 builder.AddBaseType("AggregateRoot");
                 GenerateProperties(aggregate, builder);
+                GenerateDomainEventHandlers(aggregate, builder);
                 await sw.WriteAsync(builder.ToString());
+            }
+        }
+
+        private void GenerateDomainEventHandlers(Aggregate aggregate, ClassBuilder builder)
+        {
+            foreach(var domainEvent in aggregate.DomainEvents)
+            {
+                var method = _generator.MethodDeclaration("Handle") as MethodDeclarationSyntax;
+                method = method.AddParameterListParameters(_generator.ParameterDeclaration("e", SyntaxFactory.ParseTypeName(domainEvent.Name)) as ParameterSyntax);
+                foreach(var property in domainEvent.Properties)
+                {
+                    if (aggregate.Properties.Any(p => p.Equals(property)))
+                    {
+                        //TODO: add body statements
+                    }
+                }
+                builder.AddMethod(method);
             }
         }
 
@@ -72,15 +92,15 @@ namespace DGen.Generation.Domain
         {
             t.Properties?.ForEach(p =>
             {
-                if (p.Type != null)
+                if (p.Type.Type != null)
                 {
-                    builder.AddNamespaceImportDeclaration(p.Type.Module.FullName);
+                    builder.AddNamespaceImportDeclaration(p.Type.Type.Module.FullName);
                     builder.AddAutoProperty(p.Name, p.Type.Name);
                 }
                 else
                 {
                     builder.AddNamespaceImportDeclaration("System");
-                    builder.AddAutoProperty(p.Name, p.SystemType ?? "Undefined");
+                    builder.AddAutoProperty(p.Name, p.Type.Name);
                 }
             });
         }

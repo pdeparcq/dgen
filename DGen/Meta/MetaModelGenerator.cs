@@ -66,7 +66,6 @@ namespace DGen.Meta
                 domainEvent.Properties.Insert(0, new Property
                 {
                     Name = $"{aggregate.Name}{aggregateId.Name}",
-                    SystemType = aggregateId.SystemType,
                     Type = aggregateId.Type
                 });
             }   
@@ -103,8 +102,11 @@ namespace DGen.Meta
                 {
                     IsIdentifier = p.Stereotype?.ToLower() == "id",
                     Name = p.Name,
-                    SystemType = p.AttributeType?.SystemType,
-                    Type = GetPropertyType(p.AttributeType?.ReferenceType)
+                    Type = new PropertyType
+                    {
+                        SystemType = p.AttributeType?.SystemType,
+                        Type = GetPropertyType(p.AttributeType?.ReferenceType)
+                    }
                 }).ToList();
             }
             else

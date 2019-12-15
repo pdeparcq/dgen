@@ -55,6 +55,13 @@ namespace DGen.Generation
             return this;
         }
 
+        public ClassBuilder AddMethod(MethodDeclarationSyntax method)
+        {
+            _class = _class.AddMembers(method);
+
+            return this;
+        }
+
         public override string ToString()
         {
             var ns = _namespace.AddMembers(_class);
