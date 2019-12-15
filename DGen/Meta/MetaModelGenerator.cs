@@ -92,8 +92,8 @@ namespace DGen.Meta
                 Name = p.Name,
                 Type = new PropertyType
                 {
-                    SystemType = p.AttributeSimpleType,
-                    Type = GetPropertyType(p.AttributeElementType)
+                    SystemType = p.AttributeType?.SystemType,
+                    Type = GetPropertyType(p.AttributeType?.ReferenceType)
                 }
             }).ToList();
 

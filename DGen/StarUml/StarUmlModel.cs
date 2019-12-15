@@ -21,6 +21,12 @@ namespace DGen.StarUml
         UMLAttribute
     }
 
+    public class AttributeType
+    {
+        public string SystemType { get; set; }
+        public Element ReferenceType { get; set; }
+    }
+
     public class Element
     {
         [JsonProperty(PropertyName = "_type")]
@@ -44,10 +50,9 @@ namespace DGen.StarUml
         [JsonProperty(PropertyName = "attributes")]
         public List<Element> Attributes { get; set; }
 
-        public string AttributeSimpleType { get; set; }
-
-        [JsonProperty(PropertyName = "type", IsReference = true)]
-        public Element AttributeElementType { get; set; }
+        [JsonProperty(PropertyName = "type")]
+        [JsonConverter(typeof(AttributeTypeConverter))]
+        public AttributeType AttributeType { get; set; }
 
         [JsonProperty(PropertyName = "literals")]
         public List<Element> Literals { get; set; }
@@ -71,18 +76,10 @@ namespace DGen.StarUml
         public string Multiplicity { get; set; }
 
 
-        [OnDeserialized]
-        internal void OnDeserializedMethod(StreamingContext context)
-        {
-            if (AttributeElementType == null)
-            {
-                AttributeSimpleType = "string";
-            }
-        }
-
         [OnError]
         internal void OnError(StreamingContext context, ErrorContext errorContext)
         {
+            System.Console.Error.WriteLine(errorContext.Error.Message);
             errorContext.Handled = true;
         }
 
