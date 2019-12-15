@@ -20,6 +20,7 @@ namespace DGen.Meta
 
     public class Property
     {
+        public bool IsIdentifier { get; set; }
         public string Name { get; set; }
         public string SystemType { get; set; }
         public BaseType Type { get; set; }

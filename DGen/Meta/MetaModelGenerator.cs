@@ -60,6 +60,16 @@ namespace DGen.Meta
         private DomainEvent ToDomainEvent(Element de, Aggregate aggregate)
         {
             var domainEvent = ToBaseType<DomainEvent>(de.Target, aggregate.Module);
+            var aggregateId = aggregate.Properties.FirstOrDefault(p => p.IsIdentifier);
+            if(aggregateId != null)
+            {
+                domainEvent.Properties.Insert(0, new Property
+                {
+                    Name = $"{aggregate.Name}{aggregateId.Name}",
+                    SystemType = aggregateId.SystemType,
+                    Type = aggregateId.Type
+                });
+            }   
             switch (de.Stereotype?.ToLower())
             {
                 case "create":
@@ -87,13 +97,21 @@ namespace DGen.Meta
             _types[e.FullName] = t;
 
             // Generate properties
-            t.Properties = e.Attributes?.Where(p => p.Type == ElementType.UMLAttribute).Select(p => new Property
+            if(e.Attributes != null && e.Attributes.Any())
             {
-                Name = p.Name,
-                SystemType = p.AttributeType?.SystemType,
-                Type = GetPropertyType(p.AttributeType?.ReferenceType)
-            }).ToList();
-
+                t.Properties = e.Attributes.Where(p => p.Type == ElementType.UMLAttribute).Select(p => new Property
+                {
+                    IsIdentifier = p.Stereotype?.ToLower() == "id",
+                    Name = p.Name,
+                    SystemType = p.AttributeType?.SystemType,
+                    Type = GetPropertyType(p.AttributeType?.ReferenceType)
+                }).ToList();
+            }
+            else
+            {
+                t.Properties = new List<Property>();
+            }
+            
             return t;
         }
 
