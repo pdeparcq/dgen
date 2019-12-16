@@ -26,7 +26,7 @@ namespace DGen.Meta.Generators
 
         private DomainEventType GenerateDomainEventType(string stereotype)
         {
-            if (!Enum.TryParse<DomainEventType>(stereotype, true, out DomainEventType result))
+            if (!Enum.TryParse(stereotype, true, out DomainEventType result))
             {
                 result = DomainEventType.Update;
             }

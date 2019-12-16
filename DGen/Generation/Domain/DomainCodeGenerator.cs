@@ -24,7 +24,9 @@ namespace DGen.Generation.Domain
 
         private async Task GenerateModule(Module module, DirectoryInfo di)
         {
-            await GenerateValueObjects(module, di.CreateSubdirectory("ValueObjects"));
+            await GenerateValueObjects(module, di);
+            await GenerateDomainEvents(module, di);
+            await GenerateEntities(module, di);
             await GenerateAggregates(module, di);
 
             module.Modules?.ForEach(async m =>
@@ -37,6 +39,7 @@ namespace DGen.Generation.Domain
         {
             if (module.Values != null && module.Values.Any())
             {
+                di = di.CreateSubdirectory("ValueObjects");
                 foreach (var value in module.Values)
                 {
                     await GenerateValueObject(module, di, value);
@@ -44,6 +47,29 @@ namespace DGen.Generation.Domain
             }
         }
 
+        private async Task GenerateDomainEvents(Module module, DirectoryInfo di)
+        {
+            if (module.DomainEvents != null && module.DomainEvents.Any())
+            {
+                di = di.CreateSubdirectory("DomainEvents");
+                foreach (var domainEvent in module.DomainEvents)
+                {
+                    await GenerateDomainEvent(module, di, domainEvent);
+                }
+            }
+        }
+
+        private async Task GenerateEntities(Module module, DirectoryInfo di)
+        {
+            if (module.Entities != null && module.Entities.Any())
+            {
+                di = di.CreateSubdirectory("Entities");
+                foreach (var entity in module.Entities)
+                {
+                    await GenerateEntity(module, di, entity);
+                }
+            }
+        }
         private async Task GenerateAggregates(Module module, DirectoryInfo di)
         {
             if(module.Aggregates != null && module.Aggregates.Any())
@@ -51,11 +77,6 @@ namespace DGen.Generation.Domain
                 foreach (var aggregate in module.Aggregates)
                 {
                     await GenerateAggregate(module, di, aggregate);
-
-                    foreach(var de in aggregate.DomainEvents)
-                    {
-                        await GenerateDomainEvent(module, di.CreateSubdirectory("DomainEvents"), de);
-                    }
                 }
             } 
         }
@@ -77,6 +98,17 @@ namespace DGen.Generation.Domain
             {
                 var builder = new ClassBuilder(_generator, module.FullName, value.Name);
                 GenerateProperties(value, builder);
+                await sw.WriteAsync(builder.ToString());
+            }
+        }
+
+        private async Task GenerateEntity(Module module, DirectoryInfo di, Entity entity)
+        {
+            using (var sw = File.CreateText(Path.Combine(di.FullName, $"{entity.Name}.cs")))
+            {
+                var builder = new ClassBuilder(_generator, module.FullName, entity.Name);
+                builder.AddBaseType("Entity");
+                GenerateProperties(entity, builder);
                 await sw.WriteAsync(builder.ToString());
             }
         }
@@ -114,16 +146,19 @@ namespace DGen.Generation.Domain
         {
             t.Properties?.ForEach(p =>
             {
+                if (p.IsCollection)
+                    builder.AddNamespaceImportDeclaration("System.Collections.Generic");
+
                 if (p.Type.Type != null)
                 {
                     builder.AddNamespaceImportDeclaration(p.Type.Type.Module.FullName);
-                    builder.AddAutoProperty(p.Name, p.Type.Name);
                 }
                 else
                 {
                     builder.AddNamespaceImportDeclaration("System");
-                    builder.AddAutoProperty(p.Name, p.Type.Name);
                 }
+
+                builder.AddAutoProperty(p.Name, p.IsCollection ? $"List<{p.Type.Name}>" : p.Type.Name);
             });
         }
 

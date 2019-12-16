@@ -65,7 +65,7 @@ namespace DGen.Generation
         public override string ToString()
         {
             var ns = _namespace.AddMembers(_class);
-            var declarations = new List<SyntaxNode>(_usings);
+            var declarations = new List<SyntaxNode>(_usings.OrderBy(u => u.ToString()));
             declarations.Add(ns);
             var compilationUnit = _generator.CompilationUnit(declarations).NormalizeWhitespace();
             return FormatAutoPropertiesOnOneLine(compilationUnit.ToFullString());

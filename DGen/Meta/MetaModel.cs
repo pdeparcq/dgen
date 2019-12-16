@@ -40,6 +40,7 @@ namespace DGen.Meta
     public class Property : System.IEquatable<Property>
     {
         public bool IsIdentifier { get; set; }
+        public bool IsCollection { get; set; }
         public string Name { get; set; }
         public PropertyType Type { get; set; }
 
@@ -69,6 +70,8 @@ namespace DGen.Meta
     {
         Create,
         Update,
+        Add,
+        Remove,
         Delete
     }
 
