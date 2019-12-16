@@ -4203,9 +4203,9 @@
 												"$ref": "AAAAAAFvDiALStbxAXE="
 											},
 											"font": "Arial;13;0",
-											"left": 647,
+											"left": 646,
 											"top": 574,
-											"width": 5.05908203125,
+											"width": 6.5,
 											"height": 13,
 											"alpha": 0.5235987755982988,
 											"distance": 25,
@@ -5850,103 +5850,93 @@
 						},
 						{
 							"_type": "UMLClass",
-							"_id": "AAAAAAFvDh1M4tajLVI=",
+							"_id": "AAAAAAFvDiFxkdga1+8=",
 							"_parent": {
 								"$ref": "AAAAAAFu7tB1g42eLkY="
 							},
-							"name": "FavouriteMc",
-							"ownedElements": [
+							"name": "Sector",
+							"stereotype": "aggregate",
+							"attributes": [
 								{
-									"_type": "UMLAssociation",
-									"_id": "AAAAAAFvDiKaRNm3DyY=",
+									"_type": "UMLAttribute",
+									"_id": "AAAAAAFvDibzxuYTDuM=",
 									"_parent": {
-										"$ref": "AAAAAAFvDh1M4tajLVI="
+										"$ref": "AAAAAAFvDiFxkdga1+8="
 									},
-									"end1": {
-										"_type": "UMLAssociationEnd",
-										"_id": "AAAAAAFvDiKaRdm4nXM=",
-										"_parent": {
-											"$ref": "AAAAAAFvDiKaRNm3DyY="
-										},
-										"reference": {
-											"$ref": "AAAAAAFvDh1M4tajLVI="
-										},
-										"navigable": false
-									},
-									"end2": {
-										"_type": "UMLAssociationEnd",
-										"_id": "AAAAAAFvDiKaRdm5C4U=",
-										"_parent": {
-											"$ref": "AAAAAAFvDiKaRNm3DyY="
-										},
-										"name": "Sector",
-										"reference": {
-											"$ref": "AAAAAAFvDiFxkdga1+8="
-										},
-										"multiplicity": "0..1"
+									"name": "UniqueId",
+									"stereotype": "id",
+									"type": {
+										"$ref": "AAAAAAFu7tqgRpHlBLI="
 									}
 								},
 								{
-									"_type": "UMLAssociation",
-									"_id": "AAAAAAFvDiMmM9qXPMY=",
+									"_type": "UMLAttribute",
+									"_id": "AAAAAAFvDic03efQvjM=",
 									"_parent": {
-										"$ref": "AAAAAAFvDh1M4tajLVI="
+										"$ref": "AAAAAAFvDiFxkdga1+8="
 									},
-									"end1": {
-										"_type": "UMLAssociationEnd",
-										"_id": "AAAAAAFvDiMmM9qYe4A=",
-										"_parent": {
-											"$ref": "AAAAAAFvDiMmM9qXPMY="
-										},
-										"reference": {
-											"$ref": "AAAAAAFvDh1M4tajLVI="
-										},
-										"navigable": false
-									},
-									"end2": {
-										"_type": "UMLAssociationEnd",
-										"_id": "AAAAAAFvDiMmM9qZ0ss=",
-										"_parent": {
-											"$ref": "AAAAAAFvDiMmM9qXPMY="
-										},
-										"name": "Channel",
-										"reference": {
-											"$ref": "AAAAAAFvDiGl/9iTxNg="
-										},
-										"multiplicity": "0..1"
+									"name": "Name",
+									"type": {
+										"$ref": "AAAAAAFvDhR5ndYhTwg="
 									}
 								},
 								{
-									"_type": "UMLAssociation",
-									"_id": "AAAAAAFvDiQK4N1bfec=",
+									"_type": "UMLAttribute",
+									"_id": "AAAAAAFvDidUZuhtavI=",
 									"_parent": {
-										"$ref": "AAAAAAFvDh1M4tajLVI="
+										"$ref": "AAAAAAFvDiFxkdga1+8="
 									},
-									"end1": {
-										"_type": "UMLAssociationEnd",
-										"_id": "AAAAAAFvDiQK4N1cMVY=",
-										"_parent": {
-											"$ref": "AAAAAAFvDiQK4N1bfec="
-										},
-										"reference": {
-											"$ref": "AAAAAAFvDh1M4tajLVI="
-										},
-										"navigable": false
-									},
-									"end2": {
-										"_type": "UMLAssociationEnd",
-										"_id": "AAAAAAFvDiQK4N1djk4=",
-										"_parent": {
-											"$ref": "AAAAAAFvDiQK4N1bfec="
-										},
-										"name": "MainCategory",
-										"reference": {
-											"$ref": "AAAAAAFvDhBb5NWXlis="
-										}
+									"name": "Description",
+									"type": {
+										"$ref": "AAAAAAFvDhR5ndYhTwg="
 									}
 								}
-							],
-							"stereotype": "value"
+							]
+						},
+						{
+							"_type": "UMLClass",
+							"_id": "AAAAAAFvDiGl/9iTxNg=",
+							"_parent": {
+								"$ref": "AAAAAAFu7tB1g42eLkY="
+							},
+							"name": "Channel",
+							"stereotype": "aggregate",
+							"attributes": [
+								{
+									"_type": "UMLAttribute",
+									"_id": "AAAAAAFvDid1tukoraA=",
+									"_parent": {
+										"$ref": "AAAAAAFvDiGl/9iTxNg="
+									},
+									"name": "UniqueId",
+									"stereotype": "id",
+									"type": {
+										"$ref": "AAAAAAFu7tqgRpHlBLI="
+									}
+								},
+								{
+									"_type": "UMLAttribute",
+									"_id": "AAAAAAFvDienRuo+1c0=",
+									"_parent": {
+										"$ref": "AAAAAAFvDiGl/9iTxNg="
+									},
+									"name": "Name",
+									"type": {
+										"$ref": "AAAAAAFvDhR5ndYhTwg="
+									}
+								},
+								{
+									"_type": "UMLAttribute",
+									"_id": "AAAAAAFvDie8nurbMkE=",
+									"_parent": {
+										"$ref": "AAAAAAFvDiGl/9iTxNg="
+									},
+									"name": "Description",
+									"type": {
+										"$ref": "AAAAAAFvDhR5ndYhTwg="
+									}
+								}
+							]
 						},
 						{
 							"_type": "UMLClass",
@@ -6075,93 +6065,103 @@
 						},
 						{
 							"_type": "UMLClass",
-							"_id": "AAAAAAFvDiFxkdga1+8=",
+							"_id": "AAAAAAFvDh1M4tajLVI=",
 							"_parent": {
 								"$ref": "AAAAAAFu7tB1g42eLkY="
 							},
-							"name": "Sector",
-							"stereotype": "aggregate",
-							"attributes": [
+							"name": "FavouriteMc",
+							"ownedElements": [
 								{
-									"_type": "UMLAttribute",
-									"_id": "AAAAAAFvDibzxuYTDuM=",
+									"_type": "UMLAssociation",
+									"_id": "AAAAAAFvDiKaRNm3DyY=",
 									"_parent": {
-										"$ref": "AAAAAAFvDiFxkdga1+8="
+										"$ref": "AAAAAAFvDh1M4tajLVI="
 									},
-									"name": "UniqueId",
-									"stereotype": "id",
-									"type": {
-										"$ref": "AAAAAAFu7tqgRpHlBLI="
+									"end1": {
+										"_type": "UMLAssociationEnd",
+										"_id": "AAAAAAFvDiKaRdm4nXM=",
+										"_parent": {
+											"$ref": "AAAAAAFvDiKaRNm3DyY="
+										},
+										"reference": {
+											"$ref": "AAAAAAFvDh1M4tajLVI="
+										},
+										"navigable": false
+									},
+									"end2": {
+										"_type": "UMLAssociationEnd",
+										"_id": "AAAAAAFvDiKaRdm5C4U=",
+										"_parent": {
+											"$ref": "AAAAAAFvDiKaRNm3DyY="
+										},
+										"name": "Sector",
+										"reference": {
+											"$ref": "AAAAAAFvDiFxkdga1+8="
+										},
+										"multiplicity": "0..1"
 									}
 								},
 								{
-									"_type": "UMLAttribute",
-									"_id": "AAAAAAFvDic03efQvjM=",
+									"_type": "UMLAssociation",
+									"_id": "AAAAAAFvDiMmM9qXPMY=",
 									"_parent": {
-										"$ref": "AAAAAAFvDiFxkdga1+8="
+										"$ref": "AAAAAAFvDh1M4tajLVI="
 									},
-									"name": "Name",
-									"type": {
-										"$ref": "AAAAAAFvDhR5ndYhTwg="
+									"end1": {
+										"_type": "UMLAssociationEnd",
+										"_id": "AAAAAAFvDiMmM9qYe4A=",
+										"_parent": {
+											"$ref": "AAAAAAFvDiMmM9qXPMY="
+										},
+										"reference": {
+											"$ref": "AAAAAAFvDh1M4tajLVI="
+										},
+										"navigable": false
+									},
+									"end2": {
+										"_type": "UMLAssociationEnd",
+										"_id": "AAAAAAFvDiMmM9qZ0ss=",
+										"_parent": {
+											"$ref": "AAAAAAFvDiMmM9qXPMY="
+										},
+										"name": "Channel",
+										"reference": {
+											"$ref": "AAAAAAFvDiGl/9iTxNg="
+										},
+										"multiplicity": "0..1"
 									}
 								},
 								{
-									"_type": "UMLAttribute",
-									"_id": "AAAAAAFvDidUZuhtavI=",
+									"_type": "UMLAssociation",
+									"_id": "AAAAAAFvDiQK4N1bfec=",
 									"_parent": {
-										"$ref": "AAAAAAFvDiFxkdga1+8="
+										"$ref": "AAAAAAFvDh1M4tajLVI="
 									},
-									"name": "Description",
-									"type": {
-										"$ref": "AAAAAAFvDhR5ndYhTwg="
+									"end1": {
+										"_type": "UMLAssociationEnd",
+										"_id": "AAAAAAFvDiQK4N1cMVY=",
+										"_parent": {
+											"$ref": "AAAAAAFvDiQK4N1bfec="
+										},
+										"reference": {
+											"$ref": "AAAAAAFvDh1M4tajLVI="
+										},
+										"navigable": false
+									},
+									"end2": {
+										"_type": "UMLAssociationEnd",
+										"_id": "AAAAAAFvDiQK4N1djk4=",
+										"_parent": {
+											"$ref": "AAAAAAFvDiQK4N1bfec="
+										},
+										"name": "MainCategory",
+										"reference": {
+											"$ref": "AAAAAAFvDhBb5NWXlis="
+										}
 									}
 								}
-							]
-						},
-						{
-							"_type": "UMLClass",
-							"_id": "AAAAAAFvDiGl/9iTxNg=",
-							"_parent": {
-								"$ref": "AAAAAAFu7tB1g42eLkY="
-							},
-							"name": "Channel",
-							"stereotype": "aggregate",
-							"attributes": [
-								{
-									"_type": "UMLAttribute",
-									"_id": "AAAAAAFvDid1tukoraA=",
-									"_parent": {
-										"$ref": "AAAAAAFvDiGl/9iTxNg="
-									},
-									"name": "UniqueId",
-									"stereotype": "id",
-									"type": {
-										"$ref": "AAAAAAFu7tqgRpHlBLI="
-									}
-								},
-								{
-									"_type": "UMLAttribute",
-									"_id": "AAAAAAFvDienRuo+1c0=",
-									"_parent": {
-										"$ref": "AAAAAAFvDiGl/9iTxNg="
-									},
-									"name": "Name",
-									"type": {
-										"$ref": "AAAAAAFvDhR5ndYhTwg="
-									}
-								},
-								{
-									"_type": "UMLAttribute",
-									"_id": "AAAAAAFvDie8nurbMkE=",
-									"_parent": {
-										"$ref": "AAAAAAFvDiGl/9iTxNg="
-									},
-									"name": "Description",
-									"type": {
-										"$ref": "AAAAAAFvDhR5ndYhTwg="
-									}
-								}
-							]
+							],
+							"stereotype": "value"
 						},
 						{
 							"_type": "UMLClassDiagram",
@@ -12946,9 +12946,9 @@
 												"$ref": "AAAAAAFvDpEuVT6QTCA="
 											},
 											"font": "Arial;13;0",
-											"left": 512,
+											"left": 511,
 											"top": 289,
-											"width": 5.05908203125,
+											"width": 6.5,
 											"height": 13,
 											"alpha": 0.6254847765476418,
 											"distance": 22.20360331117452,

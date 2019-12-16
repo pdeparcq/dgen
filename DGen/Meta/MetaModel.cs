@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace DGen.Meta
 {
@@ -82,6 +83,7 @@ namespace DGen.Meta
 
     public class Entity : BaseType
     {
+        public Property UniqueIdentifier => Properties?.FirstOrDefault(p => p.IsIdentifier);
     }
 
     public class Aggregate : Entity

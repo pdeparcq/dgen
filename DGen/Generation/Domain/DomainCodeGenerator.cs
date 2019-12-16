@@ -24,12 +24,24 @@ namespace DGen.Generation.Domain
 
         private async Task GenerateModule(Module module, DirectoryInfo di)
         {
+            await GenerateValueObjects(module, di.CreateSubdirectory("ValueObjects"));
             await GenerateAggregates(module, di);
 
             module.Modules?.ForEach(async m =>
             {
                 await GenerateModule(m, di.CreateSubdirectory(m.Name));
             });
+        }
+
+        private async Task GenerateValueObjects(Module module, DirectoryInfo di)
+        {
+            if (module.Values != null && module.Values.Any())
+            {
+                foreach (var value in module.Values)
+                {
+                    await GenerateValueObject(module, di, value);
+                }
+            }
         }
 
         private async Task GenerateAggregates(Module module, DirectoryInfo di)
@@ -55,6 +67,16 @@ namespace DGen.Generation.Domain
                 var builder = new ClassBuilder(_generator, module.FullName, de.Name);
                 builder.AddBaseType("DomainEvent");
                 GenerateProperties(de, builder);
+                await sw.WriteAsync(builder.ToString());
+            }
+        }
+
+        private async Task GenerateValueObject(Module module, DirectoryInfo di, Value value)
+        {
+            using (var sw = File.CreateText(Path.Combine(di.FullName, $"{value.Name}.cs")))
+            {
+                var builder = new ClassBuilder(_generator, module.FullName, value.Name);
+                GenerateProperties(value, builder);
                 await sw.WriteAsync(builder.ToString());
             }
         }

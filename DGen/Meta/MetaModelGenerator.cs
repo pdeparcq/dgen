@@ -60,13 +60,13 @@ namespace DGen.Meta
         private DomainEvent ToDomainEvent(Element de, Aggregate aggregate)
         {
             var domainEvent = ToBaseType<DomainEvent>(de.Target, aggregate.Module);
-            var aggregateId = aggregate.Properties.FirstOrDefault(p => p.IsIdentifier);
-            if(aggregateId != null)
+            
+            if(aggregate.UniqueIdentifier != null)
             {
                 domainEvent.Properties.Insert(0, new Property
                 {
-                    Name = $"{aggregate.Name}{aggregateId.Name}",
-                    Type = aggregateId.Type
+                    Name = $"{aggregate.Name}{aggregate.UniqueIdentifier.Name}",
+                    Type = aggregate.UniqueIdentifier.Type
                 });
             }   
             switch (de.Stereotype?.ToLower())
@@ -105,7 +105,7 @@ namespace DGen.Meta
                     Type = new PropertyType
                     {
                         SystemType = p.AttributeType?.SystemType,
-                        Type = GetPropertyType(p.AttributeType?.ReferenceType)
+                        Type = GetType(p.AttributeType?.ReferenceType)
                     }
                 }).ToList();
             }
@@ -113,11 +113,31 @@ namespace DGen.Meta
             {
                 t.Properties = new List<Property>();
             }
+
+            // Generate properties from associations
+            if (e.OwnedElements != null && e.OwnedElements.Any())
+            {
+                foreach (var association in e.OwnedElements.Where(oe => oe.Type == ElementType.UMLAssociation && oe.AssociationEndFrom.Reference == e))
+                {
+                    if (GetType(association.AssociationEndTo.Reference) is Aggregate aggregate)
+                    {
+                        if (aggregate.UniqueIdentifier != null)
+                        {
+                            t.Properties.Add(new Property
+                            {
+                                IsIdentifier = association.AssociationEndTo.Stereotype?.ToLower() == "id",
+                                Name = $"{association.AssociationEndTo.Name ?? aggregate.Name}{aggregate.UniqueIdentifier.Name}",
+                                Type = aggregate.UniqueIdentifier.Type
+                            });
+                        }
+                    }
+                }
+            }
             
             return t;
         }
 
-        private BaseType GetPropertyType(Element element)
+        private BaseType GetType(Element element)
         {
             if (element != null)
             {
