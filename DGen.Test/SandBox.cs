@@ -18,7 +18,7 @@ namespace DGen.Test
     [TestFixture]
     public class SandBox
     {
-        private readonly string _modelFileName = "HelloCustomer.mdj";
+        private readonly string _modelFileName = "MyLunch.mdj";
 
         [Test]
         public void CanReadStarUmlModel()
