@@ -33,18 +33,16 @@ namespace DGen.Meta
             };
 
             // Second pass when all types are available
-            foreach (var element in _types.Keys)
+            foreach (var kv in _types)
             {
-                var type = _types[element];
-
-                if(type is Aggregate aggregate)
-                    _aggregateMetaGenerator.Generate(aggregate, element, this);
-                else if(type is Entity entity)
-                    _entityMetaGenerator.Generate(entity, element, this);
-                else if(type is Value value)
-                    _valueMetaGenerator.Generate(value, element, this);
-                else if(type is DomainEvent domainEvent)
-                    _domainEventMetaGenerator.Generate(domainEvent, element, this);
+                if(kv.Value is Aggregate aggregate)
+                    _aggregateMetaGenerator.Generate(aggregate, kv.Key, this);
+                else if(kv.Value is Entity entity)
+                    _entityMetaGenerator.Generate(entity, kv.Key, this);
+                else if(kv.Value is Value value)
+                    _valueMetaGenerator.Generate(value, kv.Key, this);
+                else if(kv.Value is DomainEvent domainEvent)
+                    _domainEventMetaGenerator.Generate(domainEvent, kv.Key, this);
             }
 
             return metaModel;

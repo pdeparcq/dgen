@@ -1,4 +1,6 @@
 ﻿using DGen.StarUml;
+using System;
+using System.Linq;
 
 namespace DGen.Meta.Generators
 {
@@ -6,33 +8,29 @@ namespace DGen.Meta.Generators
     {
         public override string StereoType => "domainevent";
 
-        public override void Generate(DomainEvent domainEvent, Element e, ITypeRegistry registry)
+        public override void Generate(DomainEvent domainEvent, Element element, ITypeRegistry registry)
         {
-            base.Generate(domainEvent, e, registry);
+            base.Generate(domainEvent, element, registry);
 
-            /*
-            if (aggregate.UniqueIdentifier != null)
-            {
-                domainEvent.Properties.Insert(0, new Property
-                {
-                    Name = $"{aggregate.Name}{aggregate.UniqueIdentifier.Name}",
-                    Type = aggregate.UniqueIdentifier.Type
-                });
-            }
+            var association = element.OwnedElements?.FirstOrDefault(e => e.Type == ElementType.UMLAssociation && registry.Resolve(e.AssociationEndTo.Reference) is Aggregate);
 
-            switch (e.Stereotype?.ToLower())
+            if(association != null)
             {
-                case "create":
-                    domainEvent.Type = DomainEventType.Create;
-                    break;
-                case "delete":
-                    domainEvent.Type = DomainEventType.Delete;
-                    break;
-                default:
-                    domainEvent.Type = DomainEventType.Update;
-                    break;
+                var aggregate = registry.Resolve(association.AssociationEndTo.Reference) as Aggregate;
+
+                domainEvent.Aggregate = aggregate;
+                domainEvent.Type = GenerateDomainEventType(association.Stereotype);
+                aggregate.DomainEvents.Add(domainEvent);
             }
-            */
+        }
+
+        private DomainEventType GenerateDomainEventType(string stereotype)
+        {
+            if (!Enum.TryParse<DomainEventType>(stereotype, true, out DomainEventType result))
+            {
+                result = DomainEventType.Update;
+            }
+            return result;
         }
     }
 }
