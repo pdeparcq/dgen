@@ -53,7 +53,7 @@ namespace DGen.Meta
             var aggregate = ToEntity<Aggregate>(a, m);
             aggregate.DomainEvents = a.OwnedElements?
                     .Where(e => e.Type == ElementType.UMLDependency && e.Source == a && e.Target?.Stereotype?.ToLower() == "domainevent")
-                    .Select(de => ToDomainEvent(de, aggregate)).ToList();
+                    .Select(de => ToDomainEvent(de, aggregate)).ToList() ?? new List<DomainEvent>();
             return aggregate;
         }
 

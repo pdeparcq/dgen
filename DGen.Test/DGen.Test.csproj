@@ -19,6 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="HelloCustomer.mdj">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="MyLunch.mdj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

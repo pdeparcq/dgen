@@ -18,18 +18,19 @@ namespace DGen.Test
     [TestFixture]
     public class SandBox
     {
+        private readonly string _modelFileName = "HelloCustomer.mdj";
 
         [Test]
         public void CanReadStarUmlModel()
         {
-            var model = new StarUmlReader().Read(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "MyLunch.mdj"));
+            var model = new StarUmlReader().Read(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _modelFileName));
             Console.WriteLine(JsonConvert.SerializeObject(model, Formatting.Indented));
         }
 
         [Test]
         public void CanGenerateMetaModel()
         {
-            var model = new StarUmlReader().Read(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "MyLunch.mdj"));
+            var model = new StarUmlReader().Read(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _modelFileName));
             var metaModel = new MetaModelGenerator().Generate(model);
             Console.WriteLine(JsonConvert.SerializeObject(metaModel, Formatting.Indented,
                 new JsonSerializerSettings
@@ -41,7 +42,7 @@ namespace DGen.Test
         [Test]
         public async Task CanGenerateCodeFromMetaModel()
         {
-            var model = new StarUmlReader().Read(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "MyLunch.mdj"));
+            var model = new StarUmlReader().Read(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _modelFileName));
             var metaModel = new MetaModelGenerator().Generate(model);
 
             var generators = new List<ICodeGenerator>
