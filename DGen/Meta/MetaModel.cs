@@ -18,6 +18,7 @@ namespace DGen.Meta
         public List<Aggregate> Aggregates { get; set; }
         public List<Entity> Entities { get; set; }
         public List<Value> Values { get; set; }
+        public List<DomainEvent> DomainEvents { get; set; }
     }
 
     public class PropertyType : System.IEquatable<PropertyType>
