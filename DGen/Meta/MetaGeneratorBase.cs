@@ -11,7 +11,7 @@ namespace DGen.Meta
         public virtual IEnumerable<Element> QueryElements(Element parent)
         {
             return parent.OwnedElements?.Where(e =>
-                e.Type == ElementType.UMLClass && e.Stereotype?.ToLower() == StereoType.ToLower());
+                e.Type == ElementType.UMLClass && e.Stereotype?.ToLower() == StereoType.ToLower()) ?? new List<Element>();
         }
 
         public virtual T GenerateType(Element e, Module module, ITypeRegistry registry)
