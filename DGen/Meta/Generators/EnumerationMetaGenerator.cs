@@ -15,7 +15,7 @@ namespace DGen.Meta.Generators
 
         public override void Generate(Enumeration type, Element element, ITypeRegistry registry)
         {
-            type.Literals = element.OwnedElements?.Where(e => e.Type == ElementType.UMLEnumerationLiteral).Select(e => e.Name).ToList() ?? new List<string>();
+            type.Literals = element.Literals?.Select(l => l.Name).ToList() ?? new List<string>();
         }
     }
 }
