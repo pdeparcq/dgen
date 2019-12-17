@@ -41,9 +41,9 @@ namespace DGen.Meta
         {
             if (element.OwnedElements != null && element.OwnedElements.Any())
             {
-                foreach (var association in element.OwnedElements.Where(e => e.Type == ElementType.UMLAssociation && e.AssociationEndFrom.Reference == element))
+                foreach (var association in element.OwnedElements.Where(e => e.Type == ElementType.UMLAssociation && e.AssociationEndFrom.Reference.Element == element))
                 {
-                    var resolved = registry.Resolve(association.AssociationEndTo.Reference);
+                    var resolved = registry.Resolve(association.AssociationEndTo.Reference.Element);
 
                     if (resolved is Aggregate aggregate && aggregate.UniqueIdentifier != null)
                     {
@@ -86,7 +86,7 @@ namespace DGen.Meta
                     Type = new PropertyType
                     {
                         SystemType = p.AttributeType?.SystemType,
-                        Type = registry.Resolve(p.AttributeType?.ReferenceType)
+                        Type = registry.Resolve(p.AttributeType?.ReferenceType?.Element)
                     }
                 }).ToList();
             }

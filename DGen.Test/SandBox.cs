@@ -18,13 +18,22 @@ namespace DGen.Test
     [TestFixture]
     public class SandBox
     {
-        private readonly string _modelFileName = "MyLunch.mdj";
+        private readonly string _modelFileName = "HelloCustomer.mdj";
+        private readonly JsonSerializerSettings _serializerSettings;
+
+        public SandBox()
+        {
+            _serializerSettings = new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
+        }
 
         [Test]
         public void CanReadStarUmlModel()
         {
             var model = new StarUmlReader().Read(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _modelFileName));
-            Console.WriteLine(JsonConvert.SerializeObject(model, Formatting.Indented));
+            Console.WriteLine(JsonConvert.SerializeObject(model, Formatting.Indented, _serializerSettings));
         }
 
         [Test]
@@ -32,11 +41,7 @@ namespace DGen.Test
         {
             var model = new StarUmlReader().Read(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _modelFileName));
             var metaModel = new MetaModelGenerator().Generate(model);
-            Console.WriteLine(JsonConvert.SerializeObject(metaModel, Formatting.Indented,
-                new JsonSerializerSettings
-                {
-                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                }));
+            Console.WriteLine(JsonConvert.SerializeObject(metaModel, Formatting.Indented, _serializerSettings));
         }
 
         [Test]

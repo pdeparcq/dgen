@@ -25,7 +25,7 @@ namespace DGen.StarUml
                 var jObject = JObject.Load(reader);
                 string id = (string)jObject["$ref"];
                 if(id != null)
-                    type.ReferenceType = serializer.ReferenceResolver.ResolveReference(serializer, id) as Element;
+                    type.ReferenceType = serializer.ReferenceResolver.ResolveReference(serializer, id) as ElementReference;
             }
 
             return type;
@@ -33,7 +33,7 @@ namespace DGen.StarUml
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            // NOT SUPPORTED
         }
     }
 }

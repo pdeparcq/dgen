@@ -12,11 +12,11 @@ namespace DGen.Meta.Generators
         {
             base.Generate(domainEvent, element, registry);
 
-            var association = element.OwnedElements?.FirstOrDefault(e => e.Type == ElementType.UMLAssociation && registry.Resolve(e.AssociationEndTo.Reference) is Aggregate);
+            var association = element.OwnedElements?.FirstOrDefault(e => e.Type == ElementType.UMLAssociation && registry.Resolve(e.AssociationEndTo.Reference.Element) is Aggregate);
 
             if(association != null)
             {
-                var aggregate = registry.Resolve(association.AssociationEndTo.Reference) as Aggregate;
+                var aggregate = registry.Resolve(association.AssociationEndTo.Reference.Element) as Aggregate;
 
                 domainEvent.Aggregate = aggregate;
                 domainEvent.Type = GenerateDomainEventType(association.Stereotype);

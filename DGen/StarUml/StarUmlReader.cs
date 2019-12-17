@@ -12,6 +12,7 @@ namespace DGen.StarUml
             _settings = new JsonSerializerSettings()
             {
                 MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
+                ReferenceResolverProvider = () => new CustomReferenceResolver()
             };
         }
 

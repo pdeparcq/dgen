@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -26,7 +24,12 @@ namespace DGen.StarUml
     public class AttributeType
     {
         public string SystemType { get; set; }
-        public Element ReferenceType { get; set; }
+        public ElementReference ReferenceType { get; set; }
+    }
+
+    public class ElementReference
+    {
+        public Element Element { get; set; }
     }
 
     public class Element
@@ -38,10 +41,8 @@ namespace DGen.StarUml
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
 
-        public string FullName => Parent == null ? Name : $"{Parent.Name}.{Name}";
-
         [JsonProperty(PropertyName = "_parent", IsReference = true)]
-        public Element Parent { get; set; }
+        public ElementReference Parent { get; set; }
 
         [JsonProperty(PropertyName = "ownedElements")]
         public List<Element> OwnedElements { get; set; }
@@ -60,13 +61,13 @@ namespace DGen.StarUml
         public List<Element> Literals { get; set; }
 
         [JsonProperty(PropertyName = "reference", IsReference = true)]
-        public Element Reference { get; set; }
+        public ElementReference Reference { get; set; }
 
         [JsonProperty(PropertyName = "source", IsReference = true)]
-        public Element Source { get; set; }
+        public ElementReference Source { get; set; }
 
         [JsonProperty(PropertyName = "target", IsReference = true)]
-        public Element Target { get; set; }
+        public ElementReference Target { get; set; }
 
         [JsonProperty(PropertyName = "end1")]
         public Element AssociationEndFrom { get; set; }
@@ -81,7 +82,6 @@ namespace DGen.StarUml
         [OnError]
         internal void OnError(StreamingContext context, ErrorContext errorContext)
         {
-            System.Console.Error.WriteLine(errorContext.Error.Message);
             errorContext.Handled = true;
         }
 
