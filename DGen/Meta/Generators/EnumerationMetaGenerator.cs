@@ -1,0 +1,21 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using DGen.StarUml;
+
+namespace DGen.Meta.Generators
+{
+    public class EnumerationMetaGenerator : MetaGeneratorBase<Enumeration>
+    {
+        public override string StereoType => "enumeration";
+
+        public override IEnumerable<Element> QueryElements(Element parent)
+        {
+            return parent.OwnedElements?.Where(e => e.Type == ElementType.UMLEnumeration) ?? new List<Element>();
+        }
+
+        public override void Generate(Enumeration type, Element element, ITypeRegistry registry)
+        {
+            type.Literals = element.OwnedElements?.Where(e => e.Type == ElementType.UMLEnumerationLiteral).Select(e => e.Name).ToList() ?? new List<string>();
+        }
+    }
+}

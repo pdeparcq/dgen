@@ -19,6 +19,7 @@ namespace DGen.Meta
         public List<Entity> Entities { get; set; }
         public List<Value> Values { get; set; }
         public List<DomainEvent> DomainEvents { get; set; }
+        public List<Enumeration> Enumerations { get; set; }
     }
 
     public class PropertyType : System.IEquatable<PropertyType>
@@ -79,6 +80,11 @@ namespace DGen.Meta
     {
         public Aggregate Aggregate { get; set; }
         public DomainEventType Type { get; set; }
+    }
+
+    public class Enumeration : BaseType
+    {
+        public List<string> Literals { get; set; }
     }
 
     public class Value : BaseType

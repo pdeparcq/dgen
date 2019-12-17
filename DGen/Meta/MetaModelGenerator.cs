@@ -11,6 +11,7 @@ namespace DGen.Meta
         private readonly EntityMetaGenerator<Entity> _entityMetaGenerator;
         private readonly ValueMetaGenerator _valueMetaGenerator;
         private readonly DomainEventMetaGenerator _domainEventMetaGenerator;
+        private readonly EnumerationMetaGenerator _enumerationMetaGenerator;
 
         private Dictionary<Element, BaseType> _types;
 
@@ -20,6 +21,7 @@ namespace DGen.Meta
             _entityMetaGenerator = new EntityMetaGenerator<Entity>();
             _valueMetaGenerator = new ValueMetaGenerator();
             _domainEventMetaGenerator = new DomainEventMetaGenerator();
+            _enumerationMetaGenerator = new EnumerationMetaGenerator();
         }
         
         public MetaModel Generate(Element model)
@@ -43,6 +45,8 @@ namespace DGen.Meta
                     _valueMetaGenerator.Generate(value, kv.Key, this);
                 else if(kv.Value is DomainEvent domainEvent)
                     _domainEventMetaGenerator.Generate(domainEvent, kv.Key, this);
+                else if(kv.Value is Enumeration enumeration)
+                    _enumerationMetaGenerator.Generate(enumeration, kv.Key, this);
             }
 
             return metaModel;
@@ -68,6 +72,7 @@ namespace DGen.Meta
             generated.Values = _valueMetaGenerator.QueryElements(m).Select(e => _valueMetaGenerator.GenerateType(e, generated, this)).ToList();
             generated.Entities = _entityMetaGenerator.QueryElements(m).Select(e => _entityMetaGenerator.GenerateType(e, generated, this)).ToList();
             generated.DomainEvents = _domainEventMetaGenerator.QueryElements(m).Select(e => _domainEventMetaGenerator.GenerateType(e, generated, this)).ToList();
+            generated.Enumerations = _enumerationMetaGenerator.QueryElements(m).Select(e => _enumerationMetaGenerator.GenerateType(e, generated, this)).ToList();
 
             return generated;
         }
