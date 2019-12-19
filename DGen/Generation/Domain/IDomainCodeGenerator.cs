@@ -10,6 +10,6 @@ namespace DGen.Generation.Domain
         IEnumerable<BaseType> GetListFromModule(Module module);
         DirectoryInfo CreateSubdirectory(DirectoryInfo di);
         string GetFileName(BaseType type);
-        Task Generate(Module module, BaseType type, StreamWriter sw);
+        Task Generate(string @namespace, Module module, BaseType type, StreamWriter sw);
     }
 }

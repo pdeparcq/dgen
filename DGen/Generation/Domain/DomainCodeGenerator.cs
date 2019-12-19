@@ -23,10 +23,10 @@ namespace DGen.Generation.Domain
                 new ValueCodeGenerator(syntaxGenerator),
                 new EnumerationCodeGenerator(syntaxGenerator)
             };
-            await GenerateModule(context.Service, context.Directory, generators);
+            await GenerateModule(context.Namespace, context.Service, context.Directory, generators);
         }
 
-        private async Task GenerateModule(Module module, DirectoryInfo di, List<IDomainCodeGenerator> generators)
+        private async Task GenerateModule(string @namespace, Module module, DirectoryInfo di, List<IDomainCodeGenerator> generators)
         {
 
             foreach (var generator in generators)
@@ -36,14 +36,14 @@ namespace DGen.Generation.Domain
                     var subDirectory = generator.CreateSubdirectory(di);
                     using (var sw = File.CreateText(Path.Combine(subDirectory.FullName, generator.GetFileName(type))))
                     {
-                        await generator.Generate(module, type, sw);
+                        await generator.Generate(@namespace, module, type, sw);
                     }
                 }
             }
 
             module.Modules?.ForEach(async m =>
             {
-                await GenerateModule(m, di.CreateSubdirectory(m.Name), generators);
+                await GenerateModule($"{@namespace}.{m.Name}", m, di.CreateSubdirectory(m.Name), generators);
             });
         }
     }

@@ -22,11 +22,11 @@ namespace DGen.Generation.Domain.CodeGenerators
             return di.CreateSubdirectory("Entities");
         }
 
-        public override async Task Generate(Module module, BaseType type, StreamWriter sw)
+        public override async Task Generate(string @namespace, Module module, BaseType type, StreamWriter sw)
         {
             if (type is Entity entity)
             {
-                var builder = new ClassBuilder(Generator, module.FullName, entity.Name);
+                var builder = new ClassBuilder(Generator, @namespace, entity.Name);
                 builder.AddBaseType("Entity");
                 entity.GenerateProperties(builder);
                 await sw.WriteAsync(builder.ToString());

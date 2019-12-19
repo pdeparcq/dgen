@@ -31,6 +31,7 @@ namespace DGen.Generation
                     {
                         await generator.Generate(new CodeGenerationContext
                         {
+                            Namespace = $"{model.Name}.{service.Name}.{generator.Name}",
                             Workspace = new AdhocWorkspace(),
                             Service = service,
                             Directory = serviceDirectory.CreateSubdirectory(generator.Name)

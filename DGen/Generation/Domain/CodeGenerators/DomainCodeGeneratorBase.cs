@@ -27,6 +27,6 @@ namespace DGen.Generation.Domain.CodeGenerators
             return $"{type.Name}.cs";
         }
 
-        public abstract Task Generate(Module module, BaseType type, StreamWriter sw);
+        public abstract Task Generate(string @namespace, Module module, BaseType type, StreamWriter sw);
     }
 }

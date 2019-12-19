@@ -20,11 +20,11 @@ namespace DGen.Generation.Domain.CodeGenerators
             return module.Aggregates;
         }
 
-        public override async Task Generate(Module module, BaseType type, StreamWriter sw)
+        public override async Task Generate(string @namespace, Module module, BaseType type, StreamWriter sw)
         {
             if (type is Aggregate aggregate)
             {
-                var builder = new ClassBuilder(Generator, module.FullName, aggregate.Name);
+                var builder = new ClassBuilder(Generator, @namespace, aggregate.Name);
                 builder.AddBaseType("AggregateRoot");
                 aggregate.GenerateProperties(builder);
                 GenerateDomainEventHandlers(aggregate, builder);

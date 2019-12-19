@@ -6,6 +6,7 @@ namespace DGen.Meta
 {
     public class MetaModel
     {
+        public string Name { get; set; }
         public List<Service> Services { get; set; }
     }
 
@@ -13,7 +14,6 @@ namespace DGen.Meta
     {
         public Module ParentModule { get; set; }
         public string Name { get; set; }
-        public string FullName => ParentModule == null ? Name : $"{ParentModule.FullName}.{Name}";
         public List<Module> Modules { get; set; }
         public List<Aggregate> Aggregates { get; set; }
         public List<Entity> Entities { get; set; }

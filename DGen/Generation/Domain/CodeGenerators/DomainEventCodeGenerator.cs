@@ -22,11 +22,11 @@ namespace DGen.Generation.Domain.CodeGenerators
             return di.CreateSubdirectory("DomainEvents");
         }
 
-        public override async Task Generate(Module module, BaseType type, StreamWriter sw)
+        public override async Task Generate(string @namespace, Module module, BaseType type, StreamWriter sw)
         {
             if (type is DomainEvent domainEvent)
             {
-                var builder = new ClassBuilder(Generator, module.FullName, domainEvent.Name);
+                var builder = new ClassBuilder(Generator, @namespace, domainEvent.Name);
                 builder.AddBaseType("DomainEvent");
                 domainEvent.GenerateProperties(builder);
                 await sw.WriteAsync(builder.ToString());

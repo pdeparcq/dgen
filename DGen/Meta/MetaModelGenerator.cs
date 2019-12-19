@@ -31,6 +31,7 @@ namespace DGen.Meta
             // Generate types
             var metaModel = new MetaModel
             {
+                Name = model.Name,
                 Services = model.OwnedElements?.Where(e => e.Type == ElementType.UMLModel).Select(ToService).ToList()
             };
 

@@ -25,14 +25,14 @@ namespace DGen.Generation.Domain.CodeGenerators
             return di.CreateSubdirectory("Enumerations");
         }
 
-        public override async Task Generate(Module module, BaseType type, StreamWriter sw)
+        public override async Task Generate(string @namespace, Module module, BaseType type, StreamWriter sw)
         {
             if (type is Enumeration enumeration)
             {
                 var enumDeclaration = Generator.EnumDeclaration(enumeration.Name, Accessibility.Public) as EnumDeclarationSyntax;
                 enumDeclaration = enumDeclaration.AddMembers(enumeration.Literals
                     .Select(l => Generator.EnumMember(l) as EnumMemberDeclarationSyntax).ToArray());
-                var namespaceDeclaration = Generator.NamespaceDeclaration(module.FullName, enumDeclaration) as NamespaceDeclarationSyntax;
+                var namespaceDeclaration = Generator.NamespaceDeclaration(@namespace, enumDeclaration) as NamespaceDeclarationSyntax;
 
                 await sw.WriteAsync(namespaceDeclaration.NormalizeWhitespace().ToFullString());
             }
