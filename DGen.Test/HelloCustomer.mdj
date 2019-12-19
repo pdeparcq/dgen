@@ -9,7 +9,7 @@
 			"_parent": {
 				"$ref": "AAAAAAFF+h6SjaM2Hec="
 			},
-			"name": "HC.Common",
+			"name": "Common",
 			"ownedElements": [
 				{
 					"_type": "UMLClassDiagram",
@@ -461,7 +461,7 @@
 			"_parent": {
 				"$ref": "AAAAAAFF+h6SjaM2Hec="
 			},
-			"name": "HC.IAM",
+			"name": "IAM",
 			"ownedElements": [
 				{
 					"_type": "UMLClassDiagram",
@@ -726,7 +726,7 @@
 			"_parent": {
 				"$ref": "AAAAAAFF+h6SjaM2Hec="
 			},
-			"name": "HC.Isaac",
+			"name": "Isaac",
 			"ownedElements": [
 				{
 					"_type": "UMLPackage",
@@ -19216,7 +19216,7 @@
 													"top": 619,
 													"width": 143.4697265625,
 													"height": 13,
-													"text": "(from HC.IAM)"
+													"text": "(from IAM)"
 												},
 												{
 													"_type": "LabelView",
