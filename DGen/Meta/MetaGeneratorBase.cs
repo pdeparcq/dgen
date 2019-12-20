@@ -10,8 +10,16 @@ namespace DGen.Meta
 
         public virtual IEnumerable<Element> QueryElements(Element parent)
         {
-            return parent.OwnedElements?.Where(e =>
-                e.Type == ElementType.UMLClass && e.Stereotype?.ToLower() == StereoType.ToLower()) ?? new List<Element>();
+            var elements = new List<Element>();
+            if(parent.OwnedElements != null && parent.OwnedElements.Any())
+            {
+                foreach(var element in parent.OwnedElements.Where(e => e.Type == ElementType.UMLClass))
+                {
+                    elements.AddRange(QueryElements(element));
+                }
+                elements.AddRange(parent.OwnedElements.Where(e => e.Type == ElementType.UMLClass && e.Stereotype?.ToLower() == StereoType.ToLower()));
+            }
+            return elements;
         }
 
         public virtual T GenerateType(Element e, Module module, ITypeRegistry registry)
