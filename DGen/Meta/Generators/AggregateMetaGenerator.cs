@@ -3,7 +3,7 @@ using DGen.StarUml;
 
 namespace DGen.Meta.Generators
 {
-    public class AggregateMetaGenerator : EntityMetaGenerator<Aggregate>
+    public class AggregateMetaGenerator : MetaGeneratorBase<Aggregate>
     {
         public override string StereoType => "aggregate";
 
@@ -12,6 +12,11 @@ namespace DGen.Meta.Generators
             var aggregate =  base.GenerateType(e, module, registry);
             aggregate.DomainEvents = new List<DomainEvent>();
             return aggregate;
+        }
+
+        public override List<Aggregate> GetListFromModule(Module module)
+        {
+            return module.Aggregates;
         }
     }
 }

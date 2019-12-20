@@ -12,6 +12,7 @@ using DGen.Generation.Infrastructure;
 using DGen.Generation.Presentation;
 using DGen.Meta;
 using DGen.StarUml;
+using DGen.Meta.Generators;
 
 namespace DGen.Test
 {
@@ -20,12 +21,23 @@ namespace DGen.Test
     {
         private readonly string _modelFileName = "HelloCustomer.mdj";
         private readonly JsonSerializerSettings _serializerSettings;
+        private readonly List<IMetaGenerator> _metaGenerators;
 
         public SandBox()
         {
             _serializerSettings = new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
+
+            _metaGenerators = new List<IMetaGenerator>() {
+                new AggregateMetaGenerator(),
+                new DomainEventMetaGenerator(),
+                new EntityMetaGenerator(),
+                new EnumerationMetaGenerator(),
+                new QueryMetaGenerator(),
+                new ValueMetaGenerator(),
+                new ViewModelMetaGenerator()
             };
         }
 
@@ -40,7 +52,7 @@ namespace DGen.Test
         public void CanGenerateMetaModel()
         {
             var model = new StarUmlReader().Read(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _modelFileName));
-            var metaModel = new MetaModelGenerator().Generate(model);
+            var metaModel = new MetaModelGenerator(_metaGenerators).Generate(model);
             Console.WriteLine(JsonConvert.SerializeObject(metaModel, Formatting.Indented, _serializerSettings));
         }
 
@@ -48,7 +60,7 @@ namespace DGen.Test
         public async Task CanGenerateCodeFromMetaModel()
         {
             var model = new StarUmlReader().Read(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _modelFileName));
-            var metaModel = new MetaModelGenerator().Generate(model);
+            var metaModel = new MetaModelGenerator(_metaGenerators).Generate(model);
 
             var generators = new List<ICodeGenerator>
             {

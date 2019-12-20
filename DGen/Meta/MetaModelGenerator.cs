@@ -7,21 +7,18 @@ namespace DGen.Meta
 {
     public class MetaModelGenerator : ITypeRegistry
     {
-        private readonly AggregateMetaGenerator _aggregateMetaGenerator;
-        private readonly EntityMetaGenerator<Entity> _entityMetaGenerator;
-        private readonly ValueMetaGenerator _valueMetaGenerator;
-        private readonly DomainEventMetaGenerator _domainEventMetaGenerator;
-        private readonly EnumerationMetaGenerator _enumerationMetaGenerator;
 
+        private readonly Dictionary<System.Type, IMetaGenerator> _metaGenerators;
         private Dictionary<Element, BaseType> _types;
 
-        public MetaModelGenerator()
+        public MetaModelGenerator(IEnumerable<IMetaGenerator> metaGenerators)
         {
-            _aggregateMetaGenerator = new AggregateMetaGenerator();
-            _entityMetaGenerator = new EntityMetaGenerator<Entity>();
-            _valueMetaGenerator = new ValueMetaGenerator();
-            _domainEventMetaGenerator = new DomainEventMetaGenerator();
-            _enumerationMetaGenerator = new EnumerationMetaGenerator();
+            _metaGenerators = new Dictionary<System.Type, IMetaGenerator>();
+
+            foreach(var metaGenerator in metaGenerators)
+            {
+                _metaGenerators[metaGenerator.GeneratedType] = metaGenerator;
+            }
         }
         
         public MetaModel Generate(Element model)
@@ -38,16 +35,7 @@ namespace DGen.Meta
             // Second pass when all types are available
             foreach (var kv in _types)
             {
-                if(kv.Value is Aggregate aggregate)
-                    _aggregateMetaGenerator.Generate(aggregate, kv.Key, this);
-                else if(kv.Value is Entity entity)
-                    _entityMetaGenerator.Generate(entity, kv.Key, this);
-                else if(kv.Value is Value value)
-                    _valueMetaGenerator.Generate(value, kv.Key, this);
-                else if(kv.Value is DomainEvent domainEvent)
-                    _domainEventMetaGenerator.Generate(domainEvent, kv.Key, this);
-                else if(kv.Value is Enumeration enumeration)
-                    _enumerationMetaGenerator.Generate(enumeration, kv.Key, this);
+                _metaGenerators[kv.Value.GetType()].Generate(kv.Value, kv.Key, this);
             }
 
             return metaModel;
@@ -68,12 +56,10 @@ namespace DGen.Meta
 
             generated.Modules = m.OwnedElements?.Where(e => e.Type == ElementType.UMLPackage).Select(e => ToModule<Module>(e, generated)).ToList();
 
-            // First generate all types
-            generated.Aggregates = _aggregateMetaGenerator.QueryElements(m).Select(e => _aggregateMetaGenerator.GenerateType(e, generated, this)).ToList();
-            generated.Values = _valueMetaGenerator.QueryElements(m).Select(e => _valueMetaGenerator.GenerateType(e, generated, this)).ToList();
-            generated.Entities = _entityMetaGenerator.QueryElements(m).Select(e => _entityMetaGenerator.GenerateType(e, generated, this)).ToList();
-            generated.DomainEvents = _domainEventMetaGenerator.QueryElements(m).Select(e => _domainEventMetaGenerator.GenerateType(e, generated, this)).ToList();
-            generated.Enumerations = _enumerationMetaGenerator.QueryElements(m).Select(e => _enumerationMetaGenerator.GenerateType(e, generated, this)).ToList();
+            foreach(var metaGenerator in _metaGenerators.Values)
+            {
+                metaGenerator.GenerateTypes(m, generated, this);
+            }
 
             return generated;
         }

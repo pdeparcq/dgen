@@ -17,5 +17,10 @@ namespace DGen.Meta.Generators
         {
             type.Literals = element.Literals?.Select(l => l.Name).ToList() ?? new List<string>();
         }
+
+        public override List<Enumeration> GetListFromModule(Module module)
+        {
+            return module.Enumerations;
+        }
     }
 }

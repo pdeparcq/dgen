@@ -12,6 +12,18 @@ namespace DGen.Meta
 
     public class Module
     {
+        public Module()
+        {
+            Modules = new List<Module>();
+            Aggregates = new List<Aggregate>();
+            Entities = new List<Entity>();
+            Values = new List<Value>();
+            DomainEvents = new List<DomainEvent>();
+            Enumerations = new List<Enumeration>();
+            Queries = new List<Query>();
+            ViewModels = new List<ViewModel>();
+        }
+
         public Module ParentModule { get; set; }
         public string Name { get; set; }
         public List<Module> Modules { get; set; }
@@ -20,6 +32,8 @@ namespace DGen.Meta
         public List<Value> Values { get; set; }
         public List<DomainEvent> DomainEvents { get; set; }
         public List<Enumeration> Enumerations { get; set; }
+        public List<Query> Queries { get; set; }
+        public List<ViewModel> ViewModels { get; set; }
     }
 
     public class PropertyType : System.IEquatable<PropertyType>
@@ -101,5 +115,15 @@ namespace DGen.Meta
         public List<DomainEvent> DomainEvents { get; set; }
     }
 
-    
+    public class ViewModel : BaseType
+    {
+        BaseType Target { get; set; }
+        public bool IsCompact { get; set; }
+    }
+
+    public class Query : BaseType
+    {
+        ViewModel Result { get; set; }
+        public bool IsCollection { get; set; }
+    }
 }

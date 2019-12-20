@@ -1,19 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DGen.StarUml;
 
 namespace DGen.Meta
 {
-    public abstract class MetaGeneratorBase<T> where T : BaseType, new()
+    public abstract class MetaGeneratorBase<T> : IMetaGenerator where T : BaseType, new()
     {
         public abstract string StereoType { get; }
+
+        public Type GeneratedType => typeof(T);
 
         public virtual IEnumerable<Element> QueryElements(Element parent)
         {
             var elements = new List<Element>();
-            if(parent.OwnedElements != null && parent.OwnedElements.Any())
+            if (parent.OwnedElements != null && parent.OwnedElements.Any())
             {
-                foreach(var element in parent.OwnedElements.Where(e => e.Type == ElementType.UMLClass))
+                foreach (var element in parent.OwnedElements.Where(e => e.Type == ElementType.UMLClass))
                 {
                     elements.AddRange(QueryElements(element));
                 }
@@ -24,7 +27,7 @@ namespace DGen.Meta
 
         public virtual T GenerateType(Element e, Module module, ITypeRegistry registry)
         {
-            var t =  new T
+            var t = new T
             {
                 Module = module,
                 Name = e.Name
@@ -35,6 +38,8 @@ namespace DGen.Meta
 
             return t;
         }
+
+        public abstract List<T> GetListFromModule(Module module);
 
         public virtual void Generate(T type, Element e, ITypeRegistry registry)
         {
@@ -67,7 +72,7 @@ namespace DGen.Meta
 
                         type.Properties.Add(property);
                     }
-                    else if(resolved != null)
+                    else if (resolved != null)
                     {
                         type.Properties.Add(new Property
                         {
@@ -102,6 +107,20 @@ namespace DGen.Meta
             {
                 type.Properties = new List<Property>();
             }
+        }
+
+        public void GenerateTypes(Element parent, Module module, ITypeRegistry registry)
+        {
+            var list = GetListFromModule(module);
+            foreach(var element in QueryElements(parent))
+            {
+                list.Add(GenerateType(element, module, registry));
+            }
+        }
+
+        public void Generate(BaseType type, Element e, ITypeRegistry registry)
+        {
+            Generate(type as T, e, registry);
         }
     }
 }

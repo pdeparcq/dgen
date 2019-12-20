@@ -1,5 +1,6 @@
 ﻿using DGen.StarUml;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DGen.Meta.Generators
@@ -22,6 +23,11 @@ namespace DGen.Meta.Generators
                 domainEvent.Type = GenerateDomainEventType(association.Stereotype);
                 aggregate.DomainEvents.Add(domainEvent);
             }
+        }
+
+        public override List<DomainEvent> GetListFromModule(Module module)
+        {
+            return module.DomainEvents;
         }
 
         private DomainEventType GenerateDomainEventType(string stereotype)
