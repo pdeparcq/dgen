@@ -1,6 +1,6 @@
 ﻿using DGen.Meta;
 
-namespace DGen.Generation.Domain
+namespace DGen.Generation
 {
     public static class BaseTypeExtensions
     {
