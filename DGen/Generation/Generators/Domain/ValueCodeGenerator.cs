@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using DGen.Generation.Helpers;
 using DGen.Meta;
-using Microsoft.CodeAnalysis.Editing;
+using Microsoft.CodeAnalysis;
 
 namespace DGen.Generation.Generators.Domain
 {
     public class ValueCodeGenerator : ICodeGenerator
     {
         public string Layer => "Domain";
+
+        public string Namespace => null;
 
         public IEnumerable<BaseType> GetTypesFromModule(Module module)
         {
@@ -21,17 +22,6 @@ namespace DGen.Generation.Generators.Domain
             return di.CreateSubdirectory("ValueObjects");
         }
 
-        public async Task Generate(string @namespace, Module module, BaseType type, StreamWriter sw, SyntaxGenerator syntaxGenerator)
-        {
-            if (type is Value value)
-            {
-                var builder = new ClassBuilder(syntaxGenerator, @namespace, value.Name);
-                builder.AddBaseType("ValueObjects");
-                value.GenerateProperties(builder, true);
-                await sw.WriteAsync(builder.ToString());
-            }
-        }
-
         public string GetFileNameForModule(Module module)
         {
             return null;
@@ -40,6 +30,18 @@ namespace DGen.Generation.Generators.Domain
         public string GetFileName(BaseType type)
         {
             return $"{type.Name}.cs";
+        }
+
+        public SyntaxNode Generate(CodeGenerationContext context)
+        {
+            if (context.Type is Value value)
+            {
+                var builder = new ClassBuilder(context.SyntaxGenerator, context.Namespace, value.Name);
+                builder.AddBaseType("ValueObject");
+                value.GenerateProperties(builder, true);
+                return builder.Build();
+            }
+            return null;
         }
     }
 }

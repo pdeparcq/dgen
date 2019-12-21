@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using DGen.Generation.Helpers;
 using DGen.Meta;
-using Microsoft.CodeAnalysis.Editing;
+using Microsoft.CodeAnalysis;
 
 namespace DGen.Generation.Generators.Infrastructure
 {
@@ -12,16 +11,18 @@ namespace DGen.Generation.Generators.Infrastructure
     {
         public string Layer => "Infrastructure";
 
+        public string Namespace => null;
+
         public DirectoryInfo CreateSubdirectory(DirectoryInfo di)
         {
             return di;
         }
 
-        public async Task Generate(string @namespace, Module module, BaseType type, StreamWriter sw, SyntaxGenerator syntaxGenerator)
+        public SyntaxNode Generate(CodeGenerationContext context)
         {
-            var builder = new ClassBuilder(syntaxGenerator, @namespace, $"{module.Name}DbContext");
+            var builder = new ClassBuilder(context.SyntaxGenerator, context.Namespace, $"{context.Module.Name}DbContext");
             builder.AddBaseType("DbContext");
-            await sw.WriteAsync(builder.ToString());
+            return builder.Build();
         }
 
         public string GetFileName(BaseType type)

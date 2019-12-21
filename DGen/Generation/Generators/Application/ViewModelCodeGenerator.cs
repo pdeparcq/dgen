@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using DGen.Generation.Helpers;
 using DGen.Meta;
-using Microsoft.CodeAnalysis.Editing;
+using Microsoft.CodeAnalysis;
 
 namespace DGen.Generation.Generators.Application
 {
@@ -11,18 +10,21 @@ namespace DGen.Generation.Generators.Application
     {
         public string Layer => "Application";
 
+        public string Namespace => "ViewModels";
+
         public DirectoryInfo CreateSubdirectory(DirectoryInfo di)
         {
             return di.CreateSubdirectory("ViewModels");
         }
 
-        public async Task Generate(string @namespace, Module module, BaseType type, StreamWriter sw, SyntaxGenerator syntaxGenerator)
+        public SyntaxNode Generate(CodeGenerationContext context)
         {
-            if(type is ViewModel viewModel)
+            if(context.Type is ViewModel viewModel)
             {
-                var builder = new ClassBuilder(syntaxGenerator, @namespace, viewModel.Name);
-                await sw.WriteAsync(builder.ToString());
+                var builder = new ClassBuilder(context.SyntaxGenerator, context.Namespace, viewModel.Name);
+                return builder.Build();
             }
+            return null;
         }
 
         public string GetFileName(BaseType type)

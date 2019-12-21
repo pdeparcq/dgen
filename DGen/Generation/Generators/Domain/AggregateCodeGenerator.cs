@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DGen.Generation.Helpers;
 using DGen.Meta;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
@@ -14,16 +15,19 @@ namespace DGen.Generation.Generators.Domain
     {
         public string Layer => "Domain";
 
-        public async Task Generate(string @namespace, Module module, BaseType type, StreamWriter sw, SyntaxGenerator syntaxGenerator)
+        public string Namespace => null;
+
+        public SyntaxNode Generate(CodeGenerationContext context)
         {
-            if (type is Aggregate aggregate)
+            if (context.Type is Aggregate aggregate)
             {
-                var builder = new ClassBuilder(syntaxGenerator, @namespace, aggregate.Name);
+                var builder = new ClassBuilder(context.SyntaxGenerator, context.Namespace, aggregate.Name);
                 builder.AddBaseType("AggregateRoot");
                 aggregate.GenerateProperties(builder, true);
-                GenerateDomainEventHandlers(aggregate, builder, syntaxGenerator);
-                await sw.WriteAsync(builder.ToString());
+                GenerateDomainEventHandlers(aggregate, builder, context.SyntaxGenerator);
+                return builder.Build();
             }
+            return null;
         }
 
         private void GenerateDomainEventHandlers(Aggregate aggregate, ClassBuilder builder, SyntaxGenerator syntaxGenerator)
@@ -61,6 +65,6 @@ namespace DGen.Generation.Generators.Domain
         public IEnumerable<BaseType> GetTypesFromModule(Module module)
         {
             return module.Aggregates;
-        }
+        }    
     }
 }

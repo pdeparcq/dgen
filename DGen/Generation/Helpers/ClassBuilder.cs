@@ -10,9 +10,6 @@ namespace DGen.Generation.Helpers
 {
     public class ClassBuilder
     {
-        private static readonly Regex AutoPropRegex = new Regex(@"\s*\{\s*get;\s*set;\s*}\s");
-        private static readonly Regex AutoPropReadOnlyRegex = new Regex(@"\s*\{\s*get;\s*}\s");
-
         private readonly SyntaxGenerator _generator;
         private readonly List<SyntaxNode> _usings;
         private NamespaceDeclarationSyntax _namespace;
@@ -67,20 +64,12 @@ namespace DGen.Generation.Helpers
             return this;
         }
 
-        public override string ToString()
+        public SyntaxNode Build()
         {
             var ns = _namespace.AddMembers(_class);
             var declarations = new List<SyntaxNode>(_usings.OrderBy(u => u.ToString()));
             declarations.Add(ns);
-            var compilationUnit = _generator.CompilationUnit(declarations).NormalizeWhitespace();
-            return FormatAutoPropertiesOnOneLine(compilationUnit.ToFullString());
-        }
-
-        private string FormatAutoPropertiesOnOneLine(string str)
-        {
-            str = AutoPropRegex.Replace(str, " { get; set; }");
-            str = AutoPropReadOnlyRegex.Replace(str, " { get; }");
-            return str;
+            return _generator.CompilationUnit(declarations).NormalizeWhitespace();
         }
     }
 }
