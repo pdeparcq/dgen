@@ -27,7 +27,7 @@ namespace DGen.Generation.Generators.Domain
             {
                 var builder = new ClassBuilder(syntaxGenerator, @namespace, entity.Name);
                 builder.AddBaseType("Entities");
-                entity.GenerateProperties(builder);
+                entity.GenerateProperties(builder, true);
                 await sw.WriteAsync(builder.ToString());
             }
         }

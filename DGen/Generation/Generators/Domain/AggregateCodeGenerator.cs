@@ -20,7 +20,7 @@ namespace DGen.Generation.Generators.Domain
             {
                 var builder = new ClassBuilder(syntaxGenerator, @namespace, aggregate.Name);
                 builder.AddBaseType("AggregateRoot");
-                aggregate.GenerateProperties(builder);
+                aggregate.GenerateProperties(builder, true);
                 GenerateDomainEventHandlers(aggregate, builder, syntaxGenerator);
                 await sw.WriteAsync(builder.ToString());
             }

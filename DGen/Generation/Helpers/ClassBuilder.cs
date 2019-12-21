@@ -11,6 +11,7 @@ namespace DGen.Generation.Helpers
     public class ClassBuilder
     {
         private static readonly Regex AutoPropRegex = new Regex(@"\s*\{\s*get;\s*set;\s*}\s");
+        private static readonly Regex AutoPropReadOnlyRegex = new Regex(@"\s*\{\s*get;\s*}\s");
 
         private readonly SyntaxGenerator _generator;
         private readonly List<SyntaxNode> _usings;
@@ -43,13 +44,17 @@ namespace DGen.Generation.Helpers
 
             return this;
         }
-        public ClassBuilder AddAutoProperty(string name, string type)
+        public ClassBuilder AddAutoProperty(string name, string type, bool readOnly = false)
         {
             var property = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(type), name)
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                         .AddAccessorListAccessors(
-                            SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)),
-                            SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
+                            SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
+            if (!readOnly)
+            {
+                property = property.AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
+            }
+
             _class = _class.AddMembers(property);
 
             return this;
@@ -73,7 +78,9 @@ namespace DGen.Generation.Helpers
 
         private string FormatAutoPropertiesOnOneLine(string str)
         {
-            return AutoPropRegex.Replace(str, " { get; set; }");
+            str = AutoPropRegex.Replace(str, " { get; set; }");
+            str = AutoPropReadOnlyRegex.Replace(str, " { get; }");
+            return str;
         }
     }
 }
