@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DGen.Meta;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Editing;
 
 namespace DGen.Generation
 {
@@ -20,25 +21,52 @@ namespace DGen.Generation
         public async Task Generate(MetaModel model, string path)
         {
             var di = CreateDirectoryIfNotExists(path);
+            var syntaxGenerator = SyntaxGenerator.GetGenerator(new AdhocWorkspace(), LanguageNames.CSharp);
 
-            if(model.Services != null && model.Services.Any())
+            foreach (var service in model.Services)
             {
-                foreach(var service in model.Services)
-                {
-                    var serviceDirectory = di.CreateSubdirectory(service.Name);
+                var serviceDirectory = di.CreateSubdirectory(service.Name);
 
-                    foreach (var generator in _generators)
-                    {
-                        await generator.Generate(new CodeGenerationContext
-                        {
-                            Namespace = $"{model.Name}.{service.Name}.{generator.Name}",
-                            Workspace = new AdhocWorkspace(),
-                            Service = service,
-                            Directory = serviceDirectory.CreateSubdirectory(generator.Name)
-                        });
-                    }
+                foreach(var layer in _generators.GroupBy(g => g.Layer))
+                {
+                    var layerDirectory = serviceDirectory.CreateSubdirectory(layer.Key);
+
+                    await GenerateModule($"{model.Name}.{service.Name}.{layer.Key}", layerDirectory, service, layer.ToList(), syntaxGenerator);
                 }
             }
+        }
+
+        private async Task GenerateModule(string @namespace, DirectoryInfo di, Module module, IEnumerable<ICodeGenerator> generators, SyntaxGenerator syntaxGenerator)
+        {
+            foreach (var generator in _generators)
+            {
+                if(generator.GetFileNameForModule(module) != null)
+                {
+                    // Generate module level code
+                    using (var sw = File.CreateText(Path.Combine(di.FullName, generator.GetFileNameForModule(module))))
+                    {
+                        await generator.Generate(@namespace, module, null, sw, syntaxGenerator);
+                    }
+                }
+                else
+                {
+                    // Generate type level code
+                    foreach (var type in generator.GetListFromModule(module))
+                    {
+                        var subDirectory = generator.CreateSubdirectory(di);
+
+                        using (var sw = File.CreateText(Path.Combine(subDirectory.FullName, generator.GetFileName(type))))
+                        {
+                            await generator.Generate(@namespace, module, type, sw, syntaxGenerator);
+                        }
+                    }
+                }    
+            }
+
+            module.Modules.ForEach(async m =>
+            {
+                await GenerateModule($"{@namespace}.{m.Name}", di.CreateSubdirectory(m.Name), m, generators, syntaxGenerator);
+            });
         }
 
         private static DirectoryInfo CreateDirectoryIfNotExists(string path)

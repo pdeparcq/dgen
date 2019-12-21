@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.IO;
 using DGen.Generation;
-using DGen.Generation.Application;
-using DGen.Generation.Domain;
-using DGen.Generation.Infrastructure;
-using DGen.Generation.Presentation;
 using DGen.Meta;
 using DGen.StarUml;
+using DGen.Generation.Generators;
 
 namespace DGen.Test
 {
@@ -52,10 +49,11 @@ namespace DGen.Test
 
             var generators = new List<ICodeGenerator>
             {
-                new DomainCodeGenerator(),
-                new InfrastructureCodeGenerator(),
-                new ApplicationCodeGenerator(),
-                new PresentationCodeGenerator()
+                new AggregateCodeGenerator(),
+                new DomainEventCodeGenerator(),
+                new EntityCodeGenerator(),
+                new EnumerationCodeGenerator(),
+                new ValueCodeGenerator()
             };
 
             await new CodeGenerator(generators).Generate(metaModel, Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "generated"));

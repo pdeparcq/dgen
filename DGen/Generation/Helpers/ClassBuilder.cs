@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 
-namespace DGen.Generation
+namespace DGen.Generation.Helpers
 {
     public class ClassBuilder
     {

@@ -6,6 +6,11 @@ namespace DGen.Meta
 {
     public class MetaModel
     {
+        public MetaModel()
+        {
+            Services = new List<Service>();
+        }
+
         public string Name { get; set; }
         public List<Service> Services { get; set; }
     }
@@ -75,6 +80,11 @@ namespace DGen.Meta
 
     public abstract class BaseType
     {
+        public BaseType()
+        {
+            Properties = new List<Property>();
+        }
+
         public Module Module { get; set; }
         public string Name { get; set; }
         public List<Property> Properties { get; set; }
@@ -98,6 +108,11 @@ namespace DGen.Meta
 
     public class Enumeration : BaseType
     {
+        public Enumeration()
+        {
+            Literals = new List<string>();
+        }
+
         public List<string> Literals { get; set; }
     }
 
@@ -112,6 +127,11 @@ namespace DGen.Meta
 
     public class Aggregate : Entity
     {
+        public Aggregate()
+        {
+            DomainEvents = new List<DomainEvent>();
+        }
+
         public List<DomainEvent> DomainEvents { get; set; }
     }
 
