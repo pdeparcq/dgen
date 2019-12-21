@@ -137,13 +137,13 @@ namespace DGen.Meta
 
     public class ViewModel : BaseType
     {
-        BaseType Target { get; set; }
+        public BaseType Target { get; set; }
         public bool IsCompact { get; set; }
     }
 
     public class Query : BaseType
     {
-        ViewModel Result { get; set; }
+        public ViewModel Result { get; set; }
         public bool IsCollection { get; set; }
     }
 }

@@ -23,6 +23,15 @@ namespace DGen.Generation.Generators.Application
             if (type is Query query)
             {
                 var builder = new ClassBuilder(syntaxGenerator, @namespace, query.Name);
+                if(query.Result != null)
+                {
+                    builder.AddBaseType(query.IsCollection ? $"Query<IEnumerable<{query.Result.Name}>>" : $"Query<{query.Result.Name}>");
+                }
+                else
+                {
+                    builder.AddBaseType("Query");
+                }
+                query.GenerateProperties(builder);
                 await sw.WriteAsync(builder.ToString());
             }
         }

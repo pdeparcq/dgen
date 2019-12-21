@@ -50,7 +50,7 @@ namespace DGen.Meta
             GenerateAssociationProperties(type, e, registry);
         }
 
-        private static void GenerateAssociationProperties(T type, Element element, ITypeRegistry registry)
+        private void GenerateAssociationProperties(T type, Element element, ITypeRegistry registry)
         {
             if (element.OwnedElements != null && element.OwnedElements.Any())
             {
@@ -72,7 +72,7 @@ namespace DGen.Meta
 
                         type.Properties.Add(property);
                     }
-                    else if (resolved != null)
+                    else if (ShouldGenerateProperty(resolved))
                     {
                         type.Properties.Add(new Property
                         {
@@ -86,6 +86,21 @@ namespace DGen.Meta
                     }
                 }
             }
+        }
+
+        protected (Element Element, A Type)? GetAssociation<A>(Element element, ITypeRegistry registry) where A : BaseType
+        {
+            var association = element.OwnedElements?.FirstOrDefault(e => e.Type == ElementType.UMLAssociation && registry.Resolve(e.AssociationEndTo.Reference.Element) is A);
+            if(association != null)
+            {
+                return (association, registry.Resolve(association.AssociationEndTo.Reference.Element) as A);
+            }
+            return null;
+        }
+
+        protected virtual bool ShouldGenerateProperty(BaseType resolved)
+        {
+            return resolved != null;
         }
 
         private static void GenerateAttributeProperties(T type, Element e, ITypeRegistry registry)

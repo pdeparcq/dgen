@@ -13,15 +13,13 @@ namespace DGen.Meta.Generators
         {
             base.Generate(domainEvent, element, registry);
 
-            var association = element.OwnedElements?.FirstOrDefault(e => e.Type == ElementType.UMLAssociation && registry.Resolve(e.AssociationEndTo.Reference.Element) is Aggregate);
+            var association = GetAssociation<Aggregate>(element, registry);
 
             if(association != null)
             {
-                var aggregate = registry.Resolve(association.AssociationEndTo.Reference.Element) as Aggregate;
-
-                domainEvent.Aggregate = aggregate;
-                domainEvent.Type = GenerateDomainEventType(association.Stereotype);
-                aggregate.DomainEvents.Add(domainEvent);
+                domainEvent.Aggregate = association.Value.Type;
+                domainEvent.Type = GenerateDomainEventType(association.Value.Element.Stereotype);
+                domainEvent.Aggregate.DomainEvents.Add(domainEvent);
             }
         }
 
