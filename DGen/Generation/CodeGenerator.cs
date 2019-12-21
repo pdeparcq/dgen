@@ -55,11 +55,17 @@ namespace DGen.Generation
                     // Generate type level code
                     foreach (var type in generator.GetListFromModule(module))
                     {
-                        var subDirectory = generator.CreateSubdirectory(di);
 
-                        using (var sw = File.CreateText(Path.Combine(subDirectory.FullName, generator.GetFileName(type))))
+                        var fileName = generator.GetFileName(type);
+
+                        if(fileName != null)
                         {
-                            await generator.Generate(@namespace, module, type, sw, syntaxGenerator);
+                            var subDirectory = generator.CreateSubdirectory(di);
+
+                            using (var sw = File.CreateText(Path.Combine(subDirectory.FullName, fileName)))
+                            {
+                                await generator.Generate(@namespace, module, type, sw, syntaxGenerator);
+                            }
                         }
                     }
                 }    

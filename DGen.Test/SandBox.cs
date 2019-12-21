@@ -62,7 +62,8 @@ namespace DGen.Test
                 new Generation.Generators.Infrastructure.EntityCodeGenerator(),
                 // Application
                 new ViewModelCodeGenerator(),
-                new QueryCodeGenerator()
+                new QueryCodeGenerator(),
+                new QueryHandlerCodeGenerator()
             };
 
             await new CodeGenerator(generators).Generate(metaModel, Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), metaModel.Name));

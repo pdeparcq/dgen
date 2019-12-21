@@ -7,13 +7,13 @@ using Microsoft.CodeAnalysis.Editing;
 
 namespace DGen.Generation.Generators.Application
 {
-    public class QueryCodeGenerator : ICodeGenerator
+    public class QueryHandlerCodeGenerator : ICodeGenerator
     {
         public string Layer => "Application";
 
         public DirectoryInfo CreateSubdirectory(DirectoryInfo di)
         {
-            return di.CreateSubdirectory("Queries");
+            return di.CreateSubdirectory("Queries").CreateSubdirectory("Handlers");
         }
 
         public async Task Generate(string @namespace, Module module, BaseType type, StreamWriter sw, SyntaxGenerator syntaxGenerator)
@@ -21,7 +21,7 @@ namespace DGen.Generation.Generators.Application
             if (type is Query query)
             {
                 var builder = new ClassBuilder(syntaxGenerator, @namespace, query.Name);
-                builder.AddBaseType(query.IsCollection ? $"Query<IEnumerable<{query.Result.Name}>>" : $"Query<{query.Result.Name}>");
+                builder.AddBaseType(query.IsCollection ? $"IQueryHandlerAsync<{query.Name},IEnumerable<{query.Result.Name}>>" : $"IQueryHandlerAsync<{query.Name},{query.Result.Name}>");
                 query.GenerateProperties(builder);
                 await sw.WriteAsync(builder.ToString());
             }
@@ -29,8 +29,8 @@ namespace DGen.Generation.Generators.Application
 
         public string GetFileName(BaseType type)
         {
-            if (type is Query query && query.Result != null)
-                return $"{query.Name}.cs";
+            if(type is Query query && query.Result != null)
+                return $"{query.Name}QueryHandler.cs";
             return null;
         }
 
