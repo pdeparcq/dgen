@@ -36,7 +36,7 @@ namespace DGen.Generation.Generators.Infrastructure
             return null;
         }
 
-        public IEnumerable<BaseType> GetListFromModule(Module module)
+        public IEnumerable<BaseType> GetTypesFromModule(Module module)
         {
             return new List<BaseType>();
         }

@@ -58,7 +58,7 @@ namespace DGen.Generation.Generators.Domain
             return $"{type.Name}.cs";
         }
 
-        public IEnumerable<BaseType> GetListFromModule(Module module)
+        public IEnumerable<BaseType> GetTypesFromModule(Module module)
         {
             return module.Aggregates;
         }

@@ -53,7 +53,7 @@ namespace DGen.Generation
                 else
                 {
                     // Generate type level code
-                    foreach (var type in generator.GetListFromModule(module))
+                    foreach (var type in generator.GetTypesFromModule(module))
                     {
 
                         var fileName = generator.GetFileName(type);

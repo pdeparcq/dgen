@@ -9,7 +9,7 @@ namespace DGen.Generation
     public interface ICodeGenerator
     {
         string Layer { get; }
-        IEnumerable<BaseType> GetListFromModule(Module module);
+        IEnumerable<BaseType> GetTypesFromModule(Module module);
         DirectoryInfo CreateSubdirectory(DirectoryInfo di);
         string GetFileNameForModule(Module module);
         string GetFileName(BaseType type);

@@ -35,7 +35,7 @@ namespace DGen.Generation.Generators.Application
             return null;
         }
 
-        public IEnumerable<BaseType> GetListFromModule(Module module)
+        public IEnumerable<BaseType> GetTypesFromModule(Module module)
         {
             return module.ViewModels;
         }

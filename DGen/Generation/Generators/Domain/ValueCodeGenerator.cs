@@ -11,7 +11,7 @@ namespace DGen.Generation.Generators.Domain
     {
         public string Layer => "Domain";
 
-        public IEnumerable<BaseType> GetListFromModule(Module module)
+        public IEnumerable<BaseType> GetTypesFromModule(Module module)
         {
             return module.Values;
         }
