@@ -11,16 +11,24 @@ namespace DGen.Meta
         private readonly Dictionary<System.Type, IMetaGenerator> _metaGenerators;
         private Dictionary<Element, BaseType> _types;
 
-        public MetaModelGenerator(IEnumerable<IMetaGenerator> metaGenerators)
+        public MetaModelGenerator()
         {
             _metaGenerators = new Dictionary<System.Type, IMetaGenerator>();
 
-            foreach(var metaGenerator in metaGenerators)
-            {
-                _metaGenerators[metaGenerator.GeneratedType] = metaGenerator;
-            }
+            AddMetaGenerator(new AggregateMetaGenerator());
+            AddMetaGenerator(new DomainEventMetaGenerator());
+            AddMetaGenerator(new EntityMetaGenerator());
+            AddMetaGenerator(new EnumerationMetaGenerator());
+            AddMetaGenerator(new QueryMetaGenerator());
+            AddMetaGenerator(new ValueMetaGenerator());
+            AddMetaGenerator(new ViewModelMetaGenerator());
         }
-        
+
+        private void AddMetaGenerator(IMetaGenerator metaGenerator)
+        {
+            _metaGenerators[metaGenerator.GeneratedType] = metaGenerator;
+        }
+
         public MetaModel Generate(Element model)
         {
             _types = new Dictionary<Element, BaseType>();
