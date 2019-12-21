@@ -53,7 +53,8 @@ namespace DGen.Test
                 new DomainEventCodeGenerator(),
                 new EntityCodeGenerator(),
                 new EnumerationCodeGenerator(),
-                new ValueCodeGenerator()
+                new ValueCodeGenerator(),
+                new DbContextCodeGenerator()
             };
 
             await new CodeGenerator(generators).Generate(metaModel, Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "generated"));

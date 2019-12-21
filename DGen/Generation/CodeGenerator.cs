@@ -38,12 +38,14 @@ namespace DGen.Generation
 
         private async Task GenerateModule(string @namespace, DirectoryInfo di, Module module, IEnumerable<ICodeGenerator> generators, SyntaxGenerator syntaxGenerator)
         {
-            foreach (var generator in _generators)
+            foreach (var generator in generators)
             {
                 if(generator.GetFileNameForModule(module) != null)
                 {
+                    var subDirectory = generator.CreateSubdirectory(di);
+
                     // Generate module level code
-                    using (var sw = File.CreateText(Path.Combine(di.FullName, generator.GetFileNameForModule(module))))
+                    using (var sw = File.CreateText(Path.Combine(subDirectory.FullName, generator.GetFileNameForModule(module))))
                     {
                         await generator.Generate(@namespace, module, null, sw, syntaxGenerator);
                     }
