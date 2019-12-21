@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 
-namespace DGen.Generation.Generators
+namespace DGen.Generation.Generators.Domain
 {
     public class EnumerationCodeGenerator : ICodeGenerator
     {

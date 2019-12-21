@@ -1,44 +1,45 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using DGen.Generation.Helpers;
 using DGen.Meta;
 using Microsoft.CodeAnalysis.Editing;
 
-namespace DGen.Generation.Generators
+namespace DGen.Generation.Generators.Application
 {
-    public class DbContextCodeGenerator : ICodeGenerator
+    public class QueryCodeGenerator : ICodeGenerator
     {
-        public string Layer => "Infrastructure";
+        public string Layer => "Application";
 
         public DirectoryInfo CreateSubdirectory(DirectoryInfo di)
         {
-            return di;
+            return di.CreateSubdirectory("Queries");
         }
 
         public async Task Generate(string @namespace, Module module, BaseType type, StreamWriter sw, SyntaxGenerator syntaxGenerator)
         {
-            var builder = new ClassBuilder(syntaxGenerator, @namespace, $"{module.Name}DbContext");
-            builder.AddBaseType("DbContext");
-            await sw.WriteAsync(builder.ToString());
+            if (type is Query query)
+            {
+                var builder = new ClassBuilder(syntaxGenerator, @namespace, query.Name);
+                await sw.WriteAsync(builder.ToString());
+            }
         }
 
         public string GetFileName(BaseType type)
         {
-            return null;
+            return $"{type.Name}.cs";
         }
 
         public string GetFileNameForModule(Module module)
         {
-            if(module.Aggregates.Any())
-                return $"{module.Name}DbContext.cs";
             return null;
         }
 
         public IEnumerable<BaseType> GetListFromModule(Module module)
         {
-            return new List<BaseType>();
+            return module.Queries;
         }
     }
 }

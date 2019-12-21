@@ -8,7 +8,9 @@ using System.IO;
 using DGen.Generation;
 using DGen.Meta;
 using DGen.StarUml;
-using DGen.Generation.Generators;
+using DGen.Generation.Generators.Domain;
+using DGen.Generation.Generators.Infrastructure;
+using DGen.Generation.Generators.Application;
 
 namespace DGen.Test
 {
@@ -49,15 +51,21 @@ namespace DGen.Test
 
             var generators = new List<ICodeGenerator>
             {
+                // Domain
                 new AggregateCodeGenerator(),
                 new DomainEventCodeGenerator(),
-                new EntityCodeGenerator(),
+                new Generation.Generators.Domain.EntityCodeGenerator(),
                 new EnumerationCodeGenerator(),
                 new ValueCodeGenerator(),
-                new DbContextCodeGenerator()
+                // Infrastructure
+                new DbContextCodeGenerator(),
+                new Generation.Generators.Infrastructure.EntityCodeGenerator(),
+                // Application
+                new ViewModelCodeGenerator(),
+                new QueryCodeGenerator()
             };
 
-            await new CodeGenerator(generators).Generate(metaModel, Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "generated"));
+            await new CodeGenerator(generators).Generate(metaModel, Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), metaModel.Name));
         }
     }
 }

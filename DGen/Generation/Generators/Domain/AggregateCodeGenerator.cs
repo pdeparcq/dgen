@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 
-namespace DGen.Generation.Generators
+namespace DGen.Generation.Generators.Domain
 {
     public class AggregateCodeGenerator : ICodeGenerator
     {

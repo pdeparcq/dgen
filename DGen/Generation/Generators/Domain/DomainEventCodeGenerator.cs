@@ -5,7 +5,7 @@ using DGen.Generation.Helpers;
 using DGen.Meta;
 using Microsoft.CodeAnalysis.Editing;
 
-namespace DGen.Generation.Generators
+namespace DGen.Generation.Generators.Domain
 {
     public class DomainEventCodeGenerator : ICodeGenerator
     {
