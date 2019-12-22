@@ -2,13 +2,13 @@
 csharp ddd code generation from staruml model
 
 * Application
-** Queries
-** Commands
-** ViewModels
+  * Queries
+  * Commands
+  * ViewModels
 * Domain
-** Aggregates
-** Entities
-** ValueObjects
+  * Aggregates
+  * Entities
+  * ValueObjects
 * Infrastructure
-** Entities
-** DbContext
+  * Entities
+  * DbContext
