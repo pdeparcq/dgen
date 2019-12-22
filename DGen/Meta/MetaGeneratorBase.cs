@@ -98,6 +98,16 @@ namespace DGen.Meta
             return null;
         }
 
+        protected (Element Element, D Type)? GetDependency<D>(Element element, ITypeRegistry registry) where D : BaseType
+        {
+            var dependency = element.OwnedElements?.FirstOrDefault(e => e.Type == ElementType.UMLDependency && registry.Resolve(e.Target.Element) is D);
+            if (dependency != null)
+            {
+                return (dependency, registry.Resolve(dependency.Target.Element) as D);
+            }
+            return null;
+        }
+
         protected virtual bool ShouldGenerateProperty(BaseType resolved)
         {
             return resolved != null;

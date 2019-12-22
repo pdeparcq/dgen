@@ -20,6 +20,10 @@ namespace DGen.Generation.Generators.Application
             if(context.Type is ViewModel viewModel)
             {
                 var builder = new ClassBuilder(context.SyntaxGenerator, context.Namespace, viewModel.Name);
+                if(viewModel.Target != null)
+                {
+                    viewModel.Target.GenerateProperties(builder);
+                }
                 return builder.Build();
             }
             return null;
