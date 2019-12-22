@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using DGen.Generation.Helpers;
 using DGen.Meta;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Editing;
 
 namespace DGen.Generation.Generators.Application
 {

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using DGen.Generation.Helpers;
 using DGen.Meta;
 using Microsoft.CodeAnalysis;
@@ -20,14 +22,82 @@ namespace DGen.Generation.Generators.Application
             if(context.Type is ViewModel viewModel)
             {
                 var builder = new ClassBuilder(context.SyntaxGenerator, context.Namespace, viewModel.Name);
+                
                 if(viewModel.Target != null)
                 {
-                    viewModel.Target.GenerateProperties(builder);
+                    GenerateProperties("", viewModel.Target.Properties, viewModel);
                 }
+
+                viewModel.GenerateProperties(builder);
+
                 return builder.Build();
             }
             return null;
         }
+
+
+        private void GenerateProperties(string parent, IEnumerable<Property> properties, ViewModel viewModel)
+        {
+            foreach (var property in properties)
+            {
+                if (property.IsCollection)
+                {
+                    if (viewModel.IsCompact)
+                    {
+                        viewModel.Properties.Add(new Property
+                        {
+                            Name = $"{parent}NumberOf{property.Name}",
+                            Type = new PropertyType { SystemType = "int" }
+                        });
+                    }
+                    else
+                    {
+                        //TODO: create viewmodel for property type
+                        viewModel.Properties.Add(new Property
+                        {
+                            Name = $"{parent}{property.Name}",
+                            IsCollection = true,
+                            Type = property.Type
+                        });
+                    }
+                }
+                else
+                {
+                    GenerateProperty(parent, property, viewModel);
+                }
+            }
+        }
+
+        private void GenerateProperty(string parent, Property property, ViewModel viewModel)
+        {
+            if (property.Type.SystemType == null)
+            {
+                // If only one property with systemtype, use system type without appending the name
+                if (property.Type.Type.Properties.Count == 1 
+                    && !property.Type.Type.Properties.First().IsCollection 
+                    && property.Type.Type.Properties.First().Type.SystemType != null)
+                {
+                    viewModel.Properties.Add(new Property
+                    {
+                        Name = $"{parent}{property.Name}",
+                        Type = property.Type.Type.Properties.First().Type
+                    });
+                }
+                else
+                {
+                    GenerateProperties($"{parent}{property.Name}", property.Type.Type.Properties, viewModel);
+                }
+            }
+            else
+            {
+                viewModel.Properties.Add(new Property
+                {
+                    Name = $"{parent}{property.Name}",
+                    IsCollection = property.IsCollection,
+                    Type = property.Type
+                });
+            }
+        }  
 
         public string GetFileName(BaseType type)
         {
