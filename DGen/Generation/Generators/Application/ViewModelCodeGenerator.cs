@@ -42,7 +42,7 @@ namespace DGen.Generation.Generators.Application
             {
                 if (property.IsCollection)
                 {
-                    if (viewModel.IsCompact)
+                    if (viewModel.IsCompact && property.Type.Type is Entity)
                     {
                         viewModel.Properties.Add(new Property
                         {
@@ -52,12 +52,12 @@ namespace DGen.Generation.Generators.Application
                     }
                     else
                     {
-                        //TODO: create viewmodel for property type
                         viewModel.Properties.Add(new Property
                         {
                             Name = $"{parent}{property.Name}",
                             IsCollection = true,
-                            Type = property.Type
+                            //TODO: create real viewmodel for property type
+                            Type = new PropertyType { SystemType = $"{property.Type.Name}Overview" }
                         });
                     }
                 }
@@ -70,7 +70,7 @@ namespace DGen.Generation.Generators.Application
 
         private void GenerateProperty(string parent, Property property, ViewModel viewModel)
         {
-            if (property.Type.SystemType == null)
+            if (property.Type.SystemType == null && !(property.Type.Type is Aggregate))
             {
                 // If only one property with systemtype, use system type without appending the name
                 if (property.Type.Type.Properties.Count == 1 

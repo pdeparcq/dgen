@@ -40,7 +40,7 @@ namespace DGen.Test
         {
             var model = new StarUmlReader().Read(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _modelFileName));
             var metaModel = new MetaModelGenerator().Generate(model);
-            Console.WriteLine(JsonConvert.SerializeObject(metaModel, Formatting.Indented, _serializerSettings));
+            //Console.WriteLine(JsonConvert.SerializeObject(metaModel, Formatting.Indented, _serializerSettings));
         }
 
         [Test]

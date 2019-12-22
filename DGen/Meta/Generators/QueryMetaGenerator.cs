@@ -18,6 +18,7 @@ namespace DGen.Meta.Generators
             base.Generate(query, element, registry);
 
             var association = GetAssociation<ViewModel>(element, registry);
+
             if(association != null)
             {
                 query.Result = association.Value.Type;

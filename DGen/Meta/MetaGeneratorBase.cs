@@ -58,21 +58,7 @@ namespace DGen.Meta
                 {
                     var resolved = registry.Resolve(association.AssociationEndTo.Reference.Element);
 
-                    if (resolved is Aggregate aggregate && aggregate.UniqueIdentifier != null)
-                    {
-                        var property = new Property
-                        {
-                            IsCollection = association.AssociationEndTo.Multiplicity?.Contains("*") ?? false,
-                            Name = $"{association.AssociationEndTo.Name ?? aggregate.Name}",
-                            Type = aggregate.UniqueIdentifier.Type
-                        };
-
-                        if (!property.IsCollection)
-                            property.Name += aggregate.UniqueIdentifier.Name;
-
-                        type.Properties.Add(property);
-                    }
-                    else if (ShouldGenerateProperty(resolved))
+                    if (ShouldGenerateProperty(resolved))
                     {
                         type.Properties.Add(new Property
                         {

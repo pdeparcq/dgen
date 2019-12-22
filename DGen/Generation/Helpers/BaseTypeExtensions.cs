@@ -10,8 +10,26 @@ namespace DGen.Generation.Helpers
             {
                 if (p.IsCollection)
                     builder.AddNamespaceImportDeclaration("System.Collections.Generic");
-                builder.AddAutoProperty(p.Name, p.IsCollection ? $"List<{p.Type.Name}>" : p.Type.Name, readOnly);
+
+                if (p.Type.Type is Aggregate aggregate && aggregate.UniqueIdentifier != null)
+                {
+                    GenerateProperty(new Property
+                    {
+                        IsCollection = p.IsCollection,
+                        Name = p.IsCollection ? p.Name : $"{p.Name}{aggregate.UniqueIdentifier.Name}",
+                        Type = aggregate.UniqueIdentifier.Type
+                    }, builder, readOnly);
+                }
+                else
+                {
+                    GenerateProperty(p, builder, readOnly);
+                }
             });
+        }
+
+        private static void GenerateProperty(Property p, ClassBuilder builder, bool readOnly)
+        {
+            builder.AddAutoProperty(p.Name, p.IsCollection ? $"List<{p.Type.Name}>" : p.Type.Name, readOnly);
         }
     }
 }
