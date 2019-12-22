@@ -10,8 +10,6 @@ namespace DGen.Generation.Generators.Application
     {
         public string Layer => "Application";
 
-        public string Namespace => "Queries";
-
         public DirectoryInfo CreateSubdirectory(DirectoryInfo di)
         {
             return di.CreateSubdirectory("Queries").CreateSubdirectory("Handlers");

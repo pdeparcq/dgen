@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -16,7 +15,8 @@ namespace DGen.Generation
         private static readonly Regex AutoPropReadOnlyRegex = new Regex(@"\s*\{\s*get;\s*}\s");
 
         private readonly List<ICodeGenerator> _generators;
-        private Dictionary<object, string> _namespaces;
+        private SyntaxGenerator _syntaxGenerator;
+        private DirectoryInfo _basePath;
 
         public CodeGenerator(IEnumerable<ICodeGenerator> generators)
         {
@@ -25,63 +25,31 @@ namespace DGen.Generation
 
         public async Task Generate(MetaModel model, string path)
         {
-            _namespaces = new Dictionary<object, string>();
+            _basePath = new DirectoryInfo(path);
 
-            var di = CreateDirectoryIfNotExists(path);
-            var syntaxGenerator = SyntaxGenerator.GetGenerator(new AdhocWorkspace(), LanguageNames.CSharp);
-
-            GenerateServiceNamespaces(model);
-            await GenerateServiceModules(model, di, syntaxGenerator);
-        }
-
-        private void GenerateServiceNamespaces(MetaModel model)
-        {
-            foreach (var service in model.Services)
+            if (_basePath.Exists)
             {
-                foreach (var layer in _generators.GroupBy(g => g.Layer))
+                _syntaxGenerator = SyntaxGenerator.GetGenerator(new AdhocWorkspace(), LanguageNames.CSharp);
+
+                var applicationPath = _basePath.CreateSubdirectory(model.Name);
+
+                RemoveDirectoryFiles(applicationPath);
+
+                foreach (var service in model.Services)
                 {
-                    GenerateNamespaces($"{model.Name}.{service.Name}.{layer.Key}", service, layer.ToList());
+                    var serviceDirectory = applicationPath.CreateSubdirectory(service.Name);
+
+                    foreach (var layer in _generators.GroupBy(g => g.Layer))
+                    {
+                        var layerDirectory = serviceDirectory.CreateSubdirectory(layer.Key);
+
+                        await GenerateModule(layerDirectory, service, layer.ToList());
+                    }
                 }
-            }
+            }    
         }
 
-        private void GenerateNamespaces(string baseNamespace, Module module, List<ICodeGenerator> generators)
-        {
-            RegisterNamespace(module, baseNamespace);
-
-            foreach (var generator in generators)
-            {
-                foreach (var type in generator.GetTypesFromModule(module))
-                {
-                    if (generator.Namespace != null)
-                        RegisterNamespace(type, $"{baseNamespace}.{generator.Namespace}");
-                    else
-                        RegisterNamespace(type, baseNamespace);
-                }
-            }
-
-            module.Modules.ForEach(m =>
-            {
-                GenerateNamespaces($"{baseNamespace}.{m.Name}", m, generators);
-            });
-        }
-
-        private async Task GenerateServiceModules(MetaModel model, DirectoryInfo di, SyntaxGenerator syntaxGenerator)
-        {
-            foreach (var service in model.Services)
-            {
-                var serviceDirectory = di.CreateSubdirectory(service.Name);
-
-                foreach (var layer in _generators.GroupBy(g => g.Layer))
-                {
-                    var layerDirectory = serviceDirectory.CreateSubdirectory(layer.Key);
-
-                    await GenerateModule(layerDirectory, service, layer.ToList(), syntaxGenerator);
-                }
-            }
-        }
-
-        private async Task GenerateModule(DirectoryInfo di, Module module, IEnumerable<ICodeGenerator> generators, SyntaxGenerator syntaxGenerator)
+        private async Task GenerateModule(DirectoryInfo di, Module module, IEnumerable<ICodeGenerator> generators)
         {
             foreach (var generator in generators)
             {
@@ -94,9 +62,9 @@ namespace DGen.Generation
                     {
                         var node = generator.Generate(new CodeGenerationContext
                         {
-                            Namespace = ResolveNamespace(module),
+                            Namespace = ResolveNamespace(subDirectory),
                             Module = module,
-                            SyntaxGenerator = syntaxGenerator
+                            SyntaxGenerator = _syntaxGenerator
                         });
                         await WriteNodeToStream(sw, node);
                     }
@@ -117,10 +85,10 @@ namespace DGen.Generation
                             {
                                 var node = generator.Generate(new CodeGenerationContext
                                 {
-                                    Namespace = ResolveNamespace(type),
+                                    Namespace = ResolveNamespace(subDirectory),
                                     Module = module,
                                     Type = type,
-                                    SyntaxGenerator = syntaxGenerator
+                                    SyntaxGenerator = _syntaxGenerator
                                 });
                                 await WriteNodeToStream(sw, node);
                             }
@@ -131,8 +99,16 @@ namespace DGen.Generation
 
             module.Modules.ForEach(async m =>
             {
-                await GenerateModule(di.CreateSubdirectory(m.Name), m, generators, syntaxGenerator);
+                await GenerateModule(di.CreateSubdirectory(m.Name), m, generators);
             });
+        }
+
+        private string ResolveNamespace(DirectoryInfo subDirectory)
+        {
+            var fullPath = subDirectory.FullName;
+            var relativePath = fullPath.Substring(_basePath.FullName.Length+1);
+
+            return relativePath.Replace("\\", ".");
         }
 
         private async Task WriteNodeToStream(StreamWriter sw, SyntaxNode node)
@@ -140,31 +116,7 @@ namespace DGen.Generation
             await sw.WriteAsync(FormatAutoPropertiesOnOneLine(node.NormalizeWhitespace().ToFullString()));
         }
 
-        private static DirectoryInfo CreateDirectoryIfNotExists(string path)
-        {
-            var di = new DirectoryInfo(path);
-            if (di.Exists)
-            {
-                RemoveDirectory(di);
-            }
-            else
-            {
-                di.Create();
-            }
-            return di;
-        }
-
-        public void RegisterNamespace(object o, string @namespace)
-        {
-            _namespaces[o] = @namespace;
-        }
-
-        public string ResolveNamespace(object o)
-        {
-            return _namespaces.ContainsKey(o) ? _namespaces[o] : null;
-        }
-
-        private static void RemoveDirectory(DirectoryInfo di)
+        private static void RemoveDirectoryFiles(DirectoryInfo di)
         {
             foreach (var file in di.EnumerateFiles())
             {

@@ -18,7 +18,6 @@ namespace DGen.Generation
     public interface ICodeGenerator
     {
         string Layer { get; }
-        string Namespace { get; }
         IEnumerable<BaseType> GetTypesFromModule(Module module);
         DirectoryInfo CreateSubdirectory(DirectoryInfo di);
         string GetFileNameForModule(Module module);

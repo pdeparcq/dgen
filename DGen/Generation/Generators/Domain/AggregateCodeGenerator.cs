@@ -15,8 +15,6 @@ namespace DGen.Generation.Generators.Domain
     {
         public string Layer => "Domain";
 
-        public string Namespace => null;
-
         public SyntaxNode Generate(CodeGenerationContext context)
         {
             if (context.Type is Aggregate aggregate)

@@ -11,8 +11,6 @@ namespace DGen.Generation.Generators.Infrastructure
     {
         public string Layer => "Infrastructure";
 
-        public string Namespace => null;
-
         public DirectoryInfo CreateSubdirectory(DirectoryInfo di)
         {
             return di;

@@ -10,8 +10,6 @@ namespace DGen.Generation.Generators.Infrastructure
     {
         public string Layer => "Infrastructure";
 
-        public string Namespace => "Entities";
-
         public DirectoryInfo CreateSubdirectory(DirectoryInfo di)
         {
             return di.CreateSubdirectory("Entities");

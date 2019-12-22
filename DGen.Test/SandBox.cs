@@ -66,7 +66,7 @@ namespace DGen.Test
                 new QueryHandlerCodeGenerator()
             };
 
-            await new CodeGenerator(generators).Generate(metaModel, Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), metaModel.Name));
+            await new CodeGenerator(generators).Generate(metaModel, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
         }
     }
 }

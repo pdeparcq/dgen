@@ -11,8 +11,6 @@ namespace DGen.Generation.Generators.Domain
     {
         public string Layer => "Domain";
 
-        public string Namespace => "Enumerations";
-
         public IEnumerable<BaseType> GetTypesFromModule(Module module)
         {
             return module.Enumerations;
