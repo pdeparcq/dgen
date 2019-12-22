@@ -3,15 +3,15 @@ csharp ddd code generation from staruml model
 
 * Application
   * Queries
-   * Handlers
-   * Validators
+    * Handlers
+    * Validators
   * Commands
-   * Handlers
-   * Validators
+    * Handlers
+    * Validators
   * ViewModels
 * Domain
   * Aggregates
-   * DomainEvents
+    * DomainEvents
   * Entities
   * ValueObjects
 * Infrastructure
