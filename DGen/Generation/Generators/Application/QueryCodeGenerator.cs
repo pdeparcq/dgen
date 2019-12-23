@@ -20,7 +20,7 @@ namespace DGen.Generation.Generators.Application
             if (context.Type is Query query)
             {
                 var builder = new ClassBuilder(context.SyntaxGenerator, context.Namespace, query.Name);
-                builder.AddBaseType(query.IsCollection ? $"IQuery<IEnumerable<{query.Result.Name}>>" : $"IQuery<{query.Result.Name}>");
+                builder.AddBaseType(query.IsCollection ? $"IQuery<IEnumerable<{query.Result.Name}ViewModel>>" : $"IQuery<{query.Result.Name}ViewModel>");
                 query.GenerateProperties(builder);
                 return builder.Build();
             }

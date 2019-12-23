@@ -33,23 +33,20 @@ namespace DGen.Meta.Generators
                     var aggregate = aggregateAssociation.Value.Type;
                     var viewModel = query.Module.ViewModels.FirstOrDefault(vm => vm.Target == aggregate);
 
-                    query.IsCollection = aggregateAssociation.Value.Element.AssociationEndTo.Multiplicity?.Contains("*") ?? false;
-
                     // Create viewmodel and add it to module if it doesn't exist yet
                     if (viewModel == null)
                     {
                         viewModel = new ViewModel
                         {
                             Module = query.Module,
-                            Name = aggregate.Name + (query.IsCollection ? "Overview" : "Detail"),
-                            IsCompact = query.IsCollection,
-                            Properties = new List<Property>(),
+                            Name = aggregate.Name,
                             Target = aggregate
                         };
                         query.Module.ViewModels.Add(viewModel);
                     }
 
                     query.Result = viewModel;
+                    query.IsCollection = aggregateAssociation.Value.Element.AssociationEndTo.Multiplicity?.Contains("*") ?? false;
                 }
             }
         }

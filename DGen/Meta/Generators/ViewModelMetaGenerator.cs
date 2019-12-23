@@ -21,7 +21,6 @@ namespace DGen.Meta.Generators
             if(dependency != null)
             {
                 viewModel.Target = dependency.Value.Type;
-                viewModel.IsCompact = dependency.Value.Element.Stereotype?.ToLower() == "compact";
             }
         }
     }

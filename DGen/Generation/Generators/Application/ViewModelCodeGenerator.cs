@@ -21,7 +21,7 @@ namespace DGen.Generation.Generators.Application
         {
             if(context.Type is ViewModel viewModel)
             {
-                var builder = new ClassBuilder(context.SyntaxGenerator, context.Namespace, viewModel.Name);
+                var builder = new ClassBuilder(context.SyntaxGenerator, context.Namespace, $"{viewModel.Name}ViewModel");
                 
                 if(viewModel.Target != null)
                 {
@@ -40,68 +40,40 @@ namespace DGen.Generation.Generators.Application
         {
             foreach (var property in properties)
             {
-                if (property.IsCollection)
+                if (property.Type.SystemType == null && !(property.Type.Type is Aggregate) && !property.IsCollection)
                 {
-                    if (viewModel.IsCompact && property.Type.Type is Entity)
-                    {
-                        viewModel.Properties.Add(new Property
-                        {
-                            Name = $"{parent}NumberOf{property.Name}",
-                            Type = new PropertyType { SystemType = "int" }
-                        });
-                    }
-                    else
+                    // If only one property with systemtype, use system type without appending the name
+                    if (property.Type.Type.Properties.Count == 1
+                        && !property.Type.Type.Properties.First().IsCollection
+                        && property.Type.Type.Properties.First().Type.SystemType != null)
                     {
                         viewModel.Properties.Add(new Property
                         {
                             Name = $"{parent}{property.Name}",
-                            IsCollection = true,
-                            //TODO: create real viewmodel for property type
-                            Type = new PropertyType { SystemType = $"{property.Type.Name}Overview" }
+                            Type = property.Type.Type.Properties.First().Type
                         });
+                    }
+                    else
+                    {
+                        GenerateProperties($"{parent}{property.Name}", property.Type.Type.Properties, viewModel);
                     }
                 }
                 else
                 {
-                    GenerateProperty(parent, property, viewModel);
+                    viewModel.Properties.Add(new Property
+                    {
+                        Name = $"{parent}{property.Name}",
+                        IsCollection = property.IsCollection,
+                        //TODO: generate viewmodel types
+                        Type = new PropertyType { SystemType = property.Type.SystemType ?? $"{property.Type.Name}ViewModel" }
+                    });
                 }
             }
         }
 
-        private void GenerateProperty(string parent, Property property, ViewModel viewModel)
-        {
-            if (property.Type.SystemType == null && !(property.Type.Type is Aggregate))
-            {
-                // If only one property with systemtype, use system type without appending the name
-                if (property.Type.Type.Properties.Count == 1 
-                    && !property.Type.Type.Properties.First().IsCollection 
-                    && property.Type.Type.Properties.First().Type.SystemType != null)
-                {
-                    viewModel.Properties.Add(new Property
-                    {
-                        Name = $"{parent}{property.Name}",
-                        Type = property.Type.Type.Properties.First().Type
-                    });
-                }
-                else
-                {
-                    GenerateProperties($"{parent}{property.Name}", property.Type.Type.Properties, viewModel);
-                }
-            }
-            else
-            {
-                viewModel.Properties.Add(new Property
-                {
-                    Name = $"{parent}{property.Name}",
-                    IsCollection = property.IsCollection,
-                    Type = property.Type
-                });
-            }
-        }  
-
         public string GetFileName(BaseType type)
         {
-            return $"{type.Name}.cs";
+            return $"{type.Name}ViewModel.cs";
         }
 
         public string GetFileNameForModule(Module module)

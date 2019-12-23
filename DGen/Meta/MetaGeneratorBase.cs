@@ -77,7 +77,7 @@ namespace DGen.Meta
         protected IEnumerable<(Element Element, A Type)> GetAssociations<A>(Element element, ITypeRegistry registry, string stereoType = null) where A : BaseType
         {
             return element.OwnedElements?
-                .Where(e => e.Type == ElementType.UMLAssociation && (stereoType == null || e.Stereotype == stereoType) && registry.Resolve(e.AssociationEndTo.Reference.Element) is A)
+                .Where(e => e.Type == ElementType.UMLAssociation && (stereoType == null || e.Stereotype?.ToLower() == stereoType) && registry.Resolve(e.AssociationEndTo.Reference.Element) is A)
                 .Select(association => (association, registry.Resolve(association.AssociationEndTo.Reference.Element) as A));     
         }
 
@@ -92,7 +92,7 @@ namespace DGen.Meta
         protected IEnumerable<(Element Element, D Type)> GetDependencies<D>(Element element, ITypeRegistry registry, string stereoType = null) where D : BaseType
         {
             return element.OwnedElements?
-                .Where(e => e.Type == ElementType.UMLDependency && (stereoType == null || e.Stereotype == stereoType) && registry.Resolve(e.Target.Element) is D)
+                .Where(e => e.Type == ElementType.UMLDependency && (stereoType == null || e.Stereotype?.ToLower() == stereoType) && registry.Resolve(e.Target.Element) is D)
                 .Select(dependency => (dependency, registry.Resolve(dependency.Target.Element) as D));
         }
 
