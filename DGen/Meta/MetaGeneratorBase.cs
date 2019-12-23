@@ -58,7 +58,7 @@ namespace DGen.Meta
                 {
                     var resolved = registry.Resolve(association.AssociationEndTo.Reference.Element);
 
-                    if (ShouldGenerateProperty(resolved))
+                    if (ShouldGenerateProperty(resolved, association.Stereotype))
                     {
                         type.Properties.Add(new Property
                         {
@@ -74,29 +74,39 @@ namespace DGen.Meta
             }
         }
 
-        protected (Element Element, A Type)? GetAssociation<A>(Element element, ITypeRegistry registry) where A : BaseType
+        protected IEnumerable<(Element Element, A Type)> GetAssociations<A>(Element element, ITypeRegistry registry, string stereoType = null) where A : BaseType
         {
-            var association = element.OwnedElements?.FirstOrDefault(e => e.Type == ElementType.UMLAssociation && registry.Resolve(e.AssociationEndTo.Reference.Element) is A);
-            if(association != null)
-            {
-                return (association, registry.Resolve(association.AssociationEndTo.Reference.Element) as A);
-            }
+            return element.OwnedElements?
+                .Where(e => e.Type == ElementType.UMLAssociation && (stereoType == null || e.Stereotype == stereoType) && registry.Resolve(e.AssociationEndTo.Reference.Element) is A)
+                .Select(association => (association, registry.Resolve(association.AssociationEndTo.Reference.Element) as A));     
+        }
+
+        protected (Element Element, A Type)? GetAssociation<A>(Element element, ITypeRegistry registry, string stereoType = null) where A : BaseType
+        {
+            var associations = GetAssociations<A>(element, registry, stereoType);
+            if (associations != null && associations.Any())
+                return associations.First();
             return null;
         }
 
-        protected (Element Element, D Type)? GetDependency<D>(Element element, ITypeRegistry registry) where D : BaseType
+        protected IEnumerable<(Element Element, D Type)> GetDependencies<D>(Element element, ITypeRegistry registry, string stereoType = null) where D : BaseType
         {
-            var dependency = element.OwnedElements?.FirstOrDefault(e => e.Type == ElementType.UMLDependency && registry.Resolve(e.Target.Element) is D);
-            if (dependency != null)
-            {
-                return (dependency, registry.Resolve(dependency.Target.Element) as D);
-            }
+            return element.OwnedElements?
+                .Where(e => e.Type == ElementType.UMLDependency && (stereoType == null || e.Stereotype == stereoType) && registry.Resolve(e.Target.Element) is D)
+                .Select(dependency => (dependency, registry.Resolve(dependency.Target.Element) as D));
+        }
+
+        protected (Element Element, D Type)? GetDependency<D>(Element element, ITypeRegistry registry, string stereoType = null) where D : BaseType
+        {
+            var dependencies = GetDependencies<D>(element, registry, stereoType);
+            if (dependencies != null && dependencies.Any())
+                return dependencies.First();
             return null;
         }
 
-        protected virtual bool ShouldGenerateProperty(BaseType resolved)
+        protected virtual bool ShouldGenerateProperty(BaseType resolved, string stereoType)
         {
-            return resolved != null;
+            return resolved != null && stereoType == null;
         }
 
         private static void GenerateAttributeProperties(T type, Element e, ITypeRegistry registry)

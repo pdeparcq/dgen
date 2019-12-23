@@ -23,12 +23,40 @@ namespace DGen.Meta.Generators
             {
                 query.Result = association.Value.Type;
                 query.IsCollection = association.Value.Element.AssociationEndTo.Multiplicity?.Contains("*") ?? false;
-            }    
+            }
+            else
+            {
+                var aggregateAssociation = GetAssociation<Aggregate>(element, registry, "result");
+
+                if(aggregateAssociation != null)
+                {
+                    var aggregate = aggregateAssociation.Value.Type;
+                    var viewModel = query.Module.ViewModels.FirstOrDefault(vm => vm.Target == aggregate);
+
+                    query.IsCollection = aggregateAssociation.Value.Element.AssociationEndTo.Multiplicity?.Contains("*") ?? false;
+
+                    // Create viewmodel and add it to module if it doesn't exist yet
+                    if (viewModel == null)
+                    {
+                        viewModel = new ViewModel
+                        {
+                            Module = query.Module,
+                            Name = aggregate.Name + (query.IsCollection ? "Overview" : "Detail"),
+                            IsCompact = query.IsCollection,
+                            Properties = new List<Property>(),
+                            Target = aggregate
+                        };
+                        query.Module.ViewModels.Add(viewModel);
+                    }
+
+                    query.Result = viewModel;
+                }
+            }
         }
 
-        protected override bool ShouldGenerateProperty(BaseType resolved)
+        protected override bool ShouldGenerateProperty(BaseType resolved, string stereoType)
         {
-            return resolved != null && !(resolved is ViewModel);
+            return base.ShouldGenerateProperty(resolved, stereoType) && !(resolved is ViewModel);
         }
     }
 }
