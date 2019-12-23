@@ -21,7 +21,7 @@ namespace DGen.Generation.Generators.Application
             {
                 var builder = new ClassBuilder(context.SyntaxGenerator, context.Namespace, query.Name);
                 builder.AddBaseType(query.IsCollection ? $"IQuery<IEnumerable<{query.Result.Name}ViewModel>>" : $"IQuery<{query.Result.Name}ViewModel>");
-                query.GenerateProperties(builder);
+                query.GenerateProperties(builder, false, true);
                 return builder.Build();
             }
             return null;

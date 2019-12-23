@@ -28,7 +28,7 @@ namespace DGen.Generation.Generators.Application
                     GenerateProperties("", viewModel.Target.Properties, viewModel);
                 }
 
-                viewModel.GenerateProperties(builder);
+                viewModel.GenerateProperties(builder, false, true);
 
                 return builder.Build();
             }
@@ -42,21 +42,7 @@ namespace DGen.Generation.Generators.Application
             {
                 if (property.Type.SystemType == null && !(property.Type.Type is Aggregate) && !property.IsCollection)
                 {
-                    // If only one property with systemtype, use system type without appending the name
-                    if (property.Type.Type.Properties.Count == 1
-                        && !property.Type.Type.Properties.First().IsCollection
-                        && property.Type.Type.Properties.First().Type.SystemType != null)
-                    {
-                        viewModel.Properties.Add(new Property
-                        {
-                            Name = $"{parent}{property.Name}",
-                            Type = property.Type.Type.Properties.First().Type
-                        });
-                    }
-                    else
-                    {
-                        GenerateProperties($"{parent}{property.Name}", property.Type.Type.Properties, viewModel);
-                    }
+                    GenerateProperties($"{parent}{property.Name}", property.Type.Type.Properties, viewModel);
                 }
                 else
                 {

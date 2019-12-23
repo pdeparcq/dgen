@@ -69,7 +69,25 @@ namespace DGen.Meta
             if (other == null)
                 return false;
 
-            return other.Name == Name && other.Type.Equals(Type);
+            return other.Name == Name && other.Type.Equals(Type) && other.IsCollection == IsCollection && other.IsIdentifier == IsIdentifier;
+        }
+
+        public Property Denormalized()
+        {
+            var type = Type;
+
+            if(type.SystemType == null && type.Type.Properties.Count == 1 && !type.Type.Properties.First().IsCollection && type.Type.Properties.First().Type.SystemType != null)
+            {
+                type = type.Type.Properties.First().Type;
+            }
+
+            return new Property
+            {
+                IsIdentifier = IsIdentifier,
+                IsCollection = IsCollection,
+                Name = Name,
+                Type = type
+            };
         }
     }
 

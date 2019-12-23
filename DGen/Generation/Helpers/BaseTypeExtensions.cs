@@ -4,7 +4,7 @@ namespace DGen.Generation.Helpers
 {
     public static class BaseTypeExtensions
     {
-        public static void GenerateProperties(this BaseType t, ClassBuilder builder, bool readOnly = false)
+        public static void GenerateProperties(this BaseType t, ClassBuilder builder, bool readOnly = false, bool deNormalize = false)
         {
             t.Properties?.ForEach(p =>
             {
@@ -18,17 +18,19 @@ namespace DGen.Generation.Helpers
                         IsCollection = p.IsCollection,
                         Name = p.IsCollection ? p.Name : $"{p.Name}{aggregate.UniqueIdentifier.Name}",
                         Type = aggregate.UniqueIdentifier.Type
-                    }, builder, readOnly);
+                    }, builder, readOnly, deNormalize);
                 }
                 else
                 {
-                    GenerateProperty(p, builder, readOnly);
+                    GenerateProperty(p, builder, readOnly, deNormalize);
                 }
             });
         }
 
-        private static void GenerateProperty(Property p, ClassBuilder builder, bool readOnly)
+        private static void GenerateProperty(Property p, ClassBuilder builder, bool readOnly, bool deNormalize)
         {
+            if (deNormalize)
+                p = p.Denormalized();
             builder.AddAutoProperty(p.Name, p.IsCollection ? $"List<{p.Type.Name}>" : p.Type.Name, readOnly);
         }
     }
