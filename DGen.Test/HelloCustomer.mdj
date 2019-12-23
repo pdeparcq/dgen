@@ -16183,6 +16183,7 @@
 									"stereotype": "query"
 								}
 							],
+							"documentation": "A link between a Category and its parent\nVertical link is link between main and main\nHorizontal link is link between main and sub\n\n",
 							"stereotype": "aggregate",
 							"attributes": [
 								{
@@ -19921,9 +19922,9 @@
 												"$ref": "AAAAAAFvMUDteIKkZCw="
 											},
 											"font": "Arial;13;0",
-											"left": 558,
+											"left": 557,
 											"top": 333,
-											"width": 5.05908203125,
+											"width": 6.5,
 											"height": 13,
 											"alpha": 0.5235987755982988,
 											"distance": 25,
@@ -20192,9 +20193,9 @@
 												"$ref": "AAAAAAFvMUFF7oVNM4U="
 											},
 											"font": "Arial;13;0",
-											"left": 898,
+											"left": 897,
 											"top": 792,
-											"width": 5.05908203125,
+											"width": 6.5,
 											"height": 13,
 											"alpha": 0.5235987755982988,
 											"distance": 25,
@@ -21733,9 +21734,9 @@
 												"$ref": "AAAAAAFvMaUm/7461Zs="
 											},
 											"font": "Arial;13;0",
-											"left": 543,
+											"left": 542,
 											"top": 864,
-											"width": 5.05908203125,
+											"width": 6.5,
 											"height": 13,
 											"alpha": 0.5235987755982988,
 											"distance": 25,
@@ -22004,9 +22005,9 @@
 												"$ref": "AAAAAAFvMaVaLL9/+wY="
 											},
 											"font": "Arial;13;0",
-											"left": 537,
+											"left": 536,
 											"top": 1012,
-											"width": 5.05908203125,
+											"width": 6.5,
 											"height": 13,
 											"alpha": 0.5235987755982988,
 											"distance": 25,
@@ -36006,9 +36007,9 @@
 												"$ref": "AAAAAAFvMX5JSZlmG3o="
 											},
 											"font": "Arial;13;0",
-											"left": 508,
+											"left": 507,
 											"top": 569,
-											"width": 5.05908203125,
+											"width": 6.5,
 											"height": 13,
 											"alpha": 0.5235987755982988,
 											"distance": 25,

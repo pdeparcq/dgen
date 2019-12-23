@@ -78,6 +78,8 @@ namespace DGen.StarUml
         [JsonProperty(PropertyName = "multiplicity")]
         public string Multiplicity { get; set; }
 
+        [JsonProperty(PropertyName = "documentation")]
+        public string Documentation { get; set; }
 
         [OnError]
         internal void OnError(StreamingContext context, ErrorContext errorContext)

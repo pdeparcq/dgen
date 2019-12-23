@@ -30,7 +30,8 @@ namespace DGen.Meta
             var t = new T
             {
                 Module = module,
-                Name = e.Name
+                Name = e.Name,
+                Description = e.Documentation
             };
 
             //register type

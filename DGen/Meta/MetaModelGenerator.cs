@@ -59,7 +59,8 @@ namespace DGen.Meta
             var generated = new T()
             {
                 Name = m.Name,
-                ParentModule = parent
+                ParentModule = parent,
+                Description = m.Documentation
             };
 
             generated.Modules = m.OwnedElements?.Where(e => e.Type == ElementType.UMLPackage).Select(e => ToModule<Module>(e, generated)).ToList();

@@ -19,7 +19,7 @@ namespace DGen.Generation.Generators.Domain
         {
             if (context.Type is Aggregate aggregate)
             {
-                var builder = new ClassBuilder(context.SyntaxGenerator, context.Namespace, aggregate.Name);
+                var builder = new ClassBuilder(context.SyntaxGenerator, context.Namespace, aggregate.Name, $"/* {aggregate.Description} */");
                 builder.AddBaseType("AggregateRoot");
                 aggregate.GenerateProperties(builder, true);
                 GenerateDomainEventHandlers(aggregate, builder, context.SyntaxGenerator);

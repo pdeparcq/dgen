@@ -15,11 +15,13 @@ namespace DGen.Generation.Helpers
         private NamespaceDeclarationSyntax _namespace;
         private ClassDeclarationSyntax _class;
 
-        public ClassBuilder(SyntaxGenerator generator, string namespaceName, string className)
+        public ClassBuilder(SyntaxGenerator generator, string namespaceName, string className, string description = null)
         {
             _generator = generator;
             _usings = new List<SyntaxNode>();
             _class = _generator.ClassDeclaration(className, accessibility: Accessibility.Public) as ClassDeclarationSyntax;
+            if (description != null)
+                _class = _class.WithLeadingTrivia(SyntaxFactory.Comment(description));
             _namespace = _generator.NamespaceDeclaration(namespaceName) as NamespaceDeclarationSyntax;
         }
 
@@ -69,7 +71,7 @@ namespace DGen.Generation.Helpers
             var ns = _namespace.AddMembers(_class);
             var declarations = new List<SyntaxNode>(_usings.OrderBy(u => u.ToString()));
             declarations.Add(ns);
-            return _generator.CompilationUnit(declarations).NormalizeWhitespace();
+            return _generator.CompilationUnit(declarations);
         }
     }
 }
