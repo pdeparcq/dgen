@@ -1,46 +1,31 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using DGen.Generation.CodeModel;
 using DGen.Generation.Helpers;
 using DGen.Meta;
 using Microsoft.CodeAnalysis;
 
 namespace DGen.Generation.Generators.Application
 {
-    public class QueryHandlerCodeGenerator : ICodeGenerator
+    public class QueryHandlerCodeGenerator : ICodeModelGenerator
     {
         public string Layer => "Application";
 
-        public DirectoryInfo CreateSubdirectory(DirectoryInfo di)
-        {
-            return di.CreateSubdirectory("Queries").CreateSubdirectory("Handlers");
-        }
-
-        public SyntaxNode Generate(CodeGenerationContext context)
-        {
-            if (context.Type is Query query)
-            {
-                var builder = new ClassBuilder(context.SyntaxGenerator, context.Namespace, $"{query.Name}QueryHandler");
-                builder.AddBaseType(query.IsCollection ? $"IQueryHandlerAsync<{query.Name},IEnumerable<{query.Result.Name}ViewModel>>" : $"IQueryHandlerAsync<{query.Name},{query.Result.Name}ViewModel>");
-                return builder.Build();
-            }
-            return null;
-        }
-
-        public string GetFileName(BaseType type)
-        {
-            if(type is Query query && query.Result != null)
-                return $"{query.Name}QueryHandler.cs";
-            return null;
-        }
-
-        public string GetFileNameForModule(Module module)
-        {
-            return null;
-        }
-
-        public IEnumerable<BaseType> GetTypesFromModule(Module module)
+        public IEnumerable<BaseType> GetTypes(Module module)
         {
             return module.Queries;
+        }
+
+        public void Visit(Module module, NamespaceModel @namespace)
+        {
+        }
+
+        public void Visit(BaseType type, NamespaceModel @namespace)
+        {
+            if (type is Query query)
+            {
+                @namespace.AddClass($"{query.Name}QueryHandler");
+            }
         }
     }
 }
