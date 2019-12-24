@@ -11,6 +11,7 @@ using DGen.Generation.Generators.Domain;
 using DGen.Generation.Generators.Infrastructure;
 using DGen.Generation.Generators.Application;
 using DGen.Generation.Generators;
+using DGen.Generation.CSharp;
 
 namespace DGen.Test
 {

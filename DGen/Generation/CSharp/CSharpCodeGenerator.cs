@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 
-namespace DGen.Generation.Generators
+namespace DGen.Generation.CSharp
 {
     public class CSharpCodeGenerator
     {
@@ -47,12 +47,12 @@ namespace DGen.Generation.Generators
 
         private async Task GenerateNamespace(NamespaceModel @namespace, DirectoryInfo di)
         {
-            foreach(var type in @namespace.Types)
+            foreach (var type in @namespace.Types)
             {
                 await GenerateCodeFile(type, di);
             }
 
-            foreach(var ns in @namespace.Namespaces)
+            foreach (var ns in @namespace.Namespaces)
             {
                 await GenerateNamespace(ns, di.CreateSubdirectory(ns.Name));
             }
@@ -60,11 +60,11 @@ namespace DGen.Generation.Generators
 
         private async Task GenerateCodeFile(TypeModel type, DirectoryInfo di)
         {
-            if(type is ClassModel @class)
+            if (type is ClassModel @class)
             {
                 await GenerateClassFile(@class, di);
             }
-            else if(type is EnumerationModel enumeration)
+            else if (type is EnumerationModel enumeration)
             {
                 await GenerateEnumFile(enumeration, di);
             }
