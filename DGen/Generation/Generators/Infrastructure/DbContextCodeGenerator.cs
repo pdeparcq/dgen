@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using DGen.Generation.CodeModel;
 using DGen.Meta;
 
@@ -15,13 +16,15 @@ namespace DGen.Generation.Generators.Infrastructure
 
         public void Visit(Module module, NamespaceModel @namespace)
         {
-            @namespace.AddClass($"{module.Name}DbContext");
+            if(GetTypes(module).Any())
+                @namespace.AddClass($"{module.Name}DbContext");
         }
 
         public void Visit(BaseType type, NamespaceModel @namespace)
         {
             if (type is Aggregate aggregate)
             {
+                @namespace = @namespace.AddNamespace("Entities");
                 @namespace.AddClass($"{aggregate.Name}");
             }
         }

@@ -22,6 +22,7 @@ namespace DGen.Generation.Generators.Domain
         {
             if (type is Value value)
             {
+                @namespace = @namespace.AddNamespace("ValueObjects");
                 @namespace.AddClass($"{value.Name}");
             }
         }

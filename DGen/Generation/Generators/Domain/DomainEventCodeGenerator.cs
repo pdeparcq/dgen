@@ -23,6 +23,7 @@ namespace DGen.Generation.Generators.Domain
         {
             if (type is DomainEvent de)
             {
+                @namespace = @namespace.AddNamespace("DomainEvents");
                 @namespace.AddClass($"{de.Name}");
             }
         }

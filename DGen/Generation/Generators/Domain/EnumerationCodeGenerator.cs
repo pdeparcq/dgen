@@ -22,6 +22,7 @@ namespace DGen.Generation.Generators.Domain
         {
             if (type is Enumeration e)
             {
+                @namespace = @namespace.AddNamespace("Enumerations");
                 @namespace.AddEnumeration($"{e.Name}");
             }
         }

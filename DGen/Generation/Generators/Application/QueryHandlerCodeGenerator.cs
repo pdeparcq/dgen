@@ -24,6 +24,7 @@ namespace DGen.Generation.Generators.Application
         {
             if (type is Query query)
             {
+                @namespace = @namespace.AddNamespace("Queries").AddNamespace("Handlers");
                 @namespace.AddClass($"{query.Name}QueryHandler");
             }
         }

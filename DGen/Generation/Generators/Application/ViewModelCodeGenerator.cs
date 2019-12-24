@@ -23,6 +23,7 @@ namespace DGen.Generation.Generators.Application
         {
             if (type is ViewModel viewModel)
             {
+                @namespace = @namespace.AddNamespace("ViewModels");
                 @namespace.AddClass($"{viewModel.Name}ViewModel");
             }
         }
