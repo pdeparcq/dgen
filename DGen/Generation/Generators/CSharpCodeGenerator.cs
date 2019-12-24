@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DGen.Generation.CodeModel;
 using DGen.Generation.Helpers;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 
 namespace DGen.Generation.Generators
@@ -58,10 +60,35 @@ namespace DGen.Generation.Generators
 
         private async Task GenerateCodeFile(TypeModel type, DirectoryInfo di)
         {
-            using(var sw = File.CreateText(Path.Combine(di.FullName, $"{type.Name}.cs")))
+            if(type is ClassModel @class)
             {
-                var builder = new ClassBuilder(_syntaxGenerator, type.Namespace.FullName, type.Name);
+                await GenerateClassFile(@class, di);
+            }
+            else if(type is EnumerationModel enumeration)
+            {
+                await GenerateEnumFile(enumeration, di);
+            }
+
+        }
+
+        private async Task GenerateClassFile(ClassModel @class, DirectoryInfo di)
+        {
+            using (var sw = File.CreateText(Path.Combine(di.FullName, $"{@class.Name}.cs")))
+            {
+                var builder = new ClassBuilder(_syntaxGenerator, @class.Namespace.FullName, @class.Name);
                 await WriteNodeToStream(sw, builder.Build());
+            }
+        }
+
+        private async Task GenerateEnumFile(EnumerationModel enumeration, DirectoryInfo di)
+        {
+            using (var sw = File.CreateText(Path.Combine(di.FullName, $"{enumeration.Name}.cs")))
+            {
+                var enumDeclaration = _syntaxGenerator.EnumDeclaration(enumeration.Name, Accessibility.Public) as EnumDeclarationSyntax;
+                enumDeclaration = enumDeclaration.AddMembers(enumeration.Literals
+                    .Select(l => _syntaxGenerator.EnumMember(l.Name) as EnumMemberDeclarationSyntax).ToArray());
+                var ns = _syntaxGenerator.NamespaceDeclaration(enumeration.Namespace.FullName, enumDeclaration) as NamespaceDeclarationSyntax;
+                await WriteNodeToStream(sw, ns);
             }
         }
 

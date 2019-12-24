@@ -8,7 +8,7 @@ namespace DGen.Generation.CodeModel
     {
         public NamespaceModel Parent { get; }
         public string Name { get; }
-        public string FullName => Parent == null ? Name : $"{Parent.Name}.{Name}";
+        public string FullName => Parent == null ? Name : $"{Parent.FullName}.{Name}";
         public List<NamespaceModel> Namespaces { get; }
         public List<TypeModel> Types { get; set; }
         public IReadOnlyCollection<ClassModel> Classes => Types.OfType<ClassModel>().ToList().AsReadOnly();
