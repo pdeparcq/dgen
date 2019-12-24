@@ -7,7 +7,7 @@ using System.IO;
 using DGen.Meta;
 using DGen.StarUml;
 using DGen.Generation.Generators;
-using DGen.Generation.CSharp;
+using DGen.Generation;
 
 namespace DGen.Test
 {
@@ -55,7 +55,7 @@ namespace DGen.Test
             var model = new StarUmlReader().Read(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _modelFileName));
             var metaModel = new MetaModelGenerator().Generate(model);
             var application = new CodeModelGenerator().Generate(metaModel);
-            await new CSharpCodeGenerator().Generate(application, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            await new CodeGenerator(new CSharpCodeGenerator()).Generate(application, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
         }
     }
 }
