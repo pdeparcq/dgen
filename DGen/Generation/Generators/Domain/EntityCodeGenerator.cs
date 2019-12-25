@@ -26,7 +26,12 @@ namespace DGen.Generation.Generators.Domain
             if (type is Entity entity)
             {
                 @namespace = @namespace.AddNamespace("Entities");
-                @namespace.AddClass($"{entity.Name}");
+                var @class = @namespace.AddClass($"{entity.Name}");
+
+                foreach (var p in entity.Properties)
+                {
+                    @class.AddDomainProperty(p);
+                }
             }
         }
     }
