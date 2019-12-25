@@ -15,7 +15,7 @@ namespace DGen.Generation.Generators
         private static readonly Regex AutoPropRegex = new Regex(@"\s*\{\s*get;\s*set;\s*}\s");
         private static readonly Regex AutoPropReadOnlyRegex = new Regex(@"\s*\{\s*get;\s*}\s");
 
-        private SyntaxGenerator _syntaxGenerator;
+        private readonly SyntaxGenerator _syntaxGenerator;
 
         public CSharpCodeGenerator()
         {
@@ -26,6 +26,25 @@ namespace DGen.Generation.Generators
             using (var sw = File.CreateText(Path.Combine(di.FullName, $"{@class.Name}.cs")))
             {
                 var builder = new ClassBuilder(_syntaxGenerator, @class.Namespace.FullName, @class.Name);
+
+                foreach(var usedNamespace in @class.Usings)
+                {
+                    builder.AddNamespaceImportDeclaration(usedNamespace.FullName);
+                }
+
+                foreach(var property in @class.Properties)
+                {
+                    if(property.Type is ClassModel propertyType && propertyType.IsGeneric)
+                    {
+                        builder.AddAutoProperty(property.Name, $"{propertyType.Name}<{string.Join(",", propertyType.GenericTypes.Select(t => t.Name))}>", property.IsReadOnly);
+                    }
+                    else
+                    {
+                        builder.AddAutoProperty(property.Name, property.Type.Name, property.IsReadOnly);
+                    }
+                    
+                }
+
                 await WriteNodeToStream(sw, builder.Build());
             }
         }

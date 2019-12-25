@@ -22,8 +22,36 @@ namespace DGen.Generation.Generators.Domain
         {
             if (type is Aggregate aggregate)
             {
-                @namespace.AddClass($"{aggregate.Name}");
+                var @class = @namespace.AddClass($"{aggregate.Name}");
+
+                foreach(var p in aggregate.Properties)
+                {
+                    AddProperty(@class, p);
+                }
             }
+        }
+
+        private static void AddProperty(ClassModel @class, Property property)
+        {
+
+            var propertyName = property.Name;
+            TypeModel propertyType;
+
+            if (property.Type.Type is Aggregate aggregate && aggregate.UniqueIdentifier != null)
+            {
+                if(!property.IsCollection)
+                    propertyName = $"{propertyName}{aggregate.UniqueIdentifier.Name}";
+                propertyType = SystemTypes.Parse(aggregate.UniqueIdentifier.Type.Name);
+            }
+            else
+            {
+                propertyType = SystemTypes.Parse(property.Type.Name);
+            }
+            
+            if (property.IsCollection)
+                propertyType = SystemTypes.GenericList(propertyType);
+
+            @class.AddProperty(propertyName, propertyType).MakeReadOnly();
         }
     }
 }
