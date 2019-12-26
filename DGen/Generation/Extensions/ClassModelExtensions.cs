@@ -1,11 +1,12 @@
 ﻿using DGen.Generation.CodeModel;
+using DGen.Generation.Generators;
 using DGen.Meta;
 
-namespace DGen.Generation.Generators.Domain
+namespace DGen.Generation.Extensions
 {
     public static class ClassModelExtensions
     {
-        public static void AddDomainProperty(this ClassModel @class, Property property)
+        public static void AddDomainProperty(this ClassModel @class, Property property, ITypeModelRegistry registry)
         {
             var propertyName = property.Name;
             TypeModel propertyType;
@@ -14,11 +15,11 @@ namespace DGen.Generation.Generators.Domain
             {
                 if (!property.IsCollection)
                     propertyName = $"{propertyName}{aggregate.UniqueIdentifier.Name}";
-                propertyType = SystemTypes.Parse(aggregate.UniqueIdentifier.Type.Name);
+                propertyType = aggregate.UniqueIdentifier.Type.Resolve(registry);
             }
             else
             {
-                propertyType = SystemTypes.Parse(property.Type.Name);
+                propertyType = property.Type.Resolve(registry);
             }
 
             if (property.IsCollection)

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DGen.Generation.CodeModel;
+using DGen.Generation.Extensions;
 using DGen.Meta;
 
 namespace DGen.Generation.Generators.Domain
@@ -28,7 +29,7 @@ namespace DGen.Generation.Generators.Domain
             {
                 foreach (var p in aggregate.Properties)
                 {
-                    @class.AddDomainProperty(p);
+                    @class.AddDomainProperty(p, registry);
                 }
             }
         }
