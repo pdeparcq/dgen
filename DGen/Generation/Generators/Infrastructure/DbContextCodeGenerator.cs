@@ -14,10 +14,9 @@ namespace DGen.Generation.Generators.Infrastructure
             return module.Aggregates;
         }
 
-        public TypeModel PrepareType(BaseType type, NamespaceModel @namespace)
+        public NamespaceModel GetNamespace(NamespaceModel @namespace)
         {
-            @namespace = @namespace.AddNamespace("Entities");
-            return @namespace.AddClass($"{type.Name}");
+            return @namespace.AddNamespace("Entities");
         }
 
         public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)

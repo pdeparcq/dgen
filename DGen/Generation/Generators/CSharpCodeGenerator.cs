@@ -27,6 +27,11 @@ namespace DGen.Generation.Generators
             {
                 var builder = new ClassBuilder(_syntaxGenerator, @class.Namespace.FullName, @class.Name);
 
+                if(@class.BaseType != null)
+                {
+                    builder.AddBaseType(@class.BaseType.ToString());
+                }
+
                 foreach(var usedNamespace in @class.Usings)
                 {
                     builder.AddNamespaceImportDeclaration(usedNamespace.FullName);
@@ -34,15 +39,7 @@ namespace DGen.Generation.Generators
 
                 foreach(var property in @class.Properties)
                 {
-                    if(property.Type is ClassModel propertyType && propertyType.IsGeneric)
-                    {
-                        builder.AddAutoProperty(property.Name, $"{propertyType.Name}<{string.Join(",", propertyType.GenericTypes.Select(t => t.Name))}>", property.IsReadOnly);
-                    }
-                    else
-                    {
-                        builder.AddAutoProperty(property.Name, property.Type.Name, property.IsReadOnly);
-                    }
-                    
+                    builder.AddAutoProperty(property.Name, property.Type.ToString(), property.IsReadOnly);
                 }
 
                 await WriteNodeToStream(sw, builder.Build());

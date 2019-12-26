@@ -12,7 +12,7 @@ namespace DGen.Generation.Generators
     public class CodeModelGenerator : ITypeModelRegistry
     {
         private readonly List<ICodeModelGenerator> _generators;
-        private Dictionary<string, Dictionary<string, TypeModel>> _types;
+        private Dictionary<string, Dictionary<string, List<TypeModel>>> _types;
 
         public CodeModelGenerator()
         {
@@ -43,7 +43,7 @@ namespace DGen.Generation.Generators
 
         private void PrepareServices(MetaModel model, ApplicationModel application)
         {
-            _types = new Dictionary<string, Dictionary<string, TypeModel>>();
+            _types = new Dictionary<string, Dictionary<string, List<TypeModel>>>();
             foreach (var service in model.Services)
             {
                 var serviceModel = application.AddService(service.Name);
@@ -51,7 +51,7 @@ namespace DGen.Generation.Generators
                 foreach (var layer in _generators.GroupBy(g => g.Layer))
                 {
                     if(!_types.ContainsKey(layer.Key))
-                        _types[layer.Key] = new Dictionary<string, TypeModel>();
+                        _types[layer.Key] = new Dictionary<string, List<TypeModel>>();
                     PrepareModule(service, serviceModel.AddLayer(layer.Key), layer.ToList());
                 }
             }
@@ -77,11 +77,11 @@ namespace DGen.Generation.Generators
             {
                 foreach (var type in generator.GetTypes(module))
                 {
-                    var model = generator.PrepareType(type, @namespace);
-                    if(model != null)
+                    var name = generator.GetTypeName(type);
+                    if(name != null)
                     {
-                        Register(generator.Layer, type, model);
-                    }                        
+                        Register(generator.Layer, type, generator.GetNamespace(@namespace).AddClass(name));
+                    }
                 }
             }
 
@@ -100,7 +100,7 @@ namespace DGen.Generation.Generators
                 
                 foreach(var type in generator.GetTypes(module))
                 {
-                    var resolved = Resolve(generator.Layer, type);
+                    var resolved = Resolve(generator.Layer, type, generator.GetTypeName(type));
                     if(resolved != null)
                     {
                         generator.GenerateType(type, resolved, this);
@@ -116,14 +116,22 @@ namespace DGen.Generation.Generators
 
         public void Register(string layer, BaseType type, TypeModel model)
         {
-            _types[layer][type.FullName] = model;
+            if (!_types[layer].ContainsKey(type.FullName))
+            {
+                _types[layer][type.FullName] = new List<TypeModel>();
+            }
+            _types[layer][type.FullName].Add(model);
         }
 
-        public TypeModel Resolve(string layer, BaseType type)
+        public TypeModel Resolve(string layer, BaseType type, string name = null)
         {
             if (_types.ContainsKey(layer) && _types[layer].ContainsKey(type.FullName))
             {
-                return _types[layer][type.FullName];
+                var types = _types[layer][type.FullName];
+                if (name != null)
+                    return types.FirstOrDefault(t => t.Name == name);
+                else
+                    return types.FirstOrDefault();
             }
             return null;
         }

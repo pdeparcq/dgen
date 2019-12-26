@@ -8,7 +8,8 @@ namespace DGen.Generation.Generators
     {
         string Layer { get; }
         IEnumerable<BaseType> GetTypes(Module module);
-        TypeModel PrepareType(BaseType type, NamespaceModel @namespace);
+        string GetTypeName(BaseType type) => type.Name;
+        NamespaceModel GetNamespace(NamespaceModel @namespace) => @namespace;
         void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry);
         void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry);
     }

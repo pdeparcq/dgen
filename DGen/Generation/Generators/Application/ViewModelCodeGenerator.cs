@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using DGen.Generation.CodeModel;
+using DGen.Generation.Extensions;
 using DGen.Meta;
 
 namespace DGen.Generation.Generators.Application
@@ -14,10 +14,9 @@ namespace DGen.Generation.Generators.Application
             return module.ViewModels;
         }
 
-        public TypeModel PrepareType(BaseType type, NamespaceModel @namespace)
+        public NamespaceModel GetNamespace(NamespaceModel @namespace)
         {
-            @namespace = @namespace.AddNamespace("ViewModels");
-            return @namespace.AddClass($"{type.Name}ViewModel");
+            return @namespace.AddNamespace("ViewModels");
         }
 
         public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
@@ -27,7 +26,20 @@ namespace DGen.Generation.Generators.Application
 
         public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
         {
-            
+            if (type is ViewModel viewModel && model is ClassModel @class)
+            {
+                foreach (var property in viewModel.Properties)
+                {
+                    @class.AddDomainProperty(property, registry);
+                }
+                if (viewModel.Target != null)
+                {   
+                    foreach(var property in viewModel.Target.Properties)
+                    {
+                        @class.AddDomainProperty(property, registry);
+                    }
+                }
+            }
         }
     }
 }

@@ -14,10 +14,9 @@ namespace DGen.Generation.Generators.Domain
             return module.DomainEvents;
         }
 
-        public TypeModel PrepareType(BaseType type, NamespaceModel @namespace)
+        public NamespaceModel GetNamespace(NamespaceModel @namespace)
         {
-            @namespace = @namespace.AddNamespace("DomainEvents");
-            return @namespace.AddClass($"{type.Name}");
+            return @namespace.AddNamespace("DomainEvents");
         }
 
         public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)

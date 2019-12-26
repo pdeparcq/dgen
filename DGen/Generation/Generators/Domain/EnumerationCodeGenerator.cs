@@ -13,10 +13,9 @@ namespace DGen.Generation.Generators.Domain
             return module.Enumerations;
         }
 
-        public TypeModel PrepareType(BaseType type, NamespaceModel @namespace)
+        public NamespaceModel GetNamespace(NamespaceModel @namespace)
         {
-            @namespace = @namespace.AddNamespace("Enumerations");
-            return @namespace.AddEnumeration($"{type.Name}");
+            return @namespace.AddNamespace("Enumerations");
         }
 
         public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)

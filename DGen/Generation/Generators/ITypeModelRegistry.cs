@@ -7,6 +7,6 @@ namespace DGen.Generation.Generators
     public interface ITypeModelRegistry
     {
         void Register(string layer, BaseType type, TypeModel model);
-        TypeModel Resolve(string layer, BaseType type);
+        TypeModel Resolve(string layer, BaseType type, string name = null);
     }
 }

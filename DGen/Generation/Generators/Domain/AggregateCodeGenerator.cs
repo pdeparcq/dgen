@@ -14,11 +14,6 @@ namespace DGen.Generation.Generators.Domain
             return module.Aggregates;
         }
 
-        public TypeModel PrepareType(BaseType type, NamespaceModel @namespace)
-        {
-            return @namespace.AddClass($"{type.Name}");
-        }
-
         public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
         }

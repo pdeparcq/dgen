@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using DGen.Generation.CodeModel;
-using DGen.Generation.Helpers;
 using DGen.Meta;
-using Microsoft.CodeAnalysis;
 
 namespace DGen.Generation.Generators.Application
 {
@@ -16,10 +13,14 @@ namespace DGen.Generation.Generators.Application
             return module.Queries;
         }
 
-        public TypeModel PrepareType(BaseType type, NamespaceModel @namespace)
+        public NamespaceModel GetNamespace(NamespaceModel @namespace)
         {
-            @namespace = @namespace.AddNamespace("Queries").AddNamespace("Handlers");
-            return @namespace.AddClass($"{type.Name}QueryHandler");
+            return @namespace.AddNamespace("Queries").AddNamespace("Handlers");
+        }
+
+        public string GetTypeName(BaseType type)
+        {
+            return $"{type.Name}QueryHandler";
         }
 
         public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
@@ -29,7 +30,10 @@ namespace DGen.Generation.Generators.Application
 
         public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
         {
-            
+            if (type is Query query && model is ClassModel @class && query.Result is ViewModel viewModel)
+            {
+                @class.WithBaseType(SystemTypes.QueryHandler(registry.Resolve(Layer, query), registry.Resolve(Layer, viewModel)));
+            }
         }
     }
 }

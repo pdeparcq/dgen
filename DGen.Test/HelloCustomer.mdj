@@ -24959,30 +24959,11 @@
 											"model": {
 												"$ref": "AAAAAAFvFFv3TVqcE2c="
 											},
-											"subViews": [
-												{
-													"_type": "UMLAttributeView",
-													"_id": "AAAAAAFvFGLRBmOOjKs=",
-													"_parent": {
-														"$ref": "AAAAAAFvFFv3TlqkSKI="
-													},
-													"model": {
-														"$ref": "AAAAAAFvFGLQyWOLTLk="
-													},
-													"font": "Arial;13;0",
-													"left": 629,
-													"top": 235,
-													"width": 143.4697265625,
-													"height": 13,
-													"text": "«id»+UniqueId: UniqueId",
-													"horizontalAlignment": 0
-												}
-											],
 											"font": "Arial;13;0",
 											"left": 624,
 											"top": 230,
 											"width": 153.4697265625,
-											"height": 23
+											"height": 10
 										},
 										{
 											"_type": "UMLOperationCompartmentView",
@@ -24995,7 +24976,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 624,
-											"top": 253,
+											"top": 240,
 											"width": 153.4697265625,
 											"height": 10
 										},
@@ -30132,21 +30113,7 @@
 											}
 										}
 									],
-									"stereotype": "value",
-									"attributes": [
-										{
-											"_type": "UMLAttribute",
-											"_id": "AAAAAAFvFGLQyWOLTLk=",
-											"_parent": {
-												"$ref": "AAAAAAFvFFv3TVqcE2c="
-											},
-											"name": "UniqueId",
-											"stereotype": "id",
-											"type": {
-												"$ref": "AAAAAAFu7tqgRpHlBLI="
-											}
-										}
-									]
+									"stereotype": "value"
 								},
 								{
 									"_type": "UMLClass",

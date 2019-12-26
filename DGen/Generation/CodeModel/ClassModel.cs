@@ -5,6 +5,7 @@ namespace DGen.Generation.CodeModel
 {
     public class ClassModel : TypeModel
     {
+        public ClassModel BaseType { get; private set; }
         public List<TypeModel> GenericTypes { get; }
         public List<PropertyModel> Properties { get; }
         public bool IsGeneric => GenericTypes.Any();
@@ -35,6 +36,13 @@ namespace DGen.Generation.CodeModel
             return this;
         }
 
+        public ClassModel WithBaseType(ClassModel baseType)
+        {
+            BaseType = baseType;
+
+            return this;
+        }
+
         public PropertyModel AddProperty(string name, TypeModel type)
         {
             var property = Properties.FirstOrDefault(p => p.Name == name && p.Type == type);
@@ -44,6 +52,18 @@ namespace DGen.Generation.CodeModel
                 Properties.Add(property);
             }
             return property;
+        }
+
+        public override string ToString()
+        {
+            if (GenericTypes.Any())
+            {
+                return $"{Name}<{string.Join(",", GenericTypes.Select(t => t.Name))}>";
+            }
+            else
+            {
+                return Name;
+            }
         }
     }
 }
