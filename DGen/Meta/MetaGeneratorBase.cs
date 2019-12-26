@@ -51,6 +51,27 @@ namespace DGen.Meta
             GenerateAssociationProperties(type, e, registry);
         }
 
+        private static void GenerateAttributeProperties(T type, Element e, ITypeRegistry registry)
+        {
+            if (e.Attributes != null && e.Attributes.Any())
+            {
+                type.Properties = e.Attributes.Where(p => p.Type == ElementType.UMLAttribute).Select(p => new Property
+                {
+                    IsIdentifier = p.Stereotype?.ToLower() == "id",
+                    Name = p.Name,
+                    Type = new PropertyType
+                    {
+                        SystemType = p.AttributeType?.SystemType,
+                        Type = registry.Resolve(p.AttributeType?.ReferenceType?.Element)
+                    }
+                }).ToList();
+            }
+            else
+            {
+                type.Properties = new List<Property>();
+            }
+        }
+
         private void GenerateAssociationProperties(T type, Element element, ITypeRegistry registry)
         {
             if (element.OwnedElements != null && element.OwnedElements.Any())
@@ -108,27 +129,6 @@ namespace DGen.Meta
         protected virtual bool ShouldGenerateProperty(BaseType resolved, string stereoType)
         {
             return resolved != null && stereoType == null;
-        }
-
-        private static void GenerateAttributeProperties(T type, Element e, ITypeRegistry registry)
-        {
-            if (e.Attributes != null && e.Attributes.Any())
-            {
-                type.Properties = e.Attributes.Where(p => p.Type == ElementType.UMLAttribute).Select(p => new Property
-                {
-                    IsIdentifier = p.Stereotype?.ToLower() == "id",
-                    Name = p.Name,
-                    Type = new PropertyType
-                    {
-                        SystemType = p.AttributeType?.SystemType,
-                        Type = registry.Resolve(p.AttributeType?.ReferenceType?.Element)
-                    }
-                }).ToList();
-            }
-            else
-            {
-                type.Properties = new List<Property>();
-            }
         }
 
         public void GenerateTypes(Element parent, Module module, ITypeRegistry registry)

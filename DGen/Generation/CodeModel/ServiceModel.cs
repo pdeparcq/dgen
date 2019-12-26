@@ -1,5 +1,6 @@
 ﻿using Guards;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DGen.Generation.CodeModel
 {
@@ -17,6 +18,11 @@ namespace DGen.Generation.CodeModel
             Application = application;
             Name = name;
             Layers = new List<NamespaceModel>();
+        }
+
+        public NamespaceModel GetLayer(string layerName)
+        {
+            return Layers.Single(l => l.Name == $"{Application.Name}.{Name}.{layerName}");
         }
 
         public NamespaceModel AddLayer(string layerName)

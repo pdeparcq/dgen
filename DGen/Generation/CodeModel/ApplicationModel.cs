@@ -1,5 +1,6 @@
 ﻿using Guards;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DGen.Generation.CodeModel
 {
@@ -14,6 +15,11 @@ namespace DGen.Generation.CodeModel
 
             Name = name;
             Services = new List<ServiceModel>();
+        }
+
+        public ServiceModel GetService(string name)
+        {
+            return Services.Single(s => s.Name == name);
         }
 
         public ServiceModel AddService(string name)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DGen.Generation.CodeModel;
 using DGen.Generation.Generators.Application;
@@ -11,7 +12,7 @@ namespace DGen.Generation.Generators
     public class CodeModelGenerator : ITypeModelRegistry
     {
         private readonly List<ICodeModelGenerator> _generators;
-        private Dictionary<string, Dictionary<BaseType, TypeModel>> _types;
+        private Dictionary<string, Dictionary<string, TypeModel>> _types;
 
         public CodeModelGenerator()
         {
@@ -34,42 +35,40 @@ namespace DGen.Generation.Generators
 
         public ApplicationModel Generate(MetaModel model)
         {
-            _types = new Dictionary<string, Dictionary<BaseType, TypeModel>>();
-
             var application = new ApplicationModel(model.Name);
+            PrepareServices(model, application);
+            GenerateServices(model, application);
+            return application;
+        }
 
+        private void PrepareServices(MetaModel model, ApplicationModel application)
+        {
+            _types = new Dictionary<string, Dictionary<string, TypeModel>>();
             foreach (var service in model.Services)
             {
                 var serviceModel = application.AddService(service.Name);
 
                 foreach (var layer in _generators.GroupBy(g => g.Layer))
                 {
-                    _types[layer.Key] = new Dictionary<BaseType, TypeModel>();
-
-                    var layerModel = serviceModel.AddLayer(layer.Key);
-
-                    PrepareModule(service, layerModel, layer.ToList());
-                    GenerateModule(service, layerModel, layer.ToList());
+                    if(!_types.ContainsKey(layer.Key))
+                        _types[layer.Key] = new Dictionary<string, TypeModel>();
+                    PrepareModule(service, serviceModel.AddLayer(layer.Key), layer.ToList());
                 }
             }
-
-            return application;
         }
 
-        public void Register(string layer, BaseType type, TypeModel model)
+        private void GenerateServices(MetaModel model, ApplicationModel application)
         {
-            _types[layer][type] = model;
-        }
-
-        public TypeModel Resolve(string layer, BaseType type)
-        {
-            if(_types.ContainsKey(layer) && _types[layer].ContainsKey(type))
+            foreach (var service in model.Services)
             {
-                return _types[layer][type];
-            }
-            return null;
-        }
+                var serviceModel = application.GetService(service.Name);
 
+                foreach (var layer in _generators.GroupBy(g => g.Layer))
+                {
+                    GenerateModule(service, serviceModel.GetLayer(layer.Key), layer.ToList());
+                }
+            }
+        }
 
         private void PrepareModule(Module module, NamespaceModel @namespace, IEnumerable<ICodeModelGenerator> generators)
         {
@@ -113,6 +112,20 @@ namespace DGen.Generation.Generators
             {
                 GenerateModule(m, model.AddNamespace(m.Name), generators);
             });
+        }
+
+        public void Register(string layer, BaseType type, TypeModel model)
+        {
+            _types[layer][type.FullName] = model;
+        }
+
+        public TypeModel Resolve(string layer, BaseType type)
+        {
+            if (_types.ContainsKey(layer) && _types[layer].ContainsKey(type.FullName))
+            {
+                return _types[layer][type.FullName];
+            }
+            return null;
         }
     }
 }
