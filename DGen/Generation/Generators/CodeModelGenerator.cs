@@ -85,7 +85,7 @@ namespace DGen.Generation.Generators
                 }
             }
 
-            module.Modules.ForEach(m =>
+            module.Modules?.ForEach(m =>
             {
                 PrepareModule(m, @namespace.AddNamespace(m.Name), generators);
             });
@@ -108,7 +108,7 @@ namespace DGen.Generation.Generators
                 }
             }
 
-            module.Modules.ForEach(m =>
+            module.Modules?.ForEach(m =>
             {
                 GenerateModule(m, model.AddNamespace(m.Name), generators);
             });
