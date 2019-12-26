@@ -1,36 +1,26 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.IO;
 using System.Threading.Tasks;
-using DGen.Meta;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Editing;
+using DGen.Generation.CodeModel;
+using DGen.Generation.Generators;
 
 namespace DGen.Generation
 {
     public class CodeGenerator
     {
-        private static readonly Regex AutoPropRegex = new Regex(@"\s*\{\s*get;\s*set;\s*}\s");
-        private static readonly Regex AutoPropReadOnlyRegex = new Regex(@"\s*\{\s*get;\s*}\s");
-
-        private readonly List<ICodeGenerator> _generators;
-        private SyntaxGenerator _syntaxGenerator;
+        private readonly ICodeGenerator _codeGenerator;
         private DirectoryInfo _basePath;
-
-        public CodeGenerator(IEnumerable<ICodeGenerator> generators)
+        
+        public CodeGenerator(ICodeGenerator codeGenerator)
         {
-            _generators = generators.ToList();
+            _codeGenerator = codeGenerator;
         }
 
-        public async Task Generate(MetaModel model, string path)
+        public async Task Generate(ApplicationModel model, string path)
         {
             _basePath = new DirectoryInfo(path);
 
             if (_basePath.Exists)
             {
-                _syntaxGenerator = SyntaxGenerator.GetGenerator(new AdhocWorkspace(), LanguageNames.CSharp);
-
                 var applicationPath = _basePath.CreateSubdirectory(model.Name);
 
                 RemoveDirectoryFiles(applicationPath);
@@ -39,81 +29,40 @@ namespace DGen.Generation
                 {
                     var serviceDirectory = applicationPath.CreateSubdirectory(service.Name);
 
-                    foreach (var layer in _generators.GroupBy(g => g.Layer))
+                    foreach (var layer in service.Layers)
                     {
-                        var layerDirectory = serviceDirectory.CreateSubdirectory(layer.Key);
+                        var layerDirectory = serviceDirectory.CreateSubdirectory(layer.Name);
 
-                        await GenerateModule(layerDirectory, service, layer.ToList());
+                        await GenerateNamespace(layer, layerDirectory);
                     }
                 }
-            }    
+            }
         }
 
-        private async Task GenerateModule(DirectoryInfo di, Module module, IEnumerable<ICodeGenerator> generators)
+        private async Task GenerateNamespace(NamespaceModel @namespace, DirectoryInfo di)
         {
-            foreach (var generator in generators)
+            foreach (var type in @namespace.Types)
             {
-                if(generator.GetFileNameForModule(module) != null)
-                {
-                    var subDirectory = generator.CreateSubdirectory(di);
-
-                    // Generate module level code
-                    using (var sw = File.CreateText(Path.Combine(subDirectory.FullName, generator.GetFileNameForModule(module))))
-                    {
-                        var node = generator.Generate(new CodeGenerationContext
-                        {
-                            Namespace = ResolveNamespace(subDirectory),
-                            Module = module,
-                            SyntaxGenerator = _syntaxGenerator
-                        });
-                        await WriteNodeToStream(sw, node);
-                    }
-                }
-                else
-                {
-                    // Generate type level code
-                    foreach (var type in generator.GetTypesFromModule(module))
-                    {
-
-                        var fileName = generator.GetFileName(type);
-
-                        if(fileName != null)
-                        {
-                            var subDirectory = generator.CreateSubdirectory(di);
-
-                            using (var sw = File.CreateText(Path.Combine(subDirectory.FullName, fileName)))
-                            {
-                                var node = generator.Generate(new CodeGenerationContext
-                                {
-                                    Namespace = ResolveNamespace(subDirectory),
-                                    Module = module,
-                                    Type = type,
-                                    SyntaxGenerator = _syntaxGenerator
-                                });
-                                await WriteNodeToStream(sw, node);
-                            }
-                        }
-                    }
-                }    
+                await GenerateCodeFile(type, di);
             }
 
-            module.Modules.ForEach(async m =>
+            foreach (var ns in @namespace.Namespaces)
             {
-                await GenerateModule(di.CreateSubdirectory(m.Name), m, generators);
-            });
+                await GenerateNamespace(ns, di.CreateSubdirectory(ns.Name));
+            }
         }
 
-        private string ResolveNamespace(DirectoryInfo subDirectory)
+        private async Task GenerateCodeFile(TypeModel type, DirectoryInfo di)
         {
-            var fullPath = subDirectory.FullName;
-            var relativePath = fullPath.Substring(_basePath.FullName.Length+1);
+            if (type is ClassModel @class)
+            {
+                await _codeGenerator.GenerateClassFile(@class, di);
+            }
+            else if (type is EnumerationModel enumeration)
+            {
+                await _codeGenerator.GenerateEnumFile(enumeration, di);
+            }
 
-            return relativePath.Replace("\\", ".");
-        }
-
-        private async Task WriteNodeToStream(StreamWriter sw, SyntaxNode node)
-        {
-            await sw.WriteAsync(FormatAutoPropertiesOnOneLine(node.NormalizeWhitespace().ToFullString()));
         }
 
         private static void RemoveDirectoryFiles(DirectoryInfo di)
@@ -127,13 +76,6 @@ namespace DGen.Generation
             {
                 dir.Delete(true);
             }
-        }
-
-        private string FormatAutoPropertiesOnOneLine(string str)
-        {
-            str = AutoPropRegex.Replace(str, " { get; set; }");
-            str = AutoPropReadOnlyRegex.Replace(str, " { get; }");
-            return str;
-        }
+        }     
     }
 }

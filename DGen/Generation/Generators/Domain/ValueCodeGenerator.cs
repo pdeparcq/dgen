@@ -1,45 +1,37 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using DGen.Generation.Helpers;
+using DGen.Generation.CodeModel;
+using DGen.Generation.Extensions;
 using DGen.Meta;
-using Microsoft.CodeAnalysis;
 
 namespace DGen.Generation.Generators.Domain
 {
-    public class ValueCodeGenerator : ICodeGenerator
+    public class ValueCodeGenerator : ICodeModelGenerator
     {
         public string Layer => "Domain";
 
-        public IEnumerable<BaseType> GetTypesFromModule(Module module)
+        public IEnumerable<BaseType> GetTypes(Module module)
         {
             return module.Values;
         }
 
-        public DirectoryInfo CreateSubdirectory(DirectoryInfo di)
+        public NamespaceModel GetNamespace(NamespaceModel @namespace)
         {
-            return di.CreateSubdirectory("ValueObjects");
+            return @namespace.AddNamespace("ValueObjects");
         }
 
-        public string GetFileNameForModule(Module module)
+        public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
-            return null;
         }
 
-        public string GetFileName(BaseType type)
+        public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
         {
-            return $"{type.Name}.cs";
-        }
-
-        public SyntaxNode Generate(CodeGenerationContext context)
-        {
-            if (context.Type is Value value)
+            if (type is Value value && model is ClassModel @class)
             {
-                var builder = new ClassBuilder(context.SyntaxGenerator, context.Namespace, value.Name);
-                builder.AddBaseType("ValueObject");
-                value.GenerateProperties(builder, true);
-                return builder.Build();
+                foreach (var p in value.Properties)
+                {
+                    @class.AddDomainProperty(p, registry);
+                }
             }
-            return null;
         }
     }
 }

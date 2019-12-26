@@ -1,45 +1,40 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using DGen.Generation.CodeModel;
+using DGen.Generation.Extensions;
 using DGen.Generation.Helpers;
 using DGen.Meta;
 using Microsoft.CodeAnalysis;
 
 namespace DGen.Generation.Generators.Domain
 {
-    public class EntityCodeGenerator : ICodeGenerator
+    public class EntityCodeGenerator : ICodeModelGenerator
     {
         public string Layer => "Domain";
 
-        public IEnumerable<BaseType> GetTypesFromModule(Module module)
+        public IEnumerable<BaseType> GetTypes(Module module)
         {
             return module.Entities;
         }
 
-        public DirectoryInfo CreateSubdirectory(DirectoryInfo di)
+        public NamespaceModel GetNamespace(NamespaceModel @namespace)
         {
-            return di.CreateSubdirectory("Entities");
+            return @namespace.AddNamespace("Entities");
         }
 
-        public string GetFileNameForModule(Module module)
+        public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
-            return null;
         }
 
-        public string GetFileName(BaseType type)
+        public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
         {
-            return $"{type.Name}.cs";
-        }
-
-        public SyntaxNode Generate(CodeGenerationContext context)
-        {
-            if (context.Type is Entity entity)
+            if (type is Entity entity && model is ClassModel @class)
             {
-                var builder = new ClassBuilder(context.SyntaxGenerator, context.Namespace, entity.Name);
-                builder.AddBaseType("Entity");
-                entity.GenerateProperties(builder, true);
-                return builder.Build();
+                foreach (var p in entity.Properties)
+                {
+                    @class.AddDomainProperty(p, registry);
+                }
             }
-            return null;
         }
     }
 }

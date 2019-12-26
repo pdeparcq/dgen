@@ -31,6 +31,7 @@ namespace DGen.Meta
 
         public Module ParentModule { get; set; }
         public string Name { get; set; }
+        public string FullName => ParentModule != null ? $"{ParentModule.FullName}.{Name}" : Name;
         public string Description { get; set; }
         public List<Module> Modules { get; set; }
         public List<Aggregate> Aggregates { get; set; }
@@ -106,6 +107,7 @@ namespace DGen.Meta
 
         public Module Module { get; set; }
         public string Name { get; set; }
+        public string FullName => $"{Module.FullName}.{Name}";
         public string Description { get; set; }
         public List<Property> Properties { get; set; }
     }

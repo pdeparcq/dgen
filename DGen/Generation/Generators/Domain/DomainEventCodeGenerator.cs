@@ -1,47 +1,32 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using DGen.Generation.Helpers;
+using DGen.Generation.CodeModel;
 using DGen.Meta;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Editing;
 
 namespace DGen.Generation.Generators.Domain
 {
-    public class DomainEventCodeGenerator : ICodeGenerator
+    public class DomainEventCodeGenerator : ICodeModelGenerator
     {
         public string Layer => "Domain";
 
-        public SyntaxNode Generate(CodeGenerationContext context)
-        {
-            if (context.Type is DomainEvent domainEvent)
-            {
-                var builder = new ClassBuilder(context.SyntaxGenerator, context.Namespace, domainEvent.Name);
-                builder.AddBaseType("DomainEvent");
-                domainEvent.GenerateProperties(builder);
-                return builder.Build();
-            }
-            return null;
-        }
-
-        public IEnumerable<BaseType> GetTypesFromModule(Module module)
+        
+        public IEnumerable<BaseType> GetTypes(Module module)
         {
             return module.DomainEvents;
         }
 
-        public DirectoryInfo CreateSubdirectory(DirectoryInfo di)
+        public NamespaceModel GetNamespace(NamespaceModel @namespace)
         {
-            return di.CreateSubdirectory("DomainEvents");
+            return @namespace.AddNamespace("DomainEvents");
         }
 
-        public string GetFileNameForModule(Module module)
+        public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
-            return null;
+            
         }
 
-        public string GetFileName(BaseType type)
+        public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
         {
-            return $"{type.Name}.cs";
-        }  
+            
+        }
     }
 }

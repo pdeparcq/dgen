@@ -1,43 +1,33 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using DGen.Generation.Helpers;
+using DGen.Generation.CodeModel;
 using DGen.Meta;
-using Microsoft.CodeAnalysis;
 
 namespace DGen.Generation.Generators.Infrastructure
 {
-    public class DbContextCodeGenerator : ICodeGenerator
+    public class DbContextCodeGenerator : ICodeModelGenerator
     {
         public string Layer => "Infrastructure";
 
-        public DirectoryInfo CreateSubdirectory(DirectoryInfo di)
+        public IEnumerable<BaseType> GetTypes(Module module)
         {
-            return di;
+            return module.Aggregates;
         }
 
-        public SyntaxNode Generate(CodeGenerationContext context)
+        public NamespaceModel GetNamespace(NamespaceModel @namespace)
         {
-            var builder = new ClassBuilder(context.SyntaxGenerator, context.Namespace, $"{context.Module.Name}DbContext");
-            builder.AddBaseType("DbContext");
-            return builder.Build();
+            return @namespace.AddNamespace("Entities");
         }
 
-        public string GetFileName(BaseType type)
+        public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
-            return null;
+            if (GetTypes(module).Any())
+                @namespace.AddClass($"{module.Name}DbContext");
         }
 
-        public string GetFileNameForModule(Module module)
+        public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
         {
-            if(module.Aggregates.Any())
-                return $"{module.Name}DbContext.cs";
-            return null;
-        }
-
-        public IEnumerable<BaseType> GetTypesFromModule(Module module)
-        {
-            return new List<BaseType>();
+            
         }
     }
 }

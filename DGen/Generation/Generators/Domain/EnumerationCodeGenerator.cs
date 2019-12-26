@@ -1,46 +1,37 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using DGen.Generation.CodeModel;
 using DGen.Meta;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DGen.Generation.Generators.Domain
 {
-    public class EnumerationCodeGenerator : ICodeGenerator
+    public class EnumerationCodeGenerator : ICodeModelGenerator
     {
         public string Layer => "Domain";
 
-        public IEnumerable<BaseType> GetTypesFromModule(Module module)
+        public IEnumerable<BaseType> GetTypes(Module module)
         {
             return module.Enumerations;
         }
 
-        public DirectoryInfo CreateSubdirectory(DirectoryInfo di)
+        public NamespaceModel GetNamespace(NamespaceModel @namespace)
         {
-            return di.CreateSubdirectory("Enumerations");
+            return @namespace.AddNamespace("Enumerations");
         }
 
-        public string GetFileNameForModule(Module module)
+        public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
-            return null;
+            
         }
 
-        public string GetFileName(BaseType type)
+        public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
         {
-            return $"{type.Name}.cs";
-        }
-
-        public SyntaxNode Generate(CodeGenerationContext context)
-        {
-            if (context.Type is Enumeration enumeration)
+            if (type is Enumeration e && model is EnumerationModel enumeration)
             {
-                var enumDeclaration = context.SyntaxGenerator.EnumDeclaration(enumeration.Name, Accessibility.Public) as EnumDeclarationSyntax;
-                enumDeclaration = enumDeclaration.AddMembers(enumeration.Literals
-                    .Select(l => context.SyntaxGenerator.EnumMember(l) as EnumMemberDeclarationSyntax).ToArray());
-                return context.SyntaxGenerator.NamespaceDeclaration(context.Namespace, enumDeclaration) as NamespaceDeclarationSyntax;
+                foreach (var literal in e.Literals)
+                {
+                    enumeration.AddLiteral(literal);
+                }
             }
-            return null;
         }
     }
 }

@@ -1,16 +1,13 @@
 ﻿using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.IO;
-using DGen.Generation;
 using DGen.Meta;
 using DGen.StarUml;
-using DGen.Generation.Generators.Domain;
-using DGen.Generation.Generators.Infrastructure;
-using DGen.Generation.Generators.Application;
+using DGen.Generation.Generators;
+using DGen.Generation;
 
 namespace DGen.Test
 {
@@ -44,29 +41,21 @@ namespace DGen.Test
         }
 
         [Test]
+        public void CanGenerateApplicationModel()
+        {
+            var model = new StarUmlReader().Read(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _modelFileName));
+            var metaModel = new MetaModelGenerator().Generate(model);
+            var application = new CodeModelGenerator().Generate(metaModel);
+            //Console.WriteLine(JsonConvert.SerializeObject(metaModel, Formatting.Indented, _serializerSettings));
+        }
+
+        [Test]
         public async Task CanGenerateCodeFromMetaModel()
         {
             var model = new StarUmlReader().Read(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _modelFileName));
             var metaModel = new MetaModelGenerator().Generate(model);
-
-            var generators = new List<ICodeGenerator>
-            {
-                // Domain
-                new AggregateCodeGenerator(),
-                new DomainEventCodeGenerator(),
-                new Generation.Generators.Domain.EntityCodeGenerator(),
-                new EnumerationCodeGenerator(),
-                new ValueCodeGenerator(),
-                // Infrastructure
-                new DbContextCodeGenerator(),
-                new Generation.Generators.Infrastructure.EntityCodeGenerator(),
-                // Application
-                new ViewModelCodeGenerator(),
-                new QueryCodeGenerator(),
-                new QueryHandlerCodeGenerator()
-            };
-
-            await new CodeGenerator(generators).Generate(metaModel, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            var application = new CodeModelGenerator().Generate(metaModel);
+            await new CodeGenerator(new CSharpCodeGenerator()).Generate(application, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
         }
     }
 }

@@ -1,75 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using DGen.Generation.Helpers;
+﻿using System.Collections.Generic;
+using DGen.Generation.CodeModel;
+using DGen.Generation.Extensions;
 using DGen.Meta;
-using Microsoft.CodeAnalysis;
 
 namespace DGen.Generation.Generators.Application
 {
-    public class ViewModelCodeGenerator : ICodeGenerator
+    public class ViewModelCodeGenerator : ICodeModelGenerator
     {
         public string Layer => "Application";
 
-        public DirectoryInfo CreateSubdirectory(DirectoryInfo di)
-        {
-            return di.CreateSubdirectory("ViewModels");
-        }
-
-        public SyntaxNode Generate(CodeGenerationContext context)
-        {
-            if(context.Type is ViewModel viewModel)
-            {
-                var builder = new ClassBuilder(context.SyntaxGenerator, context.Namespace, $"{viewModel.Name}ViewModel");
-                
-                if(viewModel.Target != null)
-                {
-                    GenerateProperties("", viewModel.Target.Properties, viewModel);
-                }
-
-                viewModel.GenerateProperties(builder, false, true);
-
-                return builder.Build();
-            }
-            return null;
-        }
-
-
-        private void GenerateProperties(string parent, IEnumerable<Property> properties, ViewModel viewModel)
-        {
-            foreach (var property in properties)
-            {
-                if (property.Type.SystemType == null && !(property.Type.Type is Aggregate) && !property.IsCollection)
-                {
-                    GenerateProperties($"{parent}{property.Name}", property.Type.Type.Properties, viewModel);
-                }
-                else
-                {
-                    viewModel.Properties.Add(new Property
-                    {
-                        Name = $"{parent}{property.Name}",
-                        IsCollection = property.IsCollection,
-                        //TODO: generate viewmodel types
-                        Type = new PropertyType { SystemType = property.Type.SystemType ?? $"{property.Type.Name}ViewModel" }
-                    });
-                }
-            }
-        }
-
-        public string GetFileName(BaseType type)
-        {
-            return $"{type.Name}ViewModel.cs";
-        }
-
-        public string GetFileNameForModule(Module module)
-        {
-            return null;
-        }
-
-        public IEnumerable<BaseType> GetTypesFromModule(Module module)
+        public IEnumerable<BaseType> GetTypes(Module module)
         {
             return module.ViewModels;
+        }
+
+        public NamespaceModel GetNamespace(NamespaceModel @namespace)
+        {
+            return @namespace.AddNamespace("ViewModels");
+        }
+
+        public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
+        {
+            
+        }
+
+        public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
+        {
+            if (type is ViewModel viewModel && model is ClassModel @class)
+            {
+                foreach (var property in viewModel.Properties)
+                {
+                    @class.AddDomainProperty(property, registry);
+                }
+                if (viewModel.Target != null)
+                {   
+                    foreach(var property in viewModel.Target.Properties)
+                    {
+                        @class.AddDomainProperty(property, registry);
+                    }
+                }
+            }
         }
     }
 }
