@@ -9,28 +9,25 @@ namespace DGen.Generation.Generators.Application
     {
         public string Layer => "Application";
 
-        public DirectoryInfo CreateSubdirectory(DirectoryInfo di)
+        public IEnumerable<BaseType> GetTypes(Module module)
         {
-            return di.CreateSubdirectory("ViewModels");
+            return module.ViewModels;
         }
 
-        public void Visit(Module module, NamespaceModel @namespace)
+        public TypeModel PrepareType(BaseType type, NamespaceModel @namespace)
+        {
+            @namespace = @namespace.AddNamespace("ViewModels");
+            return @namespace.AddClass($"{type.Name}ViewModel");
+        }
+
+        public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
             
         }
 
-        public void Visit(BaseType type, NamespaceModel @namespace)
+        public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
         {
-            if (type is ViewModel viewModel)
-            {
-                @namespace = @namespace.AddNamespace("ViewModels");
-                @namespace.AddClass($"{viewModel.Name}ViewModel");
-            }
-        }
-
-        public IEnumerable<BaseType> GetTypes(Module module)
-        {
-            return module.ViewModels;
+            
         }
     }
 }

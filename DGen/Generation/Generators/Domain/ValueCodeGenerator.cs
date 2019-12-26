@@ -13,18 +13,20 @@ namespace DGen.Generation.Generators.Domain
             return module.Values;
         }
 
-        public void Visit(Module module, NamespaceModel @namespace)
+        public TypeModel PrepareType(BaseType type, NamespaceModel @namespace)
         {
-            
+            @namespace = @namespace.AddNamespace("ValueObjects");
+            return @namespace.AddClass($"{type.Name}");
         }
 
-        public void Visit(BaseType type, NamespaceModel @namespace)
+        public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
-            if (type is Value value)
-            {
-                @namespace = @namespace.AddNamespace("ValueObjects");
-                var @class = @namespace.AddClass($"{value.Name}");
+        }
 
+        public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
+        {
+            if (type is Value value && model is ClassModel @class)
+            {
                 foreach (var p in value.Properties)
                 {
                     @class.AddDomainProperty(p);

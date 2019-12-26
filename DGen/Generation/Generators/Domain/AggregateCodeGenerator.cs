@@ -13,24 +13,24 @@ namespace DGen.Generation.Generators.Domain
             return module.Aggregates;
         }
 
-        public void Visit(Module module, NamespaceModel @namespace)
+        public TypeModel PrepareType(BaseType type, NamespaceModel @namespace)
         {
-            
+            return @namespace.AddClass($"{type.Name}");
         }
 
-        public void Visit(BaseType type, NamespaceModel @namespace)
+        public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
-            if (type is Aggregate aggregate)
-            {
-                var @class = @namespace.AddClass($"{aggregate.Name}");
+        }
 
-                foreach(var p in aggregate.Properties)
+        public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
+        {
+            if (type is Aggregate aggregate && model is ClassModel @class)
+            {
+                foreach (var p in aggregate.Properties)
                 {
                     @class.AddDomainProperty(p);
                 }
             }
         }
-
-        
     }
 }

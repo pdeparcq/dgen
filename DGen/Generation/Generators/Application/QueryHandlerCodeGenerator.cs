@@ -16,17 +16,20 @@ namespace DGen.Generation.Generators.Application
             return module.Queries;
         }
 
-        public void Visit(Module module, NamespaceModel @namespace)
+        public TypeModel PrepareType(BaseType type, NamespaceModel @namespace)
         {
+            @namespace = @namespace.AddNamespace("Queries").AddNamespace("Handlers");
+            return @namespace.AddClass($"{type.Name}QueryHandler");
         }
 
-        public void Visit(BaseType type, NamespaceModel @namespace)
+        public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
-            if (type is Query query)
-            {
-                @namespace = @namespace.AddNamespace("Queries").AddNamespace("Handlers");
-                @namespace.AddClass($"{query.Name}QueryHandler");
-            }
+            
+        }
+
+        public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
+        {
+            
         }
     }
 }

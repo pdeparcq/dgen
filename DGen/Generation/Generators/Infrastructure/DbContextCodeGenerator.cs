@@ -14,19 +14,21 @@ namespace DGen.Generation.Generators.Infrastructure
             return module.Aggregates;
         }
 
-        public void Visit(Module module, NamespaceModel @namespace)
+        public TypeModel PrepareType(BaseType type, NamespaceModel @namespace)
         {
-            if(GetTypes(module).Any())
+            @namespace = @namespace.AddNamespace("Entities");
+            return @namespace.AddClass($"{type.Name}");
+        }
+
+        public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
+        {
+            if (GetTypes(module).Any())
                 @namespace.AddClass($"{module.Name}DbContext");
         }
 
-        public void Visit(BaseType type, NamespaceModel @namespace)
+        public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
         {
-            if (type is Aggregate aggregate)
-            {
-                @namespace = @namespace.AddNamespace("Entities");
-                @namespace.AddClass($"{aggregate.Name}");
-            }
+            
         }
     }
 }

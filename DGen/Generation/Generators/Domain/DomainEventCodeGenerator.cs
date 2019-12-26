@@ -14,18 +14,20 @@ namespace DGen.Generation.Generators.Domain
             return module.DomainEvents;
         }
 
-        public void Visit(Module module, NamespaceModel @namespace)
+        public TypeModel PrepareType(BaseType type, NamespaceModel @namespace)
+        {
+            @namespace = @namespace.AddNamespace("DomainEvents");
+            return @namespace.AddClass($"{type.Name}");
+        }
+
+        public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
             
         }
 
-        public void Visit(BaseType type, NamespaceModel @namespace)
+        public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
         {
-            if (type is DomainEvent de)
-            {
-                @namespace = @namespace.AddNamespace("DomainEvents");
-                @namespace.AddClass($"{de.Name}");
-            }
+            
         }
     }
 }

@@ -13,19 +13,22 @@ namespace DGen.Generation.Generators.Domain
             return module.Enumerations;
         }
 
-        public void Visit(Module module, NamespaceModel @namespace)
+        public TypeModel PrepareType(BaseType type, NamespaceModel @namespace)
+        {
+            @namespace = @namespace.AddNamespace("Enumerations");
+            return @namespace.AddEnumeration($"{type.Name}");
+        }
+
+        public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
             
         }
 
-        public void Visit(BaseType type, NamespaceModel @namespace)
+        public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
         {
-            if (type is Enumeration e)
+            if (type is Enumeration e && model is EnumerationModel enumeration)
             {
-                @namespace = @namespace.AddNamespace("Enumerations");
-                var enumeration = @namespace.AddEnumeration($"{e.Name}");
-
-                foreach(var literal in e.Literals)
+                foreach (var literal in e.Literals)
                 {
                     enumeration.AddLiteral(literal);
                 }
