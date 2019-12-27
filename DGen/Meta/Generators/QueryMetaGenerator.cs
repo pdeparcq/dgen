@@ -47,8 +47,11 @@ namespace DGen.Meta.Generators
 
                     query.Result = viewModel;
                     query.IsCollection = aggregateAssociation.Value.Element.AssociationEndTo.Multiplicity?.Contains("*") ?? false;
+                    query.Result.IsCompact = query.IsCollection;
                 }
             }
+
+            
         }
 
         protected override bool ShouldGenerateProperty(BaseType resolved, string stereoType)

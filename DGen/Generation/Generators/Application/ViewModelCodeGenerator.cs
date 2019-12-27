@@ -18,7 +18,14 @@ namespace DGen.Generation.Generators.Application
             return @namespace.AddNamespace("ViewModels");
         }
 
-        public string GetTypeName(BaseType type) => $"{type.Name}ViewModel";
+        public string GetTypeName(BaseType type)
+        {
+            if(type is ViewModel viewModel && viewModel.IsCompact)
+            {
+                return $"Compact{viewModel.Name}ViewModel";
+            }
+            return $"{type.Name}ViewModel";
+        }
 
         public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
@@ -29,7 +36,7 @@ namespace DGen.Generation.Generators.Application
         {
             if (type is ViewModel viewModel && model is ClassModel @class)
             {
-                GenerateViewModel(registry, viewModel, @class);
+                GenerateViewModel(registry, viewModel, @class, viewModel.IsCompact);
             }
         }
 
@@ -85,7 +92,7 @@ namespace DGen.Generation.Generators.Application
 
         private TypeModel GetCompactViewModelType(ITypeModelRegistry registry, ClassModel @class, BaseType propertyBaseType)
         {
-            var typeName = $"Compact{GetTypeName(propertyBaseType)}";
+            var typeName = $"Compact{propertyBaseType.Name}ViewModel";
             var propertyType = registry.Resolve(Layer, propertyBaseType, typeName);
             if (propertyType == null)
             {

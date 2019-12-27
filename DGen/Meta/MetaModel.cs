@@ -160,6 +160,7 @@ namespace DGen.Meta
     public class ViewModel : BaseType
     {
         public BaseType Target { get; set; }
+        public bool IsCompact { get; set; }
     }
 
     public class Query : BaseType
