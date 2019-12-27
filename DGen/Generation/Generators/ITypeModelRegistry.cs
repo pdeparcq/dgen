@@ -8,5 +8,6 @@ namespace DGen.Generation.Generators
     {
         void Register(string layer, BaseType type, TypeModel model);
         TypeModel Resolve(string layer, BaseType type, string name = null);
+        IQueryable<T> GetAllBaseTypes<T>(string layer) where T : BaseType;
     }
 }

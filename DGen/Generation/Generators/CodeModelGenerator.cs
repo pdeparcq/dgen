@@ -136,5 +136,10 @@ namespace DGen.Generation.Generators
             }
             return null;
         }
+
+        public IQueryable<T> GetAllBaseTypes<T>(string layer) where T : BaseType
+        {
+            return _types[layer].Keys.OfType<T>().AsQueryable();
+        }
     }
 }

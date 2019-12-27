@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DGen.Generation.CodeModel;
+using DGen.Generation.Extensions;
 using DGen.Meta;
 
 namespace DGen.Generation.Generators.Application
@@ -41,38 +42,15 @@ namespace DGen.Generation.Generators.Application
         {
             foreach (var property in viewModel.Properties)
             {
-                AddViewModelProperty(registry, @class, property.Denormalized());
+                @class.AddViewModelProperty(property.Denormalized(), registry);
             }
             if (viewModel.Target != null)
             {
                 foreach (var property in viewModel.Target.Properties)
                 {
-                    AddViewModelProperty(registry, @class, property.Denormalized());
+                    @class.AddViewModelProperty(property.Denormalized(), registry);
                 }
             }
-        }
-
-        private void AddViewModelProperty(ITypeModelRegistry registry, ClassModel @class, Property property)
-        {
-            TypeModel propertyType;
-
-            if(property.Type.SystemType != null)
-            {
-                propertyType = SystemTypes.Parse(property.Type.SystemType);
-            }
-            else if(!(property.Type.Type is Enumeration))
-            {
-                propertyType = registry.Resolve("Domain", property.Type.Type);
-            }
-            else
-            {
-                propertyType = registry.Resolve("Domain", property.Type.Type);
-            }
-
-            if (property.IsCollection)
-                propertyType = SystemTypes.GenericList(propertyType);
-
-            @class.AddProperty(property.Name, propertyType);
         }
     }
 }
