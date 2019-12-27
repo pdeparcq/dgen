@@ -131,7 +131,7 @@ namespace DGen.Meta
             return resolved != null && stereoType == null;
         }
 
-        public void GenerateTypes(Element parent, Module module, ITypeRegistry registry)
+        public virtual void GenerateTypes(Element parent, Module module, ITypeRegistry registry)
         {
             var list = GetListFromModule(module);
             foreach(var element in QueryElements(parent))

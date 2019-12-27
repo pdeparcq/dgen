@@ -23,6 +23,7 @@ namespace DGen.Meta.Generators
             {
                 query.Result = association.Value.Type;
                 query.IsCollection = association.Value.Element.AssociationEndTo.Multiplicity?.Contains("*") ?? false;
+                query.Result.IsCompact = query.IsCollection;
             }
             else
             {
@@ -31,27 +32,10 @@ namespace DGen.Meta.Generators
                 if(aggregateAssociation != null)
                 {
                     var aggregate = aggregateAssociation.Value.Type;
-                    var viewModel = query.Module.ViewModels.FirstOrDefault(vm => vm.Target == aggregate);
-
-                    // Create viewmodel and add it to module if it doesn't exist yet
-                    if (viewModel == null)
-                    {
-                        viewModel = new ViewModel
-                        {
-                            Module = query.Module,
-                            Name = aggregate.Name,
-                            Target = aggregate
-                        };
-                        query.Module.ViewModels.Add(viewModel);
-                    }
-
-                    query.Result = viewModel;
                     query.IsCollection = aggregateAssociation.Value.Element.AssociationEndTo.Multiplicity?.Contains("*") ?? false;
-                    query.Result.IsCompact = query.IsCollection;
+                    query.Result = query.Module.ViewModels.FirstOrDefault(vm => vm.Target == aggregate && vm.IsCompact == query.IsCollection);          
                 }
             }
-
-            
         }
 
         protected override bool ShouldGenerateProperty(BaseType resolved, string stereoType)

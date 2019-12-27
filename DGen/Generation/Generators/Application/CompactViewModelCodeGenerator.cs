@@ -5,28 +5,28 @@ using DGen.Meta;
 
 namespace DGen.Generation.Generators.Application
 {
-    public class ViewModelCodeGenerator : ICodeModelGenerator
+    public class CompactViewModelCodeGenerator : ICodeModelGenerator
     {
         public string Layer => "Application";
 
         public IEnumerable<BaseType> GetTypes(Module module)
         {
-            return module.ViewModels.Where(vm => !vm.IsCompact);
+            return module.ViewModels.Where(vm => vm.IsCompact);
         }
 
         public NamespaceModel GetNamespace(NamespaceModel @namespace)
         {
-            return @namespace.AddNamespace("ViewModels");
+            return @namespace.AddNamespace("ViewModels").AddNamespace("Compact");
         }
 
         public string GetTypeName(BaseType type)
         {
-            return $"{type.Name}ViewModel";
+            return $"Compact{type.Name}ViewModel";
         }
 
         public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
-            
+
         }
 
         public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
@@ -56,11 +56,11 @@ namespace DGen.Generation.Generators.Application
         {
             TypeModel propertyType;
 
-            if(property.Type.SystemType != null)
+            if (property.Type.SystemType != null)
             {
                 propertyType = SystemTypes.Parse(property.Type.SystemType);
             }
-            else if(!(property.Type.Type is Enumeration))
+            else if (!(property.Type.Type is Enumeration))
             {
                 propertyType = registry.Resolve("Domain", property.Type.Type);
             }

@@ -12,6 +12,37 @@ namespace DGen.Meta.Generators
             return module.ViewModels;
         }
 
+        public override void GenerateTypes(Element parent, Module module, ITypeRegistry registry)
+        {
+            base.GenerateTypes(parent, module, registry);
+            GenerateViewModels(module, module.Aggregates);
+            GenerateViewModels(module, module.Entities);
+            GenerateViewModels(module, module.Values);
+        }
+
+        private static void GenerateViewModels(Module module, IEnumerable<BaseType> types)
+        {
+            foreach (var type in types)
+            {
+                // Compact version
+                module.ViewModels.Add(new ViewModel
+                {
+                    Module = module,
+                    Name = type.Name,
+                    Target = type,
+                    IsCompact = true
+                });
+                // Detail version
+                module.ViewModels.Add(new ViewModel
+                {
+                    Module = module,
+                    Name = type.Name,
+                    Target = type,
+                    IsCompact = false
+                });
+            }
+        }
+
         public override void Generate(ViewModel viewModel, Element element, ITypeRegistry registry)
         {
             base.Generate(viewModel, element, registry);
