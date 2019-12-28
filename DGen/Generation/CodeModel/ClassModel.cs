@@ -8,6 +8,7 @@ namespace DGen.Generation.CodeModel
         public ClassModel BaseType { get; private set; }
         public List<TypeModel> GenericTypes { get; }
         public List<PropertyModel> Properties { get; }
+        public List<MethodModel> Methods { get; }
         public bool IsGeneric => GenericTypes.Any();
 
         public IEnumerable<NamespaceModel> Usings
@@ -27,6 +28,7 @@ namespace DGen.Generation.CodeModel
         {
             GenericTypes = new List<TypeModel>();
             Properties = new List<PropertyModel>();
+            Methods = new List<MethodModel>();
         }
 
         public ClassModel WithGenericTypes(params TypeModel[] types)
@@ -52,6 +54,13 @@ namespace DGen.Generation.CodeModel
                 Properties.Add(property);
             }
             return property;
+        }
+
+        public MethodModel AddMethod(string name)
+        {
+            var method = new MethodModel(name);
+            Methods.Add(method);
+            return method;
         }
 
         public override string ToString()

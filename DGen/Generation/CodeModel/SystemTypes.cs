@@ -5,11 +5,13 @@
         private static NamespaceModel SystemNamespace = new NamespaceModel(null, "System");
         private static NamespaceModel SystemGenericCollectionsNamespace;
         private static NamespaceModel KledexNamespace = new NamespaceModel(null, "Kledex");
+        private static NamespaceModel KledexDomainNamespace;
         private static NamespaceModel KledexQueryNamespace;
 
         static SystemTypes()
         {
             SystemGenericCollectionsNamespace = SystemNamespace.AddNamespace("Generic").AddNamespace("Collections");
+            KledexDomainNamespace = KledexNamespace.AddNamespace("Domain");
             KledexQueryNamespace = KledexNamespace.AddNamespace("Queries");
         }
 
@@ -21,6 +23,11 @@
         public static TypeModel Parse(string name)
         {
             return new ClassModel(SystemNamespace, name);
+        }
+
+        public static ClassModel AggregateRoot(TypeModel type)
+        {
+            return new ClassModel(KledexDomainNamespace, "AggregateRoot");
         }
 
         public static ClassModel Query(TypeModel result)

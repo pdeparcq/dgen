@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
+using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -30,15 +31,31 @@ namespace DGen.Generation.Generators.CSharp
 
             @class = GenerateBaseType(model, @class);
             @class = GenerateProperties(model, @class);
+            @class = GenerateMethods(model, @class);
 
             var compileUnit = GenerateCompileUnit(model, @class, @namespace);
 
             return FormatAutoPropertiesOnOneLine(compileUnit.NormalizeWhitespace().ToFullString());
         }
 
-        private static SyntaxTrivia ToDocumentation(string text)
+        private ClassDeclarationSyntax GenerateMethods(ClassModel model, ClassDeclarationSyntax @class)
         {
-            return SyntaxFactory.Comment($"/* {text} */");
+            foreach (var m in model.Methods)
+            {
+                var method = _syntaxGenerator.MethodDeclaration(m.Name) as MethodDeclarationSyntax;
+
+                if (m.ReturnType != null)
+                    method = method.WithReturnType(SyntaxFactory.ParseTypeName(m.ReturnType.ToString()));
+
+                foreach(var p in m.Parameters)
+                {
+                    var parameter = _syntaxGenerator.ParameterDeclaration(p.Name, SyntaxFactory.ParseTypeName(p.Type.ToString())) as ParameterSyntax;
+                    method = method.AddParameterListParameters(parameter);
+                }
+
+                @class = @class.AddMembers(method);
+            }
+            return @class;
         }
 
         private SyntaxNode GenerateCompileUnit(ClassModel model, ClassDeclarationSyntax @class, NamespaceDeclarationSyntax @namespace)
@@ -78,6 +95,11 @@ namespace DGen.Generation.Generators.CSharp
                 @class = _syntaxGenerator.AddBaseType(@class, _syntaxGenerator.IdentifierName(model.BaseType.ToString())) as ClassDeclarationSyntax;
             }
             return @class;
+        }
+
+        private static SyntaxTrivia ToDocumentation(string text)
+        {
+            return SyntaxFactory.Comment($"/* {text} */");
         }
 
         private string FormatAutoPropertiesOnOneLine(string str)
