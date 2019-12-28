@@ -12,7 +12,7 @@ namespace DGen.Generation.Generators.CSharp
     public class CSharpClassGenerator
     {
         private static readonly Regex AutoPropRegex = new Regex(@"\s*\{\s*get;\s*set;\s*}\s");
-        private static readonly Regex AutoPropReadOnlyRegex = new Regex(@"\s*\{\s*get;\s*}\s");
+        private static readonly Regex AutoPropReadOnlyRegex = new Regex(@"\s*\{\s*get;\s*private set;\s*}\s");
 
         private readonly SyntaxGenerator _syntaxGenerator;
 
@@ -73,12 +73,14 @@ namespace DGen.Generation.Generators.CSharp
             {
                 var property = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(p.Type.ToString()), p.Name)
                                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                                    .AddAccessorListAccessors(
-                                        SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
-                if (!p.IsReadOnly)
-                {
-                    property = property.AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
-                }
+                                    .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
+                
+                var setter = SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)) as AccessorDeclarationSyntax;
+                
+                if (p.IsReadOnly)
+                    setter = setter.AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword));
+
+                property = property.AddAccessorListAccessors(setter);
 
                 if (p.Description != null)
                     property = property.WithLeadingTrivia(ToDocumentation(p.Description));
@@ -105,7 +107,7 @@ namespace DGen.Generation.Generators.CSharp
         private string FormatAutoPropertiesOnOneLine(string str)
         {
             str = AutoPropRegex.Replace(str, " { get; set; }");
-            str = AutoPropReadOnlyRegex.Replace(str, " { get; }");
+            str = AutoPropReadOnlyRegex.Replace(str, " { get; private set; }");
             return str;
         }
     }
