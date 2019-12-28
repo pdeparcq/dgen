@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using DGen.Generation.CodeModel;
 using DGen.Generation.Extensions;
-using DGen.Generation.Helpers;
 using DGen.Meta;
-using Microsoft.CodeAnalysis;
 
 namespace DGen.Generation.Generators.Domain
 {

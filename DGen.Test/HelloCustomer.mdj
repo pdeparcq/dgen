@@ -8027,6 +8027,7 @@
 									"_parent": {
 										"$ref": "AAAAAAFvDhBb5NWXlis="
 									},
+									"documentation": "Favourite main categories for category\nThis is documentation on another line",
 									"end1": {
 										"_type": "UMLAssociationEnd",
 										"_id": "AAAAAAFvDiALStbwdtY=",
@@ -8374,6 +8375,7 @@
 									"stereotype": "query"
 								}
 							],
+							"documentation": "Category that can be predicted\nSome more documentation on other line\n",
 							"stereotype": "aggregate",
 							"attributes": [
 								{

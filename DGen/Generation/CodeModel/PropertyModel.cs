@@ -6,6 +6,7 @@ namespace DGen.Generation.CodeModel
     public class PropertyModel
     {
         public string Name { get; }
+        public string Description { get; private set; }
         public TypeModel Type { get; }
         public bool IsReadOnly { get; set; }
 
@@ -31,6 +32,13 @@ namespace DGen.Generation.CodeModel
 
             Name = name;
             Type = type;
+        }
+
+        public PropertyModel WithDescription(string description)
+        {
+            Description = description;
+
+            return this;
         }
 
         public PropertyModel MakeReadOnly()

@@ -26,7 +26,9 @@ namespace DGen.Generation.Extensions
             if (property.IsCollection)
                 propertyType = SystemTypes.GenericList(propertyType);
 
-            @class.AddProperty(propertyName, propertyType).MakeReadOnly();
+            @class.AddProperty(propertyName, propertyType)
+                .WithDescription(property.Description)
+                .MakeReadOnly();
         }
 
         public static void AddViewModelProperty(this ClassModel @class, Property property, ITypeModelRegistry registry)
@@ -44,13 +46,14 @@ namespace DGen.Generation.Extensions
             }
             else
             {
-                propertyType = registry.Resolve("Domain", property.Type.Type);
+                propertyType = property.Type.Resolve(registry);
             }
 
             if (property.IsCollection)
                 propertyType = SystemTypes.GenericList(propertyType);
 
-            @class.AddProperty(property.Name, propertyType);
+            @class.AddProperty(property.Name, propertyType)
+                .WithDescription(property.Description);
         }
     }
 }

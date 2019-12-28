@@ -6,6 +6,7 @@ namespace DGen.Generation.CodeModel
     {
         public NamespaceModel Namespace { get; }
         public string Name { get; }
+        public string Description { get; private set; }
 
         protected TypeModel(NamespaceModel @namespace, string name)
         {
@@ -14,6 +15,13 @@ namespace DGen.Generation.CodeModel
 
             Namespace = @namespace;
             Name = name;
+        }
+
+        public TypeModel WithDescription(string description)
+        {
+            Description = description;
+
+            return this;
         }
     }
 }

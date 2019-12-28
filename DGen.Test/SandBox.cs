@@ -8,6 +8,7 @@ using DGen.Meta;
 using DGen.StarUml;
 using DGen.Generation.Generators;
 using DGen.Generation;
+using DGen.Generation.Generators.CSharp;
 
 namespace DGen.Test
 {

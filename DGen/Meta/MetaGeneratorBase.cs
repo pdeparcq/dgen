@@ -59,6 +59,7 @@ namespace DGen.Meta
                 {
                     IsIdentifier = p.Stereotype?.ToLower() == "id",
                     Name = p.Name,
+                    Description = p.Documentation,
                     Type = new PropertyType
                     {
                         SystemType = p.AttributeType?.SystemType,
@@ -86,6 +87,7 @@ namespace DGen.Meta
                         {
                             IsCollection = association.AssociationEndTo.Multiplicity?.Contains("*") ?? false,
                             Name = association.AssociationEndTo.Name ?? resolved.Name,
+                            Description = association.Documentation,
                             Type = new PropertyType
                             {
                                 Type = resolved

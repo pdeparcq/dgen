@@ -64,6 +64,7 @@ namespace DGen.Meta
         public bool IsIdentifier { get; set; }
         public bool IsCollection { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
         public PropertyType Type { get; set; }
 
         public bool Equals([AllowNull] Property other)
