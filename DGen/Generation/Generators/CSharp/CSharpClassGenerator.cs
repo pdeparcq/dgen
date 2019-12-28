@@ -44,6 +44,8 @@ namespace DGen.Generation.Generators.CSharp
             {
                 var method = _syntaxGenerator.MethodDeclaration(m.Name) as MethodDeclarationSyntax;
 
+                method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
+
                 if (m.ReturnType != null)
                     method = method.WithReturnType(SyntaxFactory.ParseTypeName(m.ReturnType.ToString()));
 
