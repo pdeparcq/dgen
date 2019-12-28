@@ -81,7 +81,8 @@ namespace DGen.Generation.Generators
                     var name = generator.GetTypeName(type);
                     if(name != null)
                     {
-                        Register(generator.Layer, type, generator.GetNamespace(@namespace).AddClass(name).WithDescription(type.Description));
+                        var model = generator.PrepareType(@namespace, type);
+                        Register(generator.Layer, type, model.WithDescription(type.Description));
                     }
                 }
             }

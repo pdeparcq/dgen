@@ -10,6 +10,7 @@ namespace DGen.Generation.Generators
         IEnumerable<BaseType> GetTypes(Module module);
         string GetTypeName(BaseType type) => type.Name;
         NamespaceModel GetNamespace(NamespaceModel @namespace) => @namespace;
+        TypeModel PrepareType(NamespaceModel @namespace, BaseType type) => GetNamespace(@namespace).AddClass(GetTypeName(type));
         void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry);
         void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry);
     }

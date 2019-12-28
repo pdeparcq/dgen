@@ -62,7 +62,6 @@ namespace DGen.Generation
             {
                 await _codeGenerator.GenerateEnumFile(enumeration, di);
             }
-
         }
 
         private static void RemoveDirectoryFiles(DirectoryInfo di)
