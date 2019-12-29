@@ -17,14 +17,18 @@ namespace DGen.Generation.CodeModel
         {
             get
             {
-                return Properties
+                var usings = Properties
                     .SelectMany(p => p.Usings)
                     .Concat(Constructors.SelectMany(m => m.Usings))
                     .Concat(Methods.SelectMany(m => m.Usings))
                     .Concat(GenericTypes.Select(t => t.Namespace))
                     .Concat(Attributes.Select(t => t.Namespace))
-                    .Where(n => n != Namespace)
-                    .Distinct();
+                    .ToList();
+
+                if (BaseType != null)
+                    usings.Add(BaseType.Namespace);
+
+                return usings.Where(n => n != Namespace).Distinct();
             }
         }
 
