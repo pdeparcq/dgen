@@ -10,7 +10,7 @@
 
         static SystemTypes()
         {
-            SystemGenericCollectionsNamespace = SystemNamespace.AddNamespace("Generic").AddNamespace("Collections");
+            SystemGenericCollectionsNamespace = SystemNamespace.AddNamespace("Collections").AddNamespace("Generic");
             KledexDomainNamespace = KledexNamespace.AddNamespace("Domain");
             KledexQueryNamespace = KledexNamespace.AddNamespace("Queries");
         }

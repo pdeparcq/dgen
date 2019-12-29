@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using DGen.Generation.CodeModel;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -36,6 +37,20 @@ namespace DGen.Generation.Generators.CSharp
                     .Select(l => _syntaxGenerator.EnumMember(l.Name) as EnumMemberDeclarationSyntax).ToArray());
                 var ns = _syntaxGenerator.NamespaceDeclaration(enumeration.Namespace.FullName, enumDeclaration) as NamespaceDeclarationSyntax;
                 await sw.WriteAsync(ns.NormalizeWhitespace().ToFullString());
+            }
+        }
+
+        public async Task GenerateProjectFile(NamespaceModel layer, DirectoryInfo di)
+        {
+            using (var sw = File.CreateText(Path.Combine(di.FullName, $"{layer.Name}.csproj")))
+            {
+                var project = new XElement("Project", new XAttribute("Sdk", "Microsoft.NET.Sdk"),
+                    new XElement("PropertyGroup", new XElement("TargetFramework", "netcoreapp3.0")),
+                    new XElement("ItemGroup", 
+                        new XElement("PackageReference", new XAttribute("Include", "Kledex"), new XAttribute("Version", "2.3.0"))
+                        )
+                    );
+                await sw.WriteAsync(project.ToString());
             }
         }
     }

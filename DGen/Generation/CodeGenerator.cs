@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using DGen.Generation.CodeModel;
 using DGen.Generation.Generators;
@@ -34,6 +35,7 @@ namespace DGen.Generation
                         var layerDirectory = serviceDirectory.CreateSubdirectory(layer.Name);
 
                         await GenerateNamespace(layer, layerDirectory);
+                        await _codeGenerator.GenerateProjectFile(layer, layerDirectory);
                     }
                 }
             }
