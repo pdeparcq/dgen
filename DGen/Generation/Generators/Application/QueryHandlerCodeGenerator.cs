@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using DGen.Generation.CodeModel;
 using DGen.Meta;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace DGen.Generation.Generators.Application
 {
@@ -37,9 +38,11 @@ namespace DGen.Generation.Generators.Application
 
                 @class = @class.WithBaseType(SystemTypes.QueryHandler(queryType, queryResultType));
 
-                @class.AddMethod("Handle")
+                var handler = @class.AddMethod("Handle")
                     .WithParameters(new MethodParameter("query", queryType))
                     .WithReturnType(queryResultType);
+
+                handler.AddStatement(SyntaxFactory.ReturnStatement(SyntaxFactory.ParseExpression("null")));
             }
         }
     }

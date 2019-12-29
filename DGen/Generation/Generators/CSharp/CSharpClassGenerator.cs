@@ -45,44 +45,43 @@ namespace DGen.Generation.Generators.CSharp
             foreach (var c in model.Constructors)
             {
                 var constructor = _syntaxGenerator.ConstructorDeclaration(c.Name) as ConstructorDeclarationSyntax;
-
-                constructor = GenerateMemberAttributes(c, constructor);
-
-                constructor = constructor.AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
-
-                foreach (var p in c.Parameters)
-                {
-                    var parameter = _syntaxGenerator.ParameterDeclaration(p.Name, SyntaxFactory.ParseTypeName(p.Type.ToString())) as ParameterSyntax;
-                    constructor = constructor.AddParameterListParameters(parameter);
-                }
-
+                constructor = GenerateMethod(c, constructor);
                 @class = @class.AddMembers(constructor);
             }
             return @class;
-        }
+        }     
 
         private ClassDeclarationSyntax GenerateMethods(ClassModel model, ClassDeclarationSyntax @class)
         {
             foreach (var m in model.Methods)
             {
                 var method = _syntaxGenerator.MethodDeclaration(m.Name) as MethodDeclarationSyntax;
-
-                method = GenerateMemberAttributes(m, method);
-
-                method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
-
+                
                 if (m.ReturnType != null)
                     method = method.WithReturnType(SyntaxFactory.ParseTypeName(m.ReturnType.ToString()));
 
-                foreach(var p in m.Parameters)
-                {
-                    var parameter = _syntaxGenerator.ParameterDeclaration(p.Name, SyntaxFactory.ParseTypeName(p.Type.ToString())) as ParameterSyntax;
-                    method = method.AddParameterListParameters(parameter);
-                }
+                method = GenerateMethod(m, method);
 
                 @class = @class.AddMembers(method);
             }
             return @class;
+        }
+
+        private T GenerateMethod<T>(MethodModel model, T method) where T : BaseMethodDeclarationSyntax
+        {
+            method = GenerateMemberAttributes(model, method);
+
+            method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword)) as T;
+
+            foreach (var p in model.Parameters)
+            {
+                var parameter = _syntaxGenerator.ParameterDeclaration(p.Name, SyntaxFactory.ParseTypeName(p.Type.ToString())) as ParameterSyntax;
+                method = method.AddParameterListParameters(parameter) as T;
+            }
+
+            method = method.AddBodyStatements(model.Statements.ToArray()) as T;
+
+            return method;
         }
 
         private SyntaxNode GenerateCompileUnit(ClassModel model, ClassDeclarationSyntax @class, NamespaceDeclarationSyntax @namespace)

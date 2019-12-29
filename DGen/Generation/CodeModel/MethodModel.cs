@@ -1,4 +1,6 @@
 ﻿using Guards;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -25,6 +27,7 @@ namespace DGen.Generation.CodeModel
         public TypeModel ReturnType { get; private set; }
         public List<MethodParameter> Parameters { get; }
         public List<ClassModel> Attributes { get; }
+        public List<StatementSyntax> Statements { get; }
 
         public IEnumerable<NamespaceModel> Usings
         {
@@ -48,6 +51,12 @@ namespace DGen.Generation.CodeModel
             Name = name;
             Parameters = new List<MethodParameter>();
             Attributes = new List<ClassModel>();
+            Statements = new List<StatementSyntax>();
+        }
+
+        public void AddStatement(StatementSyntax statement)
+        {
+            Statements.Add(statement);
         }
 
         public MethodModel WithReturnType(TypeModel returnType)
