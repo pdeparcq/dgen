@@ -30,7 +30,9 @@ namespace DGen.Generation.CodeModel
         {
             get
             {
-                var usings = Attributes.Select(t => t.Namespace).ToList();
+                var usings = Attributes.Select(t => t.Namespace)
+                    .Concat(Parameters.Select(p => p.Type.Namespace))
+                    .ToList();
 
                 if (ReturnType != null)
                     usings.Add(ReturnType.Namespace);

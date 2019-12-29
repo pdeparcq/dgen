@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using DGen.Generation.CodeModel;
+using DGen.Generation.Extensions;
 using DGen.Generation.Generators;
 
 namespace DGen.Generation
@@ -68,17 +70,17 @@ namespace DGen.Generation
             }
         }
 
-        private static void RemoveDirectoryFiles(DirectoryInfo di)
+        private void RemoveDirectoryFiles(DirectoryInfo di)
         {
-            foreach (var file in di.EnumerateFiles())
+            foreach (var file in di.GetFilesByExtensions(_codeGenerator.CodeFileExtensions.ToArray()))
             {
                 file.Delete();
             }
 
             foreach (var dir in di.EnumerateDirectories())
             {
-                dir.Delete(true);
+                RemoveDirectoryFiles(dir);
             }
-        }     
+        }  
     }
 }

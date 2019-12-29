@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -18,6 +19,15 @@ namespace DGen.Generation.Generators.CSharp
         {
             _syntaxGenerator = SyntaxGenerator.GetGenerator(new AdhocWorkspace(), LanguageNames.CSharp);
             _classGenerator = new CSharpClassGenerator(_syntaxGenerator);
+        }
+
+        public IEnumerable<string> CodeFileExtensions
+        {
+            get
+            {
+                yield return ".cs";
+                yield return ".csproj";
+            }
         }
 
         public async Task GenerateClassFile(ClassModel @class, DirectoryInfo di)
@@ -54,6 +64,9 @@ namespace DGen.Generation.Generators.CSharp
                     new XElement("ItemGroup", 
                         new XElement("PackageReference", new XAttribute("Include", "Kledex"), new XAttribute("Version", "2.3.0")),
                         new XElement("PackageReference", new XAttribute("Include", "Newtonsoft.Json"), new XAttribute("Version", "12.0.3"))
+                        ),
+                    new XElement("ItemGroup",
+                        service.Dependencies.Select(s => new XElement("ProjectReference", new XAttribute("Include", $"..\\{s.Name}\\{s.Name}.Generated.csproj")))
                         )
                     );
                 await sw.WriteAsync(project.ToString());

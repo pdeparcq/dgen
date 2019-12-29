@@ -10,6 +10,14 @@ namespace DGen.Generation.CodeModel
         public string Name { get; }
         public List<NamespaceModel> Layers { get; }
 
+        public IEnumerable<NamespaceModel> Usings
+        {
+            get
+            {
+                return Layers.SelectMany(l => l.AllTypes).OfType<ClassModel>().SelectMany(c => c.Usings).Distinct();
+            }
+        }
+
         public ServiceModel(ApplicationModel application, string name)
         {
             Guard.ArgumentNotNull(() => application);
@@ -30,6 +38,22 @@ namespace DGen.Generation.CodeModel
             var layer = new NamespaceModel(null, $"{Application.Name}.{Name}.{layerName}");
             Layers.Add(layer);
             return layer;
+        }
+
+        public IEnumerable<ServiceModel> Dependencies
+        {
+            get
+            {
+                var usings = Usings;
+                foreach(var service in Application.Services.Except(new[] { this }))
+                {
+                    var namespaces = service.Layers.SelectMany(l => l.AllNamespaces);
+                    if (usings.Any(u => namespaces.Contains(u)))
+                    {
+                        yield return service;
+                    }
+                }
+            }
         }
     }
 }

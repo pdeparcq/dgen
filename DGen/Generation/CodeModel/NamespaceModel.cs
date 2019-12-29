@@ -10,7 +10,9 @@ namespace DGen.Generation.CodeModel
         public string Name { get; }
         public string FullName => Parent == null ? Name : $"{Parent.FullName}.{Name}";
         public List<NamespaceModel> Namespaces { get; }
+        public IEnumerable<NamespaceModel> AllNamespaces => Namespaces.SelectMany(ns => ns.Namespaces).Concat(Namespaces);
         public List<TypeModel> Types { get; set; }
+        public IEnumerable<TypeModel> AllTypes => Namespaces.SelectMany(ns => ns.AllTypes).Concat(Types);
         public IReadOnlyCollection<ClassModel> Classes => Types.OfType<ClassModel>().ToList().AsReadOnly();
         public IReadOnlyCollection<EnumerationModel> Enumerations => Types.OfType<EnumerationModel>().ToList().AsReadOnly();
 

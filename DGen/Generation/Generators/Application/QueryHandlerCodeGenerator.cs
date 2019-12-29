@@ -32,7 +32,14 @@ namespace DGen.Generation.Generators.Application
         {
             if (type is Query query && model is ClassModel @class && query.Result is ViewModel viewModel)
             {
-                @class.WithBaseType(SystemTypes.QueryHandler(registry.Resolve(Layer, query), registry.Resolve(Layer, viewModel)));
+                var queryType = registry.Resolve(Layer, query);
+                var queryResultType = registry.Resolve(Layer, viewModel);
+
+                @class = @class.WithBaseType(SystemTypes.QueryHandler(queryType, queryResultType));
+
+                @class.AddMethod("Handle")
+                    .WithParameters(new MethodParameter("query", queryType))
+                    .WithReturnType(queryResultType);
             }
         }
     }

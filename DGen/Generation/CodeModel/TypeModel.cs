@@ -23,5 +23,10 @@ namespace DGen.Generation.CodeModel
 
             return this;
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

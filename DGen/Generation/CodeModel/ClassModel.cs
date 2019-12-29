@@ -26,7 +26,10 @@ namespace DGen.Generation.CodeModel
                     .ToList();
 
                 if (BaseType != null)
+                {
+                    usings.AddRange(BaseType.Usings);
                     usings.Add(BaseType.Namespace);
+                }
 
                 return usings.Where(n => n != Namespace).Distinct();
             }
