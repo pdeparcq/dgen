@@ -15,8 +15,8 @@ namespace DGen.Meta
         {
             _metaGenerators = new Dictionary<System.Type, IMetaGenerator>();
 
-            AddMetaGenerator(new AggregateMetaGenerator());
             AddMetaGenerator(new DomainEventMetaGenerator());
+            AddMetaGenerator(new AggregateMetaGenerator());
             AddMetaGenerator(new EntityMetaGenerator());
             AddMetaGenerator(new EnumerationMetaGenerator());
             AddMetaGenerator(new QueryMetaGenerator());

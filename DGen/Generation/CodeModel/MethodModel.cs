@@ -23,6 +23,7 @@ namespace DGen.Generation.CodeModel
         public string Name { get; }
         public TypeModel ReturnType { get; private set; }
         public List<MethodParameter> Parameters { get; }
+        public List<ClassModel> Attributes { get; }
 
         public MethodModel(string name)
         {
@@ -30,6 +31,7 @@ namespace DGen.Generation.CodeModel
 
             Name = name;
             Parameters = new List<MethodParameter>();
+            Attributes = new List<ClassModel>();
         }
 
         public MethodModel WithReturnType(TypeModel returnType)
@@ -42,6 +44,13 @@ namespace DGen.Generation.CodeModel
         public MethodModel WithParameters(params MethodParameter[] parameters)
         {
             Parameters.AddRange(parameters);
+
+            return this;
+        }
+
+        public MethodModel WithAttributes(params ClassModel[] attributes)
+        {
+            Attributes.AddRange(attributes);
 
             return this;
         }

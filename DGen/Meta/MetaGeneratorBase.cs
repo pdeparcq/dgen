@@ -44,18 +44,18 @@ namespace DGen.Meta
 
         public virtual void Generate(T type, Element e, ITypeRegistry registry)
         {
-            // Generate properties from attributes
-            GenerateAttributeProperties(type, e, registry);
-
             // Generate properties from associations
             GenerateAssociationProperties(type, e, registry);
+
+            // Generate properties from attributes
+            GenerateAttributeProperties(type, e, registry);
         }
 
         private static void GenerateAttributeProperties(T type, Element e, ITypeRegistry registry)
         {
             if (e.Attributes != null && e.Attributes.Any())
             {
-                type.Properties = e.Attributes.Where(p => p.Type == ElementType.UMLAttribute).Select(p => new Property
+                type.Properties.AddRange(e.Attributes.Where(p => p.Type == ElementType.UMLAttribute).Select(p => new Property
                 {
                     IsIdentifier = p.Stereotype?.ToLower() == "id",
                     Name = p.Name,
@@ -65,11 +65,7 @@ namespace DGen.Meta
                         SystemType = p.AttributeType?.SystemType,
                         Type = registry.Resolve(p.AttributeType?.ReferenceType?.Element)
                     }
-                }).ToList();
-            }
-            else
-            {
-                type.Properties = new List<Property>();
+                }));
             }
         }
 

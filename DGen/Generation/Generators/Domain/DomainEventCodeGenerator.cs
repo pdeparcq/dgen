@@ -34,13 +34,16 @@ namespace DGen.Generation.Generators.Domain
                     .WithBaseType(SystemTypes.DomainEvent(@class))
                     .WithAttributes(SystemTypes.Parse("Serializable"));
 
-                @class.AddConstructor()
-                            .WithParameters(domainEvent.Properties.Select(p => new MethodParameter(p.Name.ToCamelCase(), p.Type.Resolve(registry))).ToArray());
-
+                // Generate properties
                 foreach (var p in domainEvent.Properties)
                 {
                     @class.AddDomainProperty(p, registry);
                 }
+
+                // Generate constructor
+                @class.AddConstructor()
+                            .WithParameters(@class.Properties.Select(p => new MethodParameter(p.Name.ToCamelCase(), p.Type)).ToArray())
+                            .WithAttributes(SystemTypes.JsonConstructorAttribute());   
             }
         }
     }

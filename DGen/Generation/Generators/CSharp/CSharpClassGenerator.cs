@@ -30,7 +30,7 @@ namespace DGen.Generation.Generators.CSharp
                 @class = @class.WithLeadingTrivia(ToDocumentation(model.Description));
 
             @class = GenerateBaseType(model, @class);
-            @class = GenerateAttributes(model, @class);
+            @class = GenerateTypeAttributes(model, @class);
             @class = GenerateConstructors(model, @class);
             @class = GenerateProperties(model, @class);
             @class = GenerateMethods(model, @class);
@@ -40,23 +40,13 @@ namespace DGen.Generation.Generators.CSharp
             return FormatAutoPropertiesOnOneLine(compileUnit.NormalizeWhitespace().ToFullString());
         }
 
-        private ClassDeclarationSyntax GenerateAttributes(ClassModel model, ClassDeclarationSyntax @class)
-        {
-            foreach(var a in model.Attributes)
-            {
-                var attribute = SyntaxFactory.Attribute(SyntaxFactory.ParseName(a.Name)) as AttributeSyntax;
-                var attributeList = SyntaxFactory.AttributeList() as AttributeListSyntax;
-                attributeList = attributeList.AddAttributes(attribute);
-                @class = @class.AddAttributeLists(attributeList);
-            }
-            return @class;
-        }
-
         private ClassDeclarationSyntax GenerateConstructors(ClassModel model, ClassDeclarationSyntax @class)
         {
             foreach (var c in model.Constructors)
             {
                 var constructor = _syntaxGenerator.ConstructorDeclaration(c.Name) as ConstructorDeclarationSyntax;
+
+                constructor = GenerateMemberAttributes(c, constructor);
 
                 constructor = constructor.AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
 
@@ -76,6 +66,8 @@ namespace DGen.Generation.Generators.CSharp
             foreach (var m in model.Methods)
             {
                 var method = _syntaxGenerator.MethodDeclaration(m.Name) as MethodDeclarationSyntax;
+
+                method = GenerateMemberAttributes(m, method);
 
                 method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
 
@@ -132,6 +124,32 @@ namespace DGen.Generation.Generators.CSharp
                 @class = _syntaxGenerator.AddBaseType(@class, _syntaxGenerator.IdentifierName(model.BaseType.ToString())) as ClassDeclarationSyntax;
             }
             return @class;
+        }
+
+        private T GenerateTypeAttributes<T>(ClassModel model, T type) where T : TypeDeclarationSyntax
+        {
+            foreach (var a in model.Attributes)
+            {
+                type = type.AddAttributeLists(GenerateAttributeList(a)) as T;
+            }
+            return type;
+        }
+
+        private T GenerateMemberAttributes<T>(MethodModel model, T member) where T : MemberDeclarationSyntax
+        {
+            foreach (var a in model.Attributes)
+            {
+                member = member.AddAttributeLists(GenerateAttributeList(a)) as T;
+            }
+            return member;
+        }
+
+        private static AttributeListSyntax GenerateAttributeList(ClassModel a)
+        {
+            var attribute = SyntaxFactory.Attribute(SyntaxFactory.ParseName(a.Name)) as AttributeSyntax;
+            var attributeList = SyntaxFactory.AttributeList() as AttributeListSyntax;
+            attributeList = attributeList.AddAttributes(attribute);
+            return attributeList;
         }
 
         private static SyntaxTrivia ToDocumentation(string text)

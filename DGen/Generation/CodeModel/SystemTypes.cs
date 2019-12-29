@@ -4,6 +4,7 @@
     {
         private static NamespaceModel SystemNamespace = new NamespaceModel(null, "System");
         private static NamespaceModel SystemGenericCollectionsNamespace;
+        private static NamespaceModel NewtonsoftJson = new NamespaceModel(null, "Newtonsoft").AddNamespace("Json");
         private static NamespaceModel KledexNamespace = new NamespaceModel(null, "Kledex");
         private static NamespaceModel KledexDomainNamespace;
         private static NamespaceModel KledexQueryNamespace;
@@ -23,6 +24,11 @@
         public static ClassModel Parse(string name)
         {
             return new ClassModel(SystemNamespace, name);
+        }
+
+        public static ClassModel JsonConstructorAttribute()
+        {
+            return new ClassModel(NewtonsoftJson, "JsonConstructor");
         }
 
         public static ClassModel AggregateRoot(TypeModel type)
