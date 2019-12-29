@@ -35,8 +35,10 @@ namespace DGen.Generation
                         var layerDirectory = serviceDirectory.CreateSubdirectory(layer.Name);
 
                         await GenerateNamespace(layer, layerDirectory);
-                        await _codeGenerator.GenerateProjectFile(layer, layerDirectory);
+                        await _codeGenerator.GenerateLayer(layer, layerDirectory);
                     }
+
+                    await _codeGenerator.GenerateService(service, serviceDirectory);
                 }
             }
         }

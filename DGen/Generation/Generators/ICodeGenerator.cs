@@ -6,7 +6,8 @@ namespace DGen.Generation.Generators
 {
     public interface ICodeGenerator
     {
-        Task GenerateProjectFile(NamespaceModel layer, DirectoryInfo di);
+        Task GenerateService(ServiceModel service, DirectoryInfo di);
+        Task GenerateLayer(NamespaceModel layer, DirectoryInfo di);
         Task GenerateClassFile(ClassModel @class, DirectoryInfo di);
         Task GenerateEnumFile(EnumerationModel enumeration, DirectoryInfo di);
     }

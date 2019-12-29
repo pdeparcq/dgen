@@ -40,9 +40,14 @@ namespace DGen.Generation.Generators.CSharp
             }
         }
 
-        public async Task GenerateProjectFile(NamespaceModel layer, DirectoryInfo di)
+        public Task GenerateLayer(NamespaceModel layer, DirectoryInfo di)
         {
-            using (var sw = File.CreateText(Path.Combine(di.FullName, $"{layer.Name}.csproj")))
+            return Task.CompletedTask;
+        }
+
+        public async Task GenerateService(ServiceModel service, DirectoryInfo di)
+        {
+            using (var sw = File.CreateText(Path.Combine(di.FullName, $"{service.Name}.Generated.csproj")))
             {
                 var project = new XElement("Project", new XAttribute("Sdk", "Microsoft.NET.Sdk"),
                     new XElement("PropertyGroup", new XElement("TargetFramework", "netcoreapp3.0")),
