@@ -7,7 +7,9 @@ namespace DGen.Generation.CodeModel
     {
         public ClassModel BaseType { get; private set; }
         public List<TypeModel> GenericTypes { get; }
+        public List<ClassModel> Attributes { get; }
         public List<PropertyModel> Properties { get; }
+        public List<MethodModel> Constructors { get; }
         public List<MethodModel> Methods { get; }
         public bool IsGeneric => GenericTypes.Any();
 
@@ -18,6 +20,7 @@ namespace DGen.Generation.CodeModel
                 return Properties
                     .SelectMany(p => p.Usings)
                     .Concat(GenericTypes.Select(t => t.Namespace))
+                    .Concat(Attributes.Select(t => t.Namespace))
                     .Where(n => n != Namespace)
                     .Distinct();
             }
@@ -27,13 +30,22 @@ namespace DGen.Generation.CodeModel
             : base(@namespace, name)
         {
             GenericTypes = new List<TypeModel>();
+            Attributes = new List<ClassModel>();
             Properties = new List<PropertyModel>();
+            Constructors = new List<MethodModel>();
             Methods = new List<MethodModel>();
         }
 
         public ClassModel WithGenericTypes(params TypeModel[] types)
         {
             GenericTypes.AddRange(types);
+
+            return this;
+        }
+
+        public ClassModel WithAttributes(params ClassModel[] attributes)
+        {
+            Attributes.AddRange(attributes);
 
             return this;
         }
@@ -54,6 +66,13 @@ namespace DGen.Generation.CodeModel
                 Properties.Add(property);
             }
             return property;
+        }
+
+        public MethodModel AddConstructor()
+        {
+            var constructor = new MethodModel(Name);
+            Constructors.Add(constructor);
+            return constructor;
         }
 
         public MethodModel AddMethod(string name)

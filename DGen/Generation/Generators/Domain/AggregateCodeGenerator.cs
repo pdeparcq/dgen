@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using DGen.Generation.CodeModel;
 using DGen.Generation.Extensions;
 using DGen.Meta;
@@ -31,6 +32,12 @@ namespace DGen.Generation.Generators.Domain
 
                 foreach(var de in aggregate.DomainEvents)
                 {
+                    if(de.Type == DomainEventType.Create)
+                    {
+                        @class.AddConstructor()
+                            .WithParameters(de.Properties.Select(p => new MethodParameter(p.Name.ToCamelCase(), p.Type.Resolve(registry))).ToArray());
+                    }
+
                     @class.AddMethod("Apply")
                         .WithParameters(new MethodParameter("@event", registry.Resolve(Layer, de)));
                 }

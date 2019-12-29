@@ -15,12 +15,12 @@
             KledexQueryNamespace = KledexNamespace.AddNamespace("Queries");
         }
 
-        public static TypeModel GenericList(TypeModel type)
+        public static ClassModel GenericList(TypeModel type)
         {
             return new ClassModel(SystemGenericCollectionsNamespace, "List").WithGenericTypes(type);
         }
 
-        public static TypeModel Parse(string name)
+        public static ClassModel Parse(string name)
         {
             return new ClassModel(SystemNamespace, name);
         }
@@ -28,6 +28,11 @@
         public static ClassModel AggregateRoot(TypeModel type)
         {
             return new ClassModel(KledexDomainNamespace, "AggregateRoot");
+        }
+
+        public static ClassModel DomainEvent(TypeModel type)
+        {
+            return new ClassModel(KledexDomainNamespace, "DomainEvent");
         }
 
         public static ClassModel Query(TypeModel result)

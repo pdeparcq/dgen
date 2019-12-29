@@ -30,12 +30,45 @@ namespace DGen.Generation.Generators.CSharp
                 @class = @class.WithLeadingTrivia(ToDocumentation(model.Description));
 
             @class = GenerateBaseType(model, @class);
+            @class = GenerateAttributes(model, @class);
+            @class = GenerateConstructors(model, @class);
             @class = GenerateProperties(model, @class);
             @class = GenerateMethods(model, @class);
 
             var compileUnit = GenerateCompileUnit(model, @class, @namespace);
 
             return FormatAutoPropertiesOnOneLine(compileUnit.NormalizeWhitespace().ToFullString());
+        }
+
+        private ClassDeclarationSyntax GenerateAttributes(ClassModel model, ClassDeclarationSyntax @class)
+        {
+            foreach(var a in model.Attributes)
+            {
+                var attribute = SyntaxFactory.Attribute(SyntaxFactory.ParseName(a.Name)) as AttributeSyntax;
+                var attributeList = SyntaxFactory.AttributeList() as AttributeListSyntax;
+                attributeList = attributeList.AddAttributes(attribute);
+                @class = @class.AddAttributeLists(attributeList);
+            }
+            return @class;
+        }
+
+        private ClassDeclarationSyntax GenerateConstructors(ClassModel model, ClassDeclarationSyntax @class)
+        {
+            foreach (var c in model.Constructors)
+            {
+                var constructor = _syntaxGenerator.ConstructorDeclaration(c.Name) as ConstructorDeclarationSyntax;
+
+                constructor = constructor.AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
+
+                foreach (var p in c.Parameters)
+                {
+                    var parameter = _syntaxGenerator.ParameterDeclaration(p.Name, SyntaxFactory.ParseTypeName(p.Type.ToString())) as ParameterSyntax;
+                    constructor = constructor.AddParameterListParameters(parameter);
+                }
+
+                @class = @class.AddMembers(constructor);
+            }
+            return @class;
         }
 
         private ClassDeclarationSyntax GenerateMethods(ClassModel model, ClassDeclarationSyntax @class)

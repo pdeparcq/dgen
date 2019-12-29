@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using DGen.Generation.CodeModel;
+using DGen.Generation.Extensions;
 using DGen.Meta;
 
 namespace DGen.Generation.Generators.Domain
@@ -26,7 +28,20 @@ namespace DGen.Generation.Generators.Domain
 
         public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
         {
-            
+            if (type is DomainEvent domainEvent && model is ClassModel @class)
+            {
+                @class = @class
+                    .WithBaseType(SystemTypes.DomainEvent(@class))
+                    .WithAttributes(SystemTypes.Parse("Serializable"));
+
+                @class.AddConstructor()
+                            .WithParameters(domainEvent.Properties.Select(p => new MethodParameter(p.Name.ToCamelCase(), p.Type.Resolve(registry))).ToArray());
+
+                foreach (var p in domainEvent.Properties)
+                {
+                    @class.AddDomainProperty(p, registry);
+                }
+            }
         }
     }
 }
