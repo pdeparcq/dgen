@@ -8,7 +8,8 @@ namespace DGen.Generation.CodeModel
     {
         public ApplicationModel Application { get; }
         public string Name { get; }
-        public List<NamespaceModel> Layers { get; }
+        public NamespaceModel RootNamespace { get; }
+        public IEnumerable<NamespaceModel> Layers => RootNamespace.Namespaces;
 
         public IEnumerable<NamespaceModel> Usings
         {
@@ -25,19 +26,17 @@ namespace DGen.Generation.CodeModel
 
             Application = application;
             Name = name;
-            Layers = new List<NamespaceModel>();
+            RootNamespace = new NamespaceModel(null, $"{application.Name}.{Name}");
         }
 
         public NamespaceModel GetLayer(string layerName)
         {
-            return Layers.Single(l => l.Name == $"{Application.Name}.{Name}.{layerName}");
+            return Layers.Single(l => l.Name == layerName);
         }
 
         public NamespaceModel AddLayer(string layerName)
         {
-            var layer = new NamespaceModel(null, $"{Application.Name}.{Name}.{layerName}");
-            Layers.Add(layer);
-            return layer;
+            return RootNamespace.AddNamespace(layerName);
         }
 
         public IEnumerable<ServiceModel> Dependencies

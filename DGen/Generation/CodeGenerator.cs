@@ -80,6 +80,10 @@ namespace DGen.Generation
             foreach (var dir in di.EnumerateDirectories())
             {
                 RemoveDirectoryFiles(dir);
+                if (dir.IsEmpty())
+                {
+                    dir.Delete(true);
+                }
             }
         }  
     }

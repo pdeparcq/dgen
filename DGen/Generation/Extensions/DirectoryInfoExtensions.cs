@@ -14,5 +14,10 @@ namespace DGen.Generation.Extensions
             IEnumerable<FileInfo> files = dir.EnumerateFiles();
             return files.Where(f => extensions.Contains(f.Extension));
         }
+
+        public static bool IsEmpty(this DirectoryInfo dir)
+        {
+            return !Directory.EnumerateFileSystemEntries(dir.FullName).Any();
+        }
     }
 }

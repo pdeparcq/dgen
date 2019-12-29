@@ -60,7 +60,10 @@ namespace DGen.Generation.Generators.CSharp
             using (var sw = File.CreateText(Path.Combine(di.FullName, $"{service.Name}.Generated.csproj")))
             {
                 var project = new XElement("Project", new XAttribute("Sdk", "Microsoft.NET.Sdk"),
-                    new XElement("PropertyGroup", new XElement("TargetFramework", "netcoreapp3.0")),
+                    new XElement("PropertyGroup", 
+                        new XElement("TargetFramework", "netcoreapp3.0"),
+                        new XElement("RootNamespace", service.RootNamespace.Name)
+                        ),
                     new XElement("ItemGroup", 
                         new XElement("PackageReference", new XAttribute("Include", "Kledex"), new XAttribute("Version", "2.3.0")),
                         new XElement("PackageReference", new XAttribute("Include", "Newtonsoft.Json"), new XAttribute("Version", "12.0.3"))
