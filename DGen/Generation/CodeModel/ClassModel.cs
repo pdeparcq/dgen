@@ -19,6 +19,8 @@ namespace DGen.Generation.CodeModel
             {
                 return Properties
                     .SelectMany(p => p.Usings)
+                    .Concat(Constructors.SelectMany(m => m.Usings))
+                    .Concat(Methods.SelectMany(m => m.Usings))
                     .Concat(GenericTypes.Select(t => t.Namespace))
                     .Concat(Attributes.Select(t => t.Namespace))
                     .Where(n => n != Namespace)

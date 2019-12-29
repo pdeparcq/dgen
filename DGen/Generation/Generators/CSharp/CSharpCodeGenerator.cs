@@ -47,7 +47,8 @@ namespace DGen.Generation.Generators.CSharp
                 var project = new XElement("Project", new XAttribute("Sdk", "Microsoft.NET.Sdk"),
                     new XElement("PropertyGroup", new XElement("TargetFramework", "netcoreapp3.0")),
                     new XElement("ItemGroup", 
-                        new XElement("PackageReference", new XAttribute("Include", "Kledex"), new XAttribute("Version", "2.3.0"))
+                        new XElement("PackageReference", new XAttribute("Include", "Kledex"), new XAttribute("Version", "2.3.0")),
+                        new XElement("PackageReference", new XAttribute("Include", "Newtonsoft.Json"), new XAttribute("Version", "12.0.3"))
                         )
                     );
                 await sw.WriteAsync(project.ToString());

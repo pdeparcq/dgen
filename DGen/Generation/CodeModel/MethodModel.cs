@@ -1,5 +1,6 @@
 ﻿using Guards;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DGen.Generation.CodeModel
 {
@@ -24,6 +25,14 @@ namespace DGen.Generation.CodeModel
         public TypeModel ReturnType { get; private set; }
         public List<MethodParameter> Parameters { get; }
         public List<ClassModel> Attributes { get; }
+
+        public IEnumerable<NamespaceModel> Usings
+        {
+            get
+            {
+                return Attributes.Select(t => t.Namespace);
+            }
+        }
 
         public MethodModel(string name)
         {
