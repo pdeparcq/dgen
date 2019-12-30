@@ -35,11 +35,27 @@ namespace DGen.Generation.Generators.Domain
                     if(de.Type == DomainEventType.Create)
                     {
                         @class.AddConstructor()
-                            .WithParameters(de.Properties.Select(p => new MethodParameter(p.Name.ToCamelCase(), p.Type.Resolve(registry))).ToArray());
+                            .WithParameters(GenerateConstructorProperties(registry, de, aggregate).ToArray());
                     }
 
                     @class.AddMethod("Apply")
                         .WithParameters(new MethodParameter("@event", registry.Resolve(Layer, de)));
+                }
+            }
+        }
+
+        private static IEnumerable<MethodParameter> GenerateConstructorProperties(ITypeModelRegistry registry, DomainEvent de, Aggregate aggregate)
+        {
+
+            foreach (var property in de.Properties)
+            {
+                if (property.Type.Type == aggregate && aggregate.UniqueIdentifier != null)
+                {
+                    yield return new MethodParameter(aggregate.UniqueIdentifier.Name, aggregate.UniqueIdentifier.Type.Resolve(registry));
+                }
+                else
+                {
+                    yield return new MethodParameter(property.Name.ToCamelCase(), property.Type.Resolve(registry));
                 }
             }
         }
