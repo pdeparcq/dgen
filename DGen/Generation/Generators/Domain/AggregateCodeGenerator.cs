@@ -34,8 +34,13 @@ namespace DGen.Generation.Generators.Domain
                 {
                     if(de.Type == DomainEventType.Create)
                     {
-                        @class.AddConstructor()
+                        var constructor = @class.AddConstructor()
                             .WithParameters(de.Properties.Select(p => new MethodParameter(p.Name.ToCamelCase(), p.Type.Resolve(registry))).ToArray());
+
+                        foreach(var param in constructor.Parameters)
+                        {
+                            constructor.Assign(param.Expression, param.Expression);
+                        }
                     }
 
                     @class.AddMethod("Apply")
