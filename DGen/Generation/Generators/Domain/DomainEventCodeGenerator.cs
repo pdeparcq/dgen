@@ -42,8 +42,9 @@ namespace DGen.Generation.Generators.Domain
 
                 // Generate constructor
                 @class.AddConstructor()
-                            .WithParameters(@class.Properties.Select(p => new MethodParameter(p.Name.ToCamelCase(), p.Type)).ToArray())
-                            .WithAttributes(SystemTypes.JsonConstructorAttribute());   
+                    .WithPropertyParameters()
+                    .WithAttributes(SystemTypes.JsonConstructorAttribute())
+                    .AssignProperties();
             }
         }
     }

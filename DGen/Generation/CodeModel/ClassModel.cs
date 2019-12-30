@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DGen.Generation.CodeModel
@@ -77,16 +78,26 @@ namespace DGen.Generation.CodeModel
             return property;
         }
 
+        public bool HasProperty(string name, StringComparison comparisonType = StringComparison.InvariantCultureIgnoreCase)
+        {
+            return GetProperty(name, comparisonType) != null;
+        }
+
+        public PropertyModel GetProperty(string name, StringComparison comparisonType = StringComparison.InvariantCultureIgnoreCase)
+        {
+            return Properties.SingleOrDefault(p => p.Name.Equals(name, comparisonType));
+        }
+
         public MethodModel AddConstructor()
         {
-            var constructor = new MethodModel(Name);
+            var constructor = new MethodModel(this, Name);
             Constructors.Add(constructor);
             return constructor;
         }
 
         public MethodModel AddMethod(string name)
         {
-            var method = new MethodModel(name);
+            var method = new MethodModel(this, name);
             Methods.Add(method);
             return method;
         }

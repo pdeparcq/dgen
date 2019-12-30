@@ -1,5 +1,7 @@
 ﻿using Guards;
 using System.Collections.Generic;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DGen.Generation.CodeModel
 {
@@ -9,6 +11,8 @@ namespace DGen.Generation.CodeModel
         public string Description { get; private set; }
         public TypeModel Type { get; }
         public bool IsReadOnly { get; set; }
+
+        public ExpressionSyntax Expression => SyntaxFactory.IdentifierName(Name);
 
         public IEnumerable<NamespaceModel> Usings
         {

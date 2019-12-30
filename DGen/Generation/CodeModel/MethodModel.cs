@@ -1,8 +1,10 @@
-﻿using Guards;
+﻿using System;
+using Guards;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 using System.Linq;
+using DGen.Generation.Extensions;
 
 namespace DGen.Generation.CodeModel
 {
@@ -25,6 +27,7 @@ namespace DGen.Generation.CodeModel
 
     public class MethodModel
     {
+        public ClassModel Class { get; }
         public string Name { get; }
         public TypeModel ReturnType { get; private set; }
         public List<MethodParameter> Parameters { get; }
@@ -46,10 +49,12 @@ namespace DGen.Generation.CodeModel
             }
         }
 
-        public MethodModel(string name)
+        public MethodModel(ClassModel @class, string name)
         {
+            Guard.ArgumentNotNull(() => @class);
             Guard.ArgumentNotNullOrEmpty(() => name);
 
+            Class = @class;
             Name = name;
             Parameters = new List<MethodParameter>();
             Attributes = new List<ClassModel>();
@@ -61,13 +66,6 @@ namespace DGen.Generation.CodeModel
             return Return(SyntaxFactory.ParseExpression("null"));
         }
 
-        public MethodModel Return(ExpressionSyntax expression = null)
-        {
-            AddStatement(SyntaxFactory.ReturnStatement(expression));
-
-            return this;
-        }
-
         public MethodModel ThrowNotImplemented()
         {
             AddStatement(SyntaxFactory.ThrowStatement(SyntaxFactory.ParseExpression("new System.NotImplementedException()")));
@@ -75,9 +73,23 @@ namespace DGen.Generation.CodeModel
             return this;
         }
 
-        public MethodModel Assign(ExpressionSyntax left, ExpressionSyntax right)
+        /*
+         * Assign properties from parameters with same name
+         */
+        public MethodModel AssignProperties()
         {
-            AddStatement(SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, left, right)));
+            foreach (var parameter in Parameters)
+            {
+                AssignProperty(parameter.Name);
+            }
+
+            return this;
+        }
+
+        public MethodModel AssignProperty(string propertyName, string parameterName = null)
+        {
+            if(Class.HasProperty(propertyName) && HasParameter(parameterName ?? propertyName))
+                return Assign(Class.GetProperty(propertyName).Expression, GetParameter(parameterName ?? propertyName).Expression);
 
             return this;
         }
@@ -96,6 +108,25 @@ namespace DGen.Generation.CodeModel
             return this;
         }
 
+        /*
+         * Generate method parameters from class properties
+         */
+        public MethodModel WithPropertyParameters()
+        {
+            return WithParameters(Class.Properties.Select(p => new MethodParameter(p.Name.ToCamelCase(), p.Type))
+                .ToArray());
+        }
+
+        public bool HasParameter(string name, StringComparison comparisonType = StringComparison.InvariantCultureIgnoreCase)
+        {
+            return GetParameter(name, comparisonType) != null;
+        }
+
+        public MethodParameter GetParameter(string name, StringComparison comparisonType = StringComparison.InvariantCultureIgnoreCase)
+        {
+            return Parameters.SingleOrDefault(p => p.Name.Equals(name, comparisonType));
+        }
+
         public MethodModel WithAttributes(params ClassModel[] attributes)
         {
             Attributes.AddRange(attributes);
@@ -106,6 +137,20 @@ namespace DGen.Generation.CodeModel
         private void AddStatement(StatementSyntax statement)
         {
             Statements.Add(statement);
+        }
+
+        private MethodModel Assign(ExpressionSyntax left, ExpressionSyntax right)
+        {
+            AddStatement(SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, left, right)));
+
+            return this;
+        }
+
+        private MethodModel Return(ExpressionSyntax expression = null)
+        {
+            AddStatement(SyntaxFactory.ReturnStatement(expression));
+
+            return this;
         }
     }
 }
