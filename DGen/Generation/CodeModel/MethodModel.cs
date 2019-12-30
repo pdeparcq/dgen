@@ -1,5 +1,4 @@
 ﻿using Guards;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
@@ -71,7 +70,7 @@ namespace DGen.Generation.CodeModel
 
         public MethodModel ThrowNotImplemented()
         {
-            AddStatement(SyntaxFactory.ThrowStatement(SyntaxFactory.ParseExpression("new NotImplementedException()")));
+            AddStatement(SyntaxFactory.ThrowStatement(SyntaxFactory.ParseExpression("new System.NotImplementedException()")));
 
             return this;
         }

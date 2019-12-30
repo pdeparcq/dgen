@@ -42,7 +42,7 @@ namespace DGen.Generation.Generators.Application
                     .WithParameters(new MethodParameter("query", queryType))
                     .WithReturnType(queryResultType);
 
-                handler.ReturnNull();
+                handler.ThrowNotImplemented();
             }
         }
     }
