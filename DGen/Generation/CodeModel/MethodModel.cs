@@ -94,6 +94,11 @@ namespace DGen.Generation.CodeModel
             return this;
         }
 
+        public MethodModel InvokeMethod(string methodName, params ExpressionSyntax[] parameters)
+        {
+            throw new NotImplementedException();
+        }
+
         public MethodModel WithReturnType(TypeModel returnType)
         {
             ReturnType = returnType;

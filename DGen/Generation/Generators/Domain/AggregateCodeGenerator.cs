@@ -32,16 +32,19 @@ namespace DGen.Generation.Generators.Domain
 
                 foreach(var de in aggregate.DomainEvents)
                 {
+                    var domainEventType = registry.Resolve(Layer, de) as ClassModel;
+                    var parameters = GenerateDomainEventParameters(registry, de, aggregate).ToList();
+
                     @class.AddMethod($"Publish{de.Name}")
-                        .WithParameters(GenerateDomainEventParameters(registry, de, aggregate).ToArray());
+                        .WithParameters(parameters.ToArray());
 
                     @class.AddMethod("Apply")
-                        .WithParameters(new MethodParameter("@event", registry.Resolve(Layer, de)));
+                        .WithParameters(new MethodParameter("@event", domainEventType));
 
                     if (de.Type == DomainEventType.Create)
                     {
                         @class.AddConstructor()
-                            .WithParameters(GenerateDomainEventParameters(registry, de, aggregate).ToArray());
+                            .WithParameters(parameters.ToArray());
                     }
 
                     

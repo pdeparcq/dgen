@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DGen.Generation.CodeModel
 {
@@ -93,6 +96,18 @@ namespace DGen.Generation.CodeModel
             var constructor = new MethodModel(this, Name);
             Constructors.Add(constructor);
             return constructor;
+        }
+
+        public ExpressionSyntax Construct(params ExpressionSyntax[] parameters)
+        {
+            ArgumentListSyntax argumentList = null;
+            if (parameters.Any())
+            {
+                var arguments = new SeparatedSyntaxList<ArgumentSyntax>();
+                arguments = arguments.AddRange(parameters.Select(p => SyntaxFactory.Argument(p)));
+                argumentList = SyntaxFactory.ArgumentList(arguments);
+            }
+            return SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName(Name), argumentList, null);
         }
 
         public MethodModel AddMethod(string name)
