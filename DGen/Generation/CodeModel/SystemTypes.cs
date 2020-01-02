@@ -8,6 +8,7 @@
         private static NamespaceModel KledexNamespace = new NamespaceModel(null, "Kledex");
         private static NamespaceModel KledexDomainNamespace;
         private static NamespaceModel KledexQueryNamespace;
+        public static readonly ClassModel Guid;
 
         public static readonly string AggregateRootIdentifierName = "Id";
         public static readonly string DomainEventPublishMethodName = "AddAndApplyEvent";
@@ -19,6 +20,7 @@
             SystemGenericCollectionsNamespace = SystemNamespace.AddNamespace("Collections").AddNamespace("Generic");
             KledexDomainNamespace = KledexNamespace.AddNamespace("Domain");
             KledexQueryNamespace = KledexNamespace.AddNamespace("Queries");
+            Guid = Parse("Guid");
         }
 
         public static ClassModel GenericList(TypeModel type)

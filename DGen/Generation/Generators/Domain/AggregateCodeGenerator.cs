@@ -3,6 +3,7 @@ using System.Linq;
 using DGen.Generation.CodeModel;
 using DGen.Generation.Extensions;
 using DGen.Meta;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DGen.Generation.Generators.Domain
 {
@@ -31,8 +32,13 @@ namespace DGen.Generation.Generators.Domain
                 }
 
 
-                @class.AddMethod("GetUniqueIdentifier")
-                    .WithReturnType(SystemTypes.Parse("Guid"));
+                if (aggregate.UniqueIdentifier != null && aggregate.UniqueIdentifier.Type.Resolve(registry) != SystemTypes.Guid)
+                {
+                    @class.AddMethod("GetUniqueIdentifier")
+                        .WithReturnType(SystemTypes.Guid)
+                        .WithParameters(new MethodParameter("id", aggregate.UniqueIdentifier.Type.Resolve(registry)));
+                }
+                
 
                 foreach(var de in aggregate.DomainEvents)
                 {
@@ -44,12 +50,12 @@ namespace DGen.Generation.Generators.Domain
                         @class.AddMethod($"Publish{de.Name}")
                             .WithParameters(parameters.ToArray())
                             .WithBody(builder =>
-                            {
-                                builder.InvokeMethod(SystemTypes.DomainEventPublishMethodName, domainEvent.Construct(parameters.ToExpressions(), new []
                                 {
-                                    (Name: SystemTypes.DomainEventAggregateRootIdentifierName, @class.GetMethod("GetUniqueIdentifier").Invoke())
-                                }));
-                            });
+                                    builder.InvokeMethod(SystemTypes.DomainEventPublishMethodName,
+                                        domainEvent.Construct(parameters.ToExpressions(),
+                                            CreateDomainEventInitializer(aggregate, @class, registry,
+                                                parameters.FirstOrDefault())));
+                                });
 
 
                         // Add method for applying domain event
@@ -79,6 +85,29 @@ namespace DGen.Generation.Generators.Domain
                     }
                 }
             }
+        }
+
+        private static (string Name, ExpressionSyntax)[] CreateDomainEventInitializer(Aggregate aggregate, ClassModel @class, ITypeModelRegistry registry, MethodParameter parameter)
+        {
+            if (aggregate.UniqueIdentifier != null)
+            {
+                var type = aggregate.UniqueIdentifier.Type.Resolve(registry);
+
+                if (type != SystemTypes.Guid)
+                {
+                    return new[]
+                    {
+                        (Name: SystemTypes.DomainEventAggregateRootIdentifierName, Expression: @class.GetMethod("GetUniqueIdentifier").Invoke(parameter.Expression) )
+                    };
+                }
+
+                return new[]
+                {
+                    (Name: SystemTypes.DomainEventAggregateRootIdentifierName, parameter.Expression )
+                };
+            }
+
+            return null;
         }
 
         private static IEnumerable<MethodParameter> GenerateDomainEventParameters(ITypeModelRegistry registry, DomainEvent de, Aggregate aggregate)
