@@ -16,6 +16,11 @@ namespace DGen.Generation.Generators.Domain
             return module.Aggregates;
         }
 
+        public override string GetTypeName(BaseType type)
+        {
+            return $"{type.Name}Base";
+        }
+
         public override void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
         }
@@ -60,6 +65,7 @@ namespace DGen.Generation.Generators.Domain
                         // Add method for publishing domain event
                         @class.AddMethod($"Publish{de.Name}")
                             .WithParameters(parameters.ToArray())
+                            .MakeProtected()
                             .WithBody(builder =>
                                 {
                                     builder.InvokeMethod(SystemTypes.DomainEventPublishMethodName,
@@ -73,6 +79,7 @@ namespace DGen.Generation.Generators.Domain
                         var @event = new MethodParameter("@event", domainEvent);
                         @class.AddMethod(SystemTypes.DomainEventApplyMethodName)
                             .WithParameters(@event)
+                            .MakeVirtual()
                             .WithBody(builder =>
                             {
                                 if (de.Type == DomainEventType.Create)
@@ -91,7 +98,7 @@ namespace DGen.Generation.Generators.Domain
                                 .WithParameters(parameters.ToArray()).WithBody(builder =>
                                 {
                                     builder.InvokeMethod($"Publish{de.Name}", parameters.ToExpressions());
-                                });
+                                }).MakeProtected();
                         }
                     }
                 }

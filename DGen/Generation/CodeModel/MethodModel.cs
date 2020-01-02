@@ -5,6 +5,7 @@ using System.Linq;
 using DGen.Generation.Extensions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis;
 
 namespace DGen.Generation.CodeModel
 {
@@ -20,6 +21,7 @@ namespace DGen.Generation.CodeModel
         public ExpressionSyntax Expression => SyntaxFactory.IdentifierName(Name);
         public bool IsAbstract => Body == null && !IsVirtual;
         public bool IsVirtual { get; private set; }
+        public Accessibility Accessability { get; private set; }
 
         public IEnumerable<NamespaceModel> Usings
         {
@@ -47,12 +49,27 @@ namespace DGen.Generation.CodeModel
             Parameters = new List<MethodParameter>();
             Attributes = new List<ClassModel>();
             UsedTypes = new List<TypeModel>();
+            Accessability = Accessibility.Public;
         }
 
 
         public MethodModel MakeVirtual()
         {
             IsVirtual = true;
+
+            return this;
+        }
+
+        public MethodModel MakeProtected()
+        {
+            Accessability = Accessibility.Protected;
+
+            return this;
+        }
+
+        public MethodModel MakePrivate()
+        {
+            Accessability = Accessibility.Private;
 
             return this;
         }

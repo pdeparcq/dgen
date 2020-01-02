@@ -47,7 +47,7 @@ namespace DGen.Generation.Generators.CSharp
         {
             foreach (var c in model.Constructors)
             {
-                var constructor = _syntaxGenerator.ConstructorDeclaration(c.Name) as ConstructorDeclarationSyntax;
+                var constructor = _syntaxGenerator.ConstructorDeclaration(c.Name, accessibility: c.Accessability) as ConstructorDeclarationSyntax;
                 constructor = GenerateMethod(c, constructor);
                 @class = @class.AddMembers(constructor);
             }
@@ -58,10 +58,7 @@ namespace DGen.Generation.Generators.CSharp
         {
             foreach (var m in model.Methods)
             {
-                var method = _syntaxGenerator.MethodDeclaration(m.Name) as MethodDeclarationSyntax;
-
-                if (m.ReturnType != null)
-                    method = method.WithReturnType(m.ReturnType.Syntax);
+                var method = _syntaxGenerator.MethodDeclaration(m.Name, accessibility: m.Accessability, returnType: m.ReturnType?.Syntax) as MethodDeclarationSyntax;
 
                 method = GenerateMethod(m, method);
 
@@ -73,8 +70,6 @@ namespace DGen.Generation.Generators.CSharp
         private T GenerateMethod<T>(MethodModel model, T method) where T : BaseMethodDeclarationSyntax
         {
             method = GenerateMemberAttributes(model, method);
-
-            method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword)) as T;
 
             if (model.IsVirtual)
                 method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.VirtualKeyword)) as T;

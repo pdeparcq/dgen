@@ -16,7 +16,7 @@ namespace DGen.Generation.CodeModel
         public List<PropertyModel> Properties { get; }
         public List<MethodModel> Constructors { get; }
         public List<MethodModel> Methods { get; }
-        public bool IsAbstract => Methods.Any(m => m.IsAbstract);
+        public bool IsAbstract => Methods.Any(m => m.IsAbstract) || Constructors.Any(c => c.Accessability == Accessibility.Protected);
         public bool IsGeneric => GenericTypes.Any();
 
         public IEnumerable<NamespaceModel> Usings
