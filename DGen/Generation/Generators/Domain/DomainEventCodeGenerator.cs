@@ -44,7 +44,7 @@ namespace DGen.Generation.Generators.Domain
                 @class.AddConstructor()
                     .WithPropertyParameters()
                     .WithAttributes(SystemTypes.JsonConstructorAttribute())
-                    .AssignProperties();
+                    .WithBody(builder => { builder.AssignProperties(); });
             }
         }
     }

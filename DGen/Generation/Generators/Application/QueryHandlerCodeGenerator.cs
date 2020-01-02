@@ -40,9 +40,8 @@ namespace DGen.Generation.Generators.Application
 
                 var handler = @class.AddMethod("Handle")
                     .WithParameters(new MethodParameter("query", queryType))
-                    .WithReturnType(queryResultType);
-
-                handler.ThrowNotImplemented();
+                    .WithReturnType(queryResultType)
+                    .WithBody(builder => { builder.ThrowNotImplemented(); });
             }
         }
     }

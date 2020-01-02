@@ -1,30 +1,12 @@
 ﻿using System;
 using Guards;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 using System.Linq;
 using DGen.Generation.Extensions;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DGen.Generation.CodeModel
 {
-    public class MethodParameter
-    {
-        public string Name { get; }
-        public TypeModel Type { get; }
-
-        public MethodParameter(string name, TypeModel type)
-        {
-            Guard.ArgumentNotNullOrEmpty(() => name);
-            Guard.ArgumentNotNull(() => type);
-
-            Name = name;
-            Type = type;
-        }
-
-        public ExpressionSyntax Expression => SyntaxFactory.IdentifierName(Name);
-    }
-
     public class MethodModel
     {
         public ClassModel Class { get; }
@@ -32,7 +14,7 @@ namespace DGen.Generation.CodeModel
         public TypeModel ReturnType { get; private set; }
         public List<MethodParameter> Parameters { get; }
         public List<ClassModel> Attributes { get; }
-        public List<StatementSyntax> Statements { get; }
+        public List<StatementSyntax> Body { get; private set; }
 
         public IEnumerable<NamespaceModel> Usings
         {
@@ -58,46 +40,12 @@ namespace DGen.Generation.CodeModel
             Name = name;
             Parameters = new List<MethodParameter>();
             Attributes = new List<ClassModel>();
-            Statements = new List<StatementSyntax>();
-        }
-
-        public MethodModel ReturnNull()
-        {
-            return Return(SyntaxFactory.ParseExpression("null"));
-        }
-
-        public MethodModel ThrowNotImplemented()
-        {
-            AddStatement(SyntaxFactory.ThrowStatement(SyntaxFactory.ParseExpression("new System.NotImplementedException()")));
-
-            return this;
+            Body = new List<StatementSyntax>();
         }
 
         /*
          * Assign properties from parameters with same name
          */
-        public MethodModel AssignProperties()
-        {
-            foreach (var parameter in Parameters)
-            {
-                AssignProperty(parameter.Name);
-            }
-
-            return this;
-        }
-
-        public MethodModel AssignProperty(string propertyName, string parameterName = null)
-        {
-            if(Class.HasProperty(propertyName) && HasParameter(parameterName ?? propertyName))
-                return Assign(Class.GetProperty(propertyName).Expression, GetParameter(parameterName ?? propertyName).Expression);
-
-            return this;
-        }
-
-        public MethodModel InvokeMethod(string methodName, params ExpressionSyntax[] parameters)
-        {
-            throw new NotImplementedException();
-        }
 
         public MethodModel WithReturnType(TypeModel returnType)
         {
@@ -139,21 +87,11 @@ namespace DGen.Generation.CodeModel
             return this;
         }
 
-        private void AddStatement(StatementSyntax statement)
+        public MethodModel WithBody(Action<BodyBuilder> build)
         {
-            Statements.Add(statement);
-        }
-
-        private MethodModel Assign(ExpressionSyntax left, ExpressionSyntax right)
-        {
-            AddStatement(SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, left, right)));
-
-            return this;
-        }
-
-        private MethodModel Return(ExpressionSyntax expression = null)
-        {
-            AddStatement(SyntaxFactory.ReturnStatement(expression));
+            var builder = new BodyBuilder(this);
+            build(builder);
+            Body = builder.Statements;
 
             return this;
         }

@@ -79,7 +79,7 @@ namespace DGen.Generation.Generators.CSharp
                 method = method.AddParameterListParameters(parameter) as T;
             }
 
-            method = method.AddBodyStatements(model.Statements.ToArray()) as T;
+            method = method.AddBodyStatements(model.Body.ToArray()) as T;
 
             return method;
         }
