@@ -10,6 +10,7 @@ namespace DGen.Generation.CodeModel
         public string Name { get; }
         public string Description { get; private set; }
         public ExpressionSyntax Expression => SyntaxFactory.IdentifierName(Name);
+        public virtual TypeSyntax Syntax => SyntaxFactory.ParseTypeName(Name);
 
         protected TypeModel(NamespaceModel @namespace, string name)
         {
@@ -25,11 +26,6 @@ namespace DGen.Generation.CodeModel
             Description = description;
 
             return this;
-        }
-
-        public override string ToString()
-        {
-            return Name;
         }
     }
 }

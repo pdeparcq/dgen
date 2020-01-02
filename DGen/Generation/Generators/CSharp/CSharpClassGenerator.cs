@@ -58,7 +58,7 @@ namespace DGen.Generation.Generators.CSharp
                 var method = _syntaxGenerator.MethodDeclaration(m.Name) as MethodDeclarationSyntax;
                 
                 if (m.ReturnType != null)
-                    method = method.WithReturnType(SyntaxFactory.ParseTypeName(m.ReturnType.ToString()));
+                    method = method.WithReturnType(m.ReturnType.Syntax);
 
                 method = GenerateMethod(m, method);
 
@@ -75,7 +75,7 @@ namespace DGen.Generation.Generators.CSharp
 
             foreach (var p in model.Parameters)
             {
-                var parameter = _syntaxGenerator.ParameterDeclaration(p.Name, SyntaxFactory.ParseTypeName(p.Type.ToString())) as ParameterSyntax;
+                var parameter = _syntaxGenerator.ParameterDeclaration(p.Name, p.Type.Syntax) as ParameterSyntax;
                 method = method.AddParameterListParameters(parameter) as T;
             }
 
@@ -97,7 +97,7 @@ namespace DGen.Generation.Generators.CSharp
         {
             foreach (var p in model.Properties)
             {
-                var property = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(p.Type.ToString()), p.Name)
+                var property = SyntaxFactory.PropertyDeclaration(p.Type.Syntax, p.Name)
                                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                                     .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
                 
@@ -120,7 +120,7 @@ namespace DGen.Generation.Generators.CSharp
         {
             if (model.BaseType != null)
             {
-                @class = _syntaxGenerator.AddBaseType(@class, _syntaxGenerator.IdentifierName(model.BaseType.ToString())) as ClassDeclarationSyntax;
+                @class = _syntaxGenerator.AddBaseType(@class, model.BaseType.Syntax) as ClassDeclarationSyntax;
             }
             return @class;
         }
@@ -145,8 +145,8 @@ namespace DGen.Generation.Generators.CSharp
 
         private static AttributeListSyntax GenerateAttributeList(ClassModel a)
         {
-            var attribute = SyntaxFactory.Attribute(SyntaxFactory.ParseName(a.Name)) as AttributeSyntax;
-            var attributeList = SyntaxFactory.AttributeList() as AttributeListSyntax;
+            var attribute = SyntaxFactory.Attribute(SyntaxFactory.ParseName(a.Name));
+            var attributeList = SyntaxFactory.AttributeList();
             attributeList = attributeList.AddAttributes(attribute);
             return attributeList;
         }

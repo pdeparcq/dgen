@@ -139,13 +139,17 @@ namespace DGen.Generation.CodeModel
             return Methods.SingleOrDefault(m => m.Name.Equals(name, comparisonType)) ?? BaseType?.GetMethod(name, comparisonType);
         }
 
-        public override string ToString()
+        public override TypeSyntax Syntax
         {
-            if (GenericTypes.Any())
+            get
             {
-                return $"{Name}<{string.Join(",", GenericTypes.Select(t => t.Name))}>";
+                if (GenericTypes.Any())
+                {
+                    return SyntaxFactory.ParseTypeName($"{Name}<{string.Join(",", GenericTypes.Select(t => t.Name))}>");
+                }
+                return base.Syntax;
             }
-            return Name;
         }
+        
     }
 }
