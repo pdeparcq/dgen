@@ -1,27 +1,25 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using DGen.Generation.CodeModel;
 using DGen.Generation.Extensions;
 using DGen.Meta;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DGen.Generation.Generators.Domain
 {
-    public class AggregateCodeGenerator : ICodeModelGenerator
+    public class AggregateCodeGenerator : LayerCodeGenerator
     {
-        public string Layer => "Domain";
+        public override string Layer => "Domain";
 
-        public IEnumerable<BaseType> GetTypes(Module module)
+        public override IEnumerable<BaseType> GetTypes(Module module)
         {
             return module.Aggregates;
         }
 
-        public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
+        public override void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
         }
 
-        public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
+        public override void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
         {
             if (type is Aggregate aggregate && model is ClassModel @class)
             {

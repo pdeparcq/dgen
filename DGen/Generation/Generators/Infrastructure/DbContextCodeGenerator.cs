@@ -5,27 +5,27 @@ using DGen.Meta;
 
 namespace DGen.Generation.Generators.Infrastructure
 {
-    public class DbContextCodeGenerator : ICodeModelGenerator
+    public class DbContextCodeGenerator : LayerCodeGenerator
     {
-        public string Layer => "Infrastructure";
+        public override string Layer => "Infrastructure";
 
-        public IEnumerable<BaseType> GetTypes(Module module)
+        public override IEnumerable<BaseType> GetTypes(Module module)
         {
             return module.Aggregates;
         }
 
-        public NamespaceModel GetNamespace(NamespaceModel @namespace)
+        public override NamespaceModel GetNamespace(NamespaceModel @namespace)
         {
             return @namespace.AddNamespace("Entities");
         }
 
-        public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
+        public override void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
             if (GetTypes(module).Any())
                 @namespace.AddClass($"{module.Name}DbContext");
         }
 
-        public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
+        public override void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
         {
             
         }

@@ -5,25 +5,25 @@ using DGen.Meta;
 
 namespace DGen.Generation.Generators.Domain
 {
-    public class ValueCodeGenerator : ICodeModelGenerator
+    public class ValueCodeGenerator : LayerCodeGenerator
     {
-        public string Layer => "Domain";
+        public override string Layer => "Domain";
 
-        public IEnumerable<BaseType> GetTypes(Module module)
+        public override IEnumerable<BaseType> GetTypes(Module module)
         {
             return module.Values;
         }
 
-        public NamespaceModel GetNamespace(NamespaceModel @namespace)
+        public override NamespaceModel GetNamespace(NamespaceModel @namespace)
         {
             return @namespace.AddNamespace("ValueObjects");
         }
 
-        public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
+        public override void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
         }
 
-        public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
+        public override void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
         {
             if (type is Value value && model is ClassModel @class)
             {

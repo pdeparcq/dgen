@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DGen.Generation.CodeModel;
 using DGen.Generation.Generators.Application;
@@ -11,12 +10,12 @@ namespace DGen.Generation.Generators
 {
     public class CodeModelGenerator : ITypeModelRegistry
     {
-        private readonly List<ICodeModelGenerator> _generators;
+        private readonly List<ILayerCodeGenerator> _generators;
         private Dictionary<string, Dictionary<BaseType, List<TypeModel>>> _types;
 
         public CodeModelGenerator()
         {
-            _generators = new List<ICodeModelGenerator>
+            _generators = new List<ILayerCodeGenerator>
             {
                 // Domain
                 new DomainEventCodeGenerator(),
@@ -71,7 +70,7 @@ namespace DGen.Generation.Generators
             }
         }
 
-        private void PrepareModule(Module module, NamespaceModel @namespace, IEnumerable<ICodeModelGenerator> generators)
+        private void PrepareModule(Module module, NamespaceModel @namespace, IEnumerable<ILayerCodeGenerator> generators)
         {
 
             foreach (var generator in generators)
@@ -93,7 +92,7 @@ namespace DGen.Generation.Generators
             });
         }
 
-        private void GenerateModule(Module module, NamespaceModel model, IEnumerable<ICodeModelGenerator> generators)
+        private void GenerateModule(Module module, NamespaceModel model, IEnumerable<ILayerCodeGenerator> generators)
         {
 
             foreach (var generator in generators)

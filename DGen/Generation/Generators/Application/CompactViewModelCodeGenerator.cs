@@ -6,31 +6,31 @@ using DGen.Meta;
 
 namespace DGen.Generation.Generators.Application
 {
-    public class CompactViewModelCodeGenerator : ICodeModelGenerator
+    public class CompactViewModelCodeGenerator : LayerCodeGenerator
     {
-        public string Layer => "Application";
+        public override string Layer => "Application";
 
-        public IEnumerable<BaseType> GetTypes(Module module)
+        public override IEnumerable<BaseType> GetTypes(Module module)
         {
             return module.ViewModels.Where(vm => vm.IsCompact);
         }
 
-        public NamespaceModel GetNamespace(NamespaceModel @namespace)
+        public override NamespaceModel GetNamespace(NamespaceModel @namespace)
         {
             return @namespace.AddNamespace("ViewModels").AddNamespace("Compact");
         }
 
-        public string GetTypeName(BaseType type)
+        public override string GetTypeName(BaseType type)
         {
             return $"Compact{type.Name}ViewModel";
         }
 
-        public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
+        public override void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
 
         }
 
-        public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
+        public override void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
         {
             if (type is ViewModel viewModel && model is ClassModel @class)
             {

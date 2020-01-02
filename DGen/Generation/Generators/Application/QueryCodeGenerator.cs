@@ -5,26 +5,26 @@ using DGen.Meta;
 
 namespace DGen.Generation.Generators.Application
 {
-    public class QueryCodeGenerator : ICodeModelGenerator
+    public class QueryCodeGenerator : LayerCodeGenerator
     {
-        public string Layer => "Application";
+        public override string Layer => "Application";
 
-        public IEnumerable<BaseType> GetTypes(Module module)
+        public override IEnumerable<BaseType> GetTypes(Module module)
         {
             return module.Queries;
         }
 
-        public NamespaceModel GetNamespace(NamespaceModel @namespace)
+        public override NamespaceModel GetNamespace(NamespaceModel @namespace)
         {
             return @namespace.AddNamespace("Queries");
         }
 
-        public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
+        public override void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
             
         }
 
-        public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
+        public override void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
         {
             if(type is Query query && model is ClassModel @class && query.Result is ViewModel viewModel)
             {

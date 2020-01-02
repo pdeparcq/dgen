@@ -5,31 +5,31 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace DGen.Generation.Generators.Application
 {
-    public class QueryHandlerCodeGenerator : ICodeModelGenerator
+    public class QueryHandlerCodeGenerator : LayerCodeGenerator
     {
-        public string Layer => "Application";
+        public override string Layer => "Application";
 
-        public IEnumerable<BaseType> GetTypes(Module module)
+        public override IEnumerable<BaseType> GetTypes(Module module)
         {
             return module.Queries;
         }
 
-        public NamespaceModel GetNamespace(NamespaceModel @namespace)
+        public override NamespaceModel GetNamespace(NamespaceModel @namespace)
         {
             return @namespace.AddNamespace("Queries").AddNamespace("Handlers");
         }
 
-        public string GetTypeName(BaseType type)
+        public override string GetTypeName(BaseType type)
         {
             return $"{type.Name}QueryHandler";
         }
 
-        public void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
+        public override void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
             
         }
 
-        public void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
+        public override void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
         {
             if (type is Query query && model is ClassModel @class && query.Result is ViewModel viewModel)
             {
