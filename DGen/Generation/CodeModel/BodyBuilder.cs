@@ -72,7 +72,7 @@ namespace DGen.Generation.CodeModel
             return AddStatement(SyntaxFactory.ThrowStatement(exception.Construct(parameters)));
         }
 
-        private BodyBuilder Return(ExpressionSyntax expression = null)
+        public BodyBuilder Return(ExpressionSyntax expression = null)
         {
             return AddStatement(SyntaxFactory.ReturnStatement(expression));
         }

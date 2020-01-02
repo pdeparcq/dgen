@@ -76,6 +76,9 @@ namespace DGen.Generation.Generators.CSharp
 
             method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword)) as T;
 
+            if (model.IsVirtual)
+                method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.VirtualKeyword)) as T;
+
             if (model.IsAbstract)
                 method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword)) as T;
 

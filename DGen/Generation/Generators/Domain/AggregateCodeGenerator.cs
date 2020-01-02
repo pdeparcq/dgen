@@ -34,9 +34,20 @@ namespace DGen.Generation.Generators.Domain
 
                 if (aggregate.UniqueIdentifier != null && aggregate.UniqueIdentifier.Type.Resolve(registry) != SystemTypes.Guid)
                 {
-                    @class.AddMethod("GetUniqueIdentifier")
+                    var parameter = new MethodParameter("id", aggregate.UniqueIdentifier.Type.Resolve(registry));
+
+                    var method = @class.AddMethod("GetUniqueIdentifier")
                         .WithReturnType(SystemTypes.Guid)
-                        .WithParameters(new MethodParameter("id", aggregate.UniqueIdentifier.Type.Resolve(registry)));
+                        .WithParameters(parameter);
+
+                    var property = aggregate.UniqueIdentifier.Denormalized();
+                    if (property.Type.SystemType != null && SystemTypes.Parse(property.Type.Name) == SystemTypes.Guid)
+                    {
+                        method.WithBody(builder =>
+                        {
+                            builder.Return(parameter.Property(aggregate.UniqueIdentifier.Type.Type.Properties.First().Name));
+                        }).MakeVirtual();
+                    }
                 }
                 
 
@@ -87,7 +98,7 @@ namespace DGen.Generation.Generators.Domain
             }
         }
 
-        private static (string Name, ExpressionSyntax)[] CreateDomainEventInitializer(Aggregate aggregate, ClassModel @class, ITypeModelRegistry registry, MethodParameter parameter)
+        private static (string Name, ExpressionSyntax Expression)[] CreateDomainEventInitializer(Aggregate aggregate, ClassModel @class, ITypeModelRegistry registry, MethodParameter parameter)
         {
             if (aggregate.UniqueIdentifier != null)
             {

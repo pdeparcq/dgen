@@ -18,7 +18,8 @@ namespace DGen.Generation.CodeModel
         public List<StatementSyntax> Body { get; private set; }
         public List<TypeModel> UsedTypes { get; }
         public ExpressionSyntax Expression => SyntaxFactory.IdentifierName(Name);
-        public bool IsAbstract => Body == null;
+        public bool IsAbstract => Body == null && !IsVirtual;
+        public bool IsVirtual { get; private set; }
 
         public IEnumerable<NamespaceModel> Usings
         {
@@ -46,6 +47,14 @@ namespace DGen.Generation.CodeModel
             Parameters = new List<MethodParameter>();
             Attributes = new List<ClassModel>();
             UsedTypes = new List<TypeModel>();
+        }
+
+
+        public MethodModel MakeVirtual()
+        {
+            IsVirtual = true;
+
+            return this;
         }
 
         public ExpressionSyntax Invoke(params ExpressionSyntax[] parameters)
