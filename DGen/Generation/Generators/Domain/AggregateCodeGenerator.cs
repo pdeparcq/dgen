@@ -44,9 +44,18 @@ namespace DGen.Generation.Generators.Domain
                                 builder.InvokeMethod("AddAndApplyEvent", domainEvent.Construct(parameters.ToExpressions()));
                             });
 
+
+                        var @event = new MethodParameter("@event", domainEvent);
                         // Add method for applying domain event
                         @class.AddMethod("Apply")
-                            .WithParameters(new MethodParameter("@event", domainEvent));
+                            .WithParameters(@event)
+                            .WithBody(builder =>
+                            {
+                                foreach (var property in de.Properties)
+                                {
+                                    builder.AssignProperty(property.Name, @event.Property(property.Name));
+                                }
+                            });
 
                         if (de.Type == DomainEventType.Create)
                         {

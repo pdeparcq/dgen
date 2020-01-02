@@ -19,5 +19,17 @@ namespace DGen.Generation.CodeModel
         }
 
         public ExpressionSyntax Expression => SyntaxFactory.IdentifierName(Name);
+
+
+        public ExpressionSyntax Property(string propertyName)
+        {
+            if (Type is ClassModel @class && @class.HasProperty(propertyName))
+            {
+                return SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Expression,
+                    @class.GetProperty(propertyName).Expression as SimpleNameSyntax);
+            }
+
+            return null;
+        }
     }
 }

@@ -19,8 +19,8 @@ namespace DGen.Generation.Generators
             _generators = new List<ICodeModelGenerator>
             {
                 // Domain
-                new AggregateCodeGenerator(),
                 new DomainEventCodeGenerator(),
+                new AggregateCodeGenerator(),
                 new Domain.EntityCodeGenerator(),
                 new EnumerationCodeGenerator(),
                 new ValueCodeGenerator(),

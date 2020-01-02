@@ -15,20 +15,28 @@ namespace DGen.Generation.CodeModel
             Statements = new List<StatementSyntax>();
         }
 
-        public BodyBuilder AssignProperties()
+        public BodyBuilder AssignPropertiesFromParameters()
         {
             foreach (var parameter in Method.Parameters)
             {
-                AssignProperty(parameter.Name);
+                AssignPropertyFromParameter(parameter.Name);
             }
 
             return this;
         }
 
-        public BodyBuilder AssignProperty(string propertyName, string parameterName = null)
+        public BodyBuilder AssignPropertyFromParameter(string propertyName, string parameterName = null)
         {
-            if(Method.Class.HasProperty(propertyName) && Method.HasParameter(parameterName ?? propertyName))
-                return Assign(Method.Class.GetProperty(propertyName).Expression, Method.GetParameter(parameterName ?? propertyName).Expression);
+            if(Method.HasParameter(parameterName ?? propertyName))
+                return AssignProperty(propertyName, Method.GetParameter(parameterName ?? propertyName).Expression);
+
+            return this;
+        }
+
+        public BodyBuilder AssignProperty(string propertyName, ExpressionSyntax expression)
+        {
+            if (Method.Class.HasProperty(propertyName))
+                return Assign(Method.Class.GetProperty(propertyName).Expression, expression);
 
             return this;
         }
