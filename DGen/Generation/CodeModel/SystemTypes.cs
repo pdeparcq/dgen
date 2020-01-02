@@ -9,6 +9,10 @@
         private static NamespaceModel KledexDomainNamespace;
         private static NamespaceModel KledexQueryNamespace;
 
+        public static readonly string AggregateRootIdentifierName = "Id";
+        public static readonly string DomainEventPublishMethodName = "AddAndApplyEvent";
+        public static readonly string DomainEventApplyMethodName = "Apply";
+        public static readonly string DomainEventAggregateRootIdentifierName = "AggregateRootId";
 
         static SystemTypes()
         {
@@ -40,13 +44,16 @@
         public static ClassModel AggregateRoot(TypeModel type)
         {
             var @class = new ClassModel(KledexDomainNamespace, "AggregateRoot");
-            @class.AddMethod("AddAndApplyEvent");
+            @class.AddMethod(DomainEventPublishMethodName);
+            @class.AddProperty(AggregateRootIdentifierName, Parse("Guid"));
             return @class;
         }
 
         public static ClassModel DomainEvent(TypeModel type)
         {
-            return new ClassModel(KledexDomainNamespace, "DomainEvent");
+            var @class = new ClassModel(KledexDomainNamespace, "DomainEvent");
+            @class.AddProperty(DomainEventAggregateRootIdentifierName, Parse("Guid"));
+            return @class;
         }
 
         public static ClassModel Query(TypeModel result)

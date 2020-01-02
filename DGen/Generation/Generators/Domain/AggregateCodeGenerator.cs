@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using DGen.Generation.CodeModel;
 using DGen.Generation.Extensions;
 using DGen.Meta;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DGen.Generation.Generators.Domain
 {
@@ -30,6 +32,11 @@ namespace DGen.Generation.Generators.Domain
                     @class.AddDomainProperty(p, registry);
                 }
 
+
+                @class.AddMethod("GetUniqueIdentifier")
+                    .WithReturnType(SystemTypes.Parse("Guid"))
+                    .WithBody(builder => { builder.ThrowNotImplemented(); });
+
                 foreach(var de in aggregate.DomainEvents)
                 {
                     if (registry.Resolve(Layer, de) is ClassModel domainEvent)
@@ -41,16 +48,23 @@ namespace DGen.Generation.Generators.Domain
                             .WithParameters(parameters.ToArray())
                             .WithBody(builder =>
                             {
-                                builder.InvokeMethod("AddAndApplyEvent", domainEvent.Construct(parameters.ToExpressions()));
+                                builder.InvokeMethod(SystemTypes.DomainEventPublishMethodName, domainEvent.Construct(parameters.ToExpressions(), new []
+                                {
+                                    (Name: SystemTypes.DomainEventAggregateRootIdentifierName, @class.GetMethod("GetUniqueIdentifier").Invoke())
+                                }));
                             });
 
 
-                        var @event = new MethodParameter("@event", domainEvent);
                         // Add method for applying domain event
-                        @class.AddMethod("Apply")
+                        var @event = new MethodParameter("@event", domainEvent);
+                        @class.AddMethod(SystemTypes.DomainEventApplyMethodName)
                             .WithParameters(@event)
                             .WithBody(builder =>
                             {
+                                if (de.Type == DomainEventType.Create)
+                                {
+                                    builder.AssignProperty(SystemTypes.AggregateRootIdentifierName, @event.Property(SystemTypes.DomainEventAggregateRootIdentifierName));
+                                }
                                 foreach (var property in de.Properties)
                                 {
                                     builder.AssignProperty(property.Name, @event.Property(property.Name));

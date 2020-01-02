@@ -89,7 +89,8 @@ namespace DGen.Generation.CodeModel
 
         public PropertyModel GetProperty(string name, StringComparison comparisonType = StringComparison.InvariantCultureIgnoreCase)
         {
-            return Properties.SingleOrDefault(p => p.Name.Equals(name, comparisonType));
+            return Properties.SingleOrDefault(p => p.Name.Equals(name, comparisonType)) ??
+                   BaseType?.GetProperty(name, comparisonType);
         }
 
         public MethodModel AddConstructor()
@@ -101,7 +102,24 @@ namespace DGen.Generation.CodeModel
 
         public ExpressionSyntax Construct(params ExpressionSyntax[] parameters)
         {
-            return SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName(Name), parameters.ToArgumentList(), null);
+            return Construct(parameters, null);
+        }
+
+        public ExpressionSyntax Construct(IEnumerable<ExpressionSyntax> parameters,
+            IEnumerable<(string Name, ExpressionSyntax Expression)> initializer = null)
+        {
+            var expression = SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName(Name),
+                parameters.ToArgumentList(), null);
+
+            //Add initializer if provided
+            if (initializer != null)
+            {
+                var list = new SeparatedSyntaxList<ExpressionSyntax>();
+                list = list.AddRange(initializer.Select(i => SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, GetProperty(i.Name).Expression, i.Expression)));
+                expression = expression.WithInitializer(SyntaxFactory.InitializerExpression(SyntaxKind.ObjectInitializerExpression, list));
+            }
+
+            return expression;
         }
 
         public MethodModel AddMethod(string name)

@@ -48,7 +48,7 @@ namespace DGen.Generation.CodeModel
             UsedTypes = new List<TypeModel>();
         }
 
-        public ExpressionSyntax Invoke(ExpressionSyntax[] parameters)
+        public ExpressionSyntax Invoke(params ExpressionSyntax[] parameters)
         {
             return SyntaxFactory.InvocationExpression(Expression, parameters.ToArgumentList());
         }
