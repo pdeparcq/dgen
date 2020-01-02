@@ -1,4 +1,6 @@
 ﻿using Guards;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DGen.Generation.CodeModel
 {
@@ -7,6 +9,7 @@ namespace DGen.Generation.CodeModel
         public NamespaceModel Namespace { get; }
         public string Name { get; }
         public string Description { get; private set; }
+        public ExpressionSyntax Expression => SyntaxFactory.IdentifierName(Name);
 
         protected TypeModel(NamespaceModel @namespace, string name)
         {

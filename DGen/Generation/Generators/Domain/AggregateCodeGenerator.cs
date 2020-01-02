@@ -32,22 +32,31 @@ namespace DGen.Generation.Generators.Domain
 
                 foreach(var de in aggregate.DomainEvents)
                 {
-                    var domainEventType = registry.Resolve(Layer, de) as ClassModel;
-                    var parameters = GenerateDomainEventParameters(registry, de, aggregate).ToList();
-
-                    @class.AddMethod($"Publish{de.Name}")
-                        .WithParameters(parameters.ToArray());
-
-                    @class.AddMethod("Apply")
-                        .WithParameters(new MethodParameter("@event", domainEventType));
-
-                    if (de.Type == DomainEventType.Create)
+                    if (registry.Resolve(Layer, de) is ClassModel domainEvent)
                     {
-                        @class.AddConstructor()
-                            .WithParameters(parameters.ToArray());
-                    }
+                        var parameters = GenerateDomainEventParameters(registry, de, aggregate).ToList();
 
-                    
+                        // Add method for publishing domain event
+                        @class.AddMethod($"Publish{de.Name}")
+                            .WithParameters(parameters.ToArray())
+                            .WithBody(builder =>
+                            {
+                                builder.InvokeMethod("AddAndApplyEvent", domainEvent.Construct(parameters.ToExpressions()));
+                            });
+
+                        // Add method for applying domain event
+                        @class.AddMethod("Apply")
+                            .WithParameters(new MethodParameter("@event", domainEvent));
+
+                        if (de.Type == DomainEventType.Create)
+                        {
+                            @class.AddConstructor()
+                                .WithParameters(parameters.ToArray()).WithBody(builder =>
+                                {
+                                    builder.InvokeMethod($"Publish{de.Name}", parameters.ToExpressions());
+                                });
+                        }
+                    }
                 }
             }
         }

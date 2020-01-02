@@ -3,6 +3,7 @@ using Guards;
 using System.Collections.Generic;
 using System.Linq;
 using DGen.Generation.Extensions;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DGen.Generation.CodeModel
@@ -15,6 +16,8 @@ namespace DGen.Generation.CodeModel
         public List<MethodParameter> Parameters { get; }
         public List<ClassModel> Attributes { get; }
         public List<StatementSyntax> Body { get; private set; }
+        public List<TypeModel> UsedTypes { get; private set; }
+        public ExpressionSyntax Expression => SyntaxFactory.IdentifierName(Name);
 
         public IEnumerable<NamespaceModel> Usings
         {
@@ -22,6 +25,7 @@ namespace DGen.Generation.CodeModel
             {
                 var usings = Attributes.Select(t => t.Namespace)
                     .Concat(Parameters.Select(p => p.Type.Namespace))
+                    .Concat(UsedTypes.Select(t => t.Namespace))
                     .ToList();
 
                 if (ReturnType != null)
@@ -41,15 +45,27 @@ namespace DGen.Generation.CodeModel
             Parameters = new List<MethodParameter>();
             Attributes = new List<ClassModel>();
             Body = new List<StatementSyntax>();
+            UsedTypes = new List<TypeModel>();
         }
 
-        /*
-         * Assign properties from parameters with same name
-         */
+        public ExpressionSyntax Invoke(ExpressionSyntax[] parameters)
+        {
+            return SyntaxFactory.InvocationExpression(Expression, parameters.ToArgumentList());
+        }
 
         public MethodModel WithReturnType(TypeModel returnType)
         {
             ReturnType = returnType;
+
+            return this;
+        }
+
+        public MethodModel UseType(TypeModel type)
+        {
+            if (!UsedTypes.Contains(type))
+            {
+                UsedTypes.Add(type);
+            }
 
             return this;
         }
@@ -61,9 +77,6 @@ namespace DGen.Generation.CodeModel
             return this;
         }
 
-        /*
-         * Generate method parameters from class properties
-         */
         public MethodModel WithPropertyParameters()
         {
             return WithParameters(Class.Properties.Select(p => new MethodParameter(p.Name.ToCamelCase(), p.Type))

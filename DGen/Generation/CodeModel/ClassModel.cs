@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DGen.Generation.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -100,14 +101,7 @@ namespace DGen.Generation.CodeModel
 
         public ExpressionSyntax Construct(params ExpressionSyntax[] parameters)
         {
-            ArgumentListSyntax argumentList = null;
-            if (parameters.Any())
-            {
-                var arguments = new SeparatedSyntaxList<ArgumentSyntax>();
-                arguments = arguments.AddRange(parameters.Select(p => SyntaxFactory.Argument(p)));
-                argumentList = SyntaxFactory.ArgumentList(arguments);
-            }
-            return SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName(Name), argumentList, null);
+            return SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName(Name), parameters.ToArgumentList(), null);
         }
 
         public MethodModel AddMethod(string name)
@@ -117,16 +111,23 @@ namespace DGen.Generation.CodeModel
             return method;
         }
 
+        public bool HasMethod(string name, StringComparison comparisonType = StringComparison.InvariantCultureIgnoreCase)
+        {
+            return GetMethod(name, comparisonType) != null;
+        }
+
+        public MethodModel GetMethod(string name, StringComparison comparisonType = StringComparison.InvariantCultureIgnoreCase)
+        {
+            return Methods.SingleOrDefault(m => m.Name.Equals(name, comparisonType)) ?? BaseType?.GetMethod(name, comparisonType);
+        }
+
         public override string ToString()
         {
             if (GenericTypes.Any())
             {
                 return $"{Name}<{string.Join(",", GenericTypes.Select(t => t.Name))}>";
             }
-            else
-            {
-                return Name;
-            }
+            return Name;
         }
     }
 }

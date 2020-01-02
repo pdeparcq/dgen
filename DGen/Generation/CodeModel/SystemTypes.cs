@@ -9,6 +9,7 @@
         private static NamespaceModel KledexDomainNamespace;
         private static NamespaceModel KledexQueryNamespace;
 
+
         static SystemTypes()
         {
             SystemGenericCollectionsNamespace = SystemNamespace.AddNamespace("Collections").AddNamespace("Generic");
@@ -26,6 +27,11 @@
             return new ClassModel(SystemNamespace, name);
         }
 
+        public static ClassModel NotImplementedException()
+        {
+            return new ClassModel(SystemNamespace, "NotImplementedException");
+        }
+
         public static ClassModel JsonConstructorAttribute()
         {
             return new ClassModel(NewtonsoftJson, "JsonConstructor");
@@ -33,7 +39,9 @@
 
         public static ClassModel AggregateRoot(TypeModel type)
         {
-            return new ClassModel(KledexDomainNamespace, "AggregateRoot");
+            var @class = new ClassModel(KledexDomainNamespace, "AggregateRoot");
+            @class.AddMethod("AddAndApplyEvent");
+            return @class;
         }
 
         public static ClassModel DomainEvent(TypeModel type)

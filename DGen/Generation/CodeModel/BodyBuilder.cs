@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -14,18 +13,6 @@ namespace DGen.Generation.CodeModel
         {
             Method = method;
             Statements = new List<StatementSyntax>();
-        }
-
-        public BodyBuilder ReturnNull()
-        {
-            return Return(SyntaxFactory.ParseExpression("null"));
-        }
-
-        public BodyBuilder ThrowNotImplemented()
-        {
-            AddStatement(SyntaxFactory.ThrowStatement(SyntaxFactory.ParseExpression("new System.NotImplementedException()")));
-
-            return this;
         }
 
         public BodyBuilder AssignProperties()
@@ -48,24 +35,43 @@ namespace DGen.Generation.CodeModel
 
         public BodyBuilder InvokeMethod(string methodName, params ExpressionSyntax[] parameters)
         {
-            throw new NotImplementedException();
-        }
-
-        private void AddStatement(StatementSyntax statement)
-        {
-            Statements.Add(statement);
-        }
-
-        private BodyBuilder Assign(ExpressionSyntax left, ExpressionSyntax right)
-        {
-            AddStatement(SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, left, right)));
+            if (Method.Class.HasMethod(methodName))
+            {
+                return Execute(Method.Class.GetMethod(methodName).Invoke(parameters));
+            }
 
             return this;
         }
 
+        public BodyBuilder ThrowNotImplemented()
+        {
+            return Throw(SystemTypes.NotImplementedException());
+        }
+
+        private BodyBuilder Assign(ExpressionSyntax left, ExpressionSyntax right)
+        {
+            return Execute(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, left, right));
+        }
+
+        private BodyBuilder Execute(ExpressionSyntax expression)
+        {
+            return AddStatement(SyntaxFactory.ExpressionStatement(expression));
+        }
+
+        private BodyBuilder Throw(ClassModel exception, params ExpressionSyntax[] parameters)
+        {
+            Method.UseType(exception);
+            return AddStatement(SyntaxFactory.ThrowStatement(exception.Construct(parameters)));
+        }
+
         private BodyBuilder Return(ExpressionSyntax expression = null)
         {
-            AddStatement(SyntaxFactory.ReturnStatement(expression));
+            return AddStatement(SyntaxFactory.ReturnStatement(expression));
+        }
+
+        private BodyBuilder AddStatement(StatementSyntax statement)
+        {
+            Statements.Add(statement);
 
             return this;
         }
