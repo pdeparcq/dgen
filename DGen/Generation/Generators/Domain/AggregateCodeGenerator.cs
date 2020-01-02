@@ -32,8 +32,7 @@ namespace DGen.Generation.Generators.Domain
 
 
                 @class.AddMethod("GetUniqueIdentifier")
-                    .WithReturnType(SystemTypes.Parse("Guid"))
-                    .WithBody(builder => { builder.ThrowNotImplemented(); });
+                    .WithReturnType(SystemTypes.Parse("Guid"));
 
                 foreach(var de in aggregate.DomainEvents)
                 {

@@ -29,6 +29,9 @@ namespace DGen.Generation.Generators.CSharp
             if (model.Description != null)
                 @class = @class.WithLeadingTrivia(ToDocumentation(model.Description));
 
+            if (model.IsAbstract)
+                @class = @class.AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword));
+
             @class = GenerateBaseType(model, @class);
             @class = GenerateTypeAttributes(model, @class);
             @class = GenerateConstructors(model, @class);
@@ -56,7 +59,7 @@ namespace DGen.Generation.Generators.CSharp
             foreach (var m in model.Methods)
             {
                 var method = _syntaxGenerator.MethodDeclaration(m.Name) as MethodDeclarationSyntax;
-                
+
                 if (m.ReturnType != null)
                     method = method.WithReturnType(m.ReturnType.Syntax);
 
@@ -73,13 +76,23 @@ namespace DGen.Generation.Generators.CSharp
 
             method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword)) as T;
 
+            if (model.IsAbstract)
+                method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword)) as T;
+
             foreach (var p in model.Parameters)
             {
                 var parameter = _syntaxGenerator.ParameterDeclaration(p.Name, p.Type.Syntax) as ParameterSyntax;
                 method = method.AddParameterListParameters(parameter) as T;
             }
 
-            method = method.AddBodyStatements(model.Body.ToArray()) as T;
+            if (!model.IsAbstract)
+            {
+                method = method.AddBodyStatements(model.Body.ToArray()) as T;
+            }
+            else
+            {
+                method = method.WithBody(null).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)) as T;
+            }
 
             return method;
         }

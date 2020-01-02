@@ -16,8 +16,9 @@ namespace DGen.Generation.CodeModel
         public List<MethodParameter> Parameters { get; }
         public List<ClassModel> Attributes { get; }
         public List<StatementSyntax> Body { get; private set; }
-        public List<TypeModel> UsedTypes { get; private set; }
+        public List<TypeModel> UsedTypes { get; }
         public ExpressionSyntax Expression => SyntaxFactory.IdentifierName(Name);
+        public bool IsAbstract => Body == null;
 
         public IEnumerable<NamespaceModel> Usings
         {
@@ -44,7 +45,6 @@ namespace DGen.Generation.CodeModel
             Name = name;
             Parameters = new List<MethodParameter>();
             Attributes = new List<ClassModel>();
-            Body = new List<StatementSyntax>();
             UsedTypes = new List<TypeModel>();
         }
 
