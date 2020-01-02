@@ -21,7 +21,7 @@ namespace DGen.Generation.Extensions
             return argumentList;
         }
 
-        public static ExpressionSyntax[] ToExpressions(this IEnumerable<MethodParameter> parameters)
+        public static IEnumerable<ExpressionSyntax> ToExpressions(this IEnumerable<MethodParameter> parameters)
         {
             return parameters.Select(p => p.Expression).ToArray();
         }

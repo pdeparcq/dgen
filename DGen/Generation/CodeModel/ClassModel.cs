@@ -106,21 +106,25 @@ namespace DGen.Generation.CodeModel
             return Construct(parameters, null);
         }
 
-        public ExpressionSyntax Construct(IEnumerable<ExpressionSyntax> parameters,
-            IEnumerable<(string Name, ExpressionSyntax Expression)> initializer = null)
+        public ExpressionSyntax Construct(IEnumerable<ExpressionSyntax> parameters, IEnumerable<AssignmentExpressionSyntax> initializer)
         {
             var expression = SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName(Name),
                 parameters.ToArgumentList(), null);
 
             //Add initializer if provided
-            if (initializer != null)
+            if (initializer != null && initializer.Any())
             {
                 var list = new SeparatedSyntaxList<ExpressionSyntax>();
-                list = list.AddRange(initializer.Select(i => SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, GetProperty(i.Name).Expression, i.Expression)));
+                list = list.AddRange(initializer);
                 expression = expression.WithInitializer(SyntaxFactory.InitializerExpression(SyntaxKind.ObjectInitializerExpression, list));
             }
 
             return expression;
+        }
+
+        public AssignmentExpressionSyntax Initializer(string name, ExpressionSyntax expression)
+        {
+            return SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, GetProperty(name).Expression, expression);
         }
 
         public MethodModel AddMethod(string name)

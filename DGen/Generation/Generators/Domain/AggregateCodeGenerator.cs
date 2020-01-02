@@ -68,10 +68,27 @@ namespace DGen.Generation.Generators.Domain
                             .MakeProtected()
                             .WithBody(builder =>
                                 {
-                                    builder.InvokeMethod(SystemTypes.DomainEventPublishMethodName,
-                                        domainEvent.Construct(parameters.ToExpressions(),
-                                            CreateDomainEventInitializer(aggregate, @class, registry,
-                                                parameters.FirstOrDefault())));
+                                    if (aggregate.UniqueIdentifier != null)
+                                    {
+                                        var type = aggregate.UniqueIdentifier.Type.Resolve(registry);
+                                        AssignmentExpressionSyntax initializer;
+
+                                        if (type != SystemTypes.Guid)
+                                        {
+                                            initializer = domainEvent.Initializer(SystemTypes.DomainEventAggregateRootIdentifierName, @class.GetMethod("GetUniqueIdentifier").Invoke(parameters.First().Expression));
+                                        }
+                                        else
+                                        {
+                                            initializer = domainEvent.Initializer(SystemTypes.DomainEventAggregateRootIdentifierName, parameters.First().Expression);
+                                        }
+
+                                        builder.InvokeMethod(SystemTypes.DomainEventPublishMethodName, domainEvent.Construct(parameters.ToExpressions(), new[] { initializer }.AsEnumerable()));
+                                    }
+                                    else
+                                    {
+                                        builder.InvokeMethod(SystemTypes.DomainEventPublishMethodName, domainEvent.Construct(parameters.ToExpressions().ToArray()));
+                                    }
+
                                 });
 
 
@@ -97,35 +114,12 @@ namespace DGen.Generation.Generators.Domain
                             @class.AddConstructor()
                                 .WithParameters(parameters.ToArray()).WithBody(builder =>
                                 {
-                                    builder.InvokeMethod($"Publish{de.Name}", parameters.ToExpressions());
+                                    builder.InvokeMethod($"Publish{de.Name}", parameters.ToExpressions().ToArray());
                                 }).MakeProtected();
                         }
                     }
                 }
             }
-        }
-
-        private static (string Name, ExpressionSyntax Expression)[] CreateDomainEventInitializer(Aggregate aggregate, ClassModel @class, ITypeModelRegistry registry, MethodParameter parameter)
-        {
-            if (aggregate.UniqueIdentifier != null)
-            {
-                var type = aggregate.UniqueIdentifier.Type.Resolve(registry);
-
-                if (type != SystemTypes.Guid)
-                {
-                    return new[]
-                    {
-                        (Name: SystemTypes.DomainEventAggregateRootIdentifierName, Expression: @class.GetMethod("GetUniqueIdentifier").Invoke(parameter.Expression) )
-                    };
-                }
-
-                return new[]
-                {
-                    (Name: SystemTypes.DomainEventAggregateRootIdentifierName, parameter.Expression )
-                };
-            }
-
-            return null;
         }
 
         private static IEnumerable<MethodParameter> GenerateDomainEventParameters(ITypeModelRegistry registry, DomainEvent de, Aggregate aggregate)
