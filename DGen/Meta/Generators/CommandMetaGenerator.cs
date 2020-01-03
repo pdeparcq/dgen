@@ -28,6 +28,7 @@ namespace DGen.Meta.Generators
                 if (dependency != null)
                 {
                     command.Input = command.Module.GetTypes<InputModel>().FirstOrDefault(i => i.Source == dependency.Value.Type);
+                    command.Aggregate = dependency.Value.Type.Aggregate;
 
                     if (command.Input != null)
                     {

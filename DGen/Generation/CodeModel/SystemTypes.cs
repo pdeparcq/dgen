@@ -1,4 +1,7 @@
-﻿namespace DGen.Generation.CodeModel
+﻿using System;
+using DGen.Meta.MetaModel.Types;
+
+namespace DGen.Generation.CodeModel
 {
     public static class SystemTypes
     {
@@ -8,6 +11,7 @@
         private static NamespaceModel KledexNamespace = new NamespaceModel(null, "Kledex");
         private static NamespaceModel KledexDomainNamespace;
         private static NamespaceModel KledexQueryNamespace;
+        private static NamespaceModel KledexCommandNamespace;
         public static readonly ClassModel Guid;
 
         public static readonly string AggregateRootIdentifierName = "Id";
@@ -20,6 +24,7 @@
             SystemGenericCollectionsNamespace = SystemNamespace.AddNamespace("Collections").AddNamespace("Generic");
             KledexDomainNamespace = KledexNamespace.AddNamespace("Domain");
             KledexQueryNamespace = KledexNamespace.AddNamespace("Queries");
+            KledexCommandNamespace = KledexNamespace.AddNamespace("Commands");
             Guid = Parse("Guid");
         }
 
@@ -67,5 +72,16 @@
         {
             return new ClassModel(KledexQueryNamespace, "IQueryHandler").WithGenericTypes(query, result);
         }
+
+        internal static ClassModel Command()
+        {
+            return new ClassModel(KledexCommandNamespace, "Command");
+        }
+
+        public static ClassModel CommandHandler(TypeModel command)
+        {
+            return new ClassModel(KledexCommandNamespace, "ICommandHandler").WithGenericTypes(command);
+        }
+
     }
 }
