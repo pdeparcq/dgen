@@ -1,22 +1,17 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using DGen.Meta.MetaModel.Types;
 
 namespace DGen.Meta.MetaModel
 {
     public class Module
     {
+        private readonly List<BaseType> _types;
+
         public Module()
         {
             Modules = new List<Module>();
-            Aggregates = new List<Aggregate>();
-            Entities = new List<Entity>();
-            Values = new List<Value>();
-            DomainEvents = new List<DomainEvent>();
-            Enumerations = new List<Enumeration>();
-            Queries = new List<Query>();
-            ViewModels = new List<ViewModel>();
-            Commands = new List<Command>();
-            InputModels = new List<InputModel>();
+            _types = new List<BaseType>();
         }
 
         public Module ParentModule { get; set; }
@@ -24,14 +19,16 @@ namespace DGen.Meta.MetaModel
         public string FullName => ParentModule != null ? $"{ParentModule.FullName}.{Name}" : Name;
         public string Description { get; set; }
         public List<Module> Modules { get; set; }
-        public List<Aggregate> Aggregates { get; set; }
-        public List<Entity> Entities { get; set; }
-        public List<Value> Values { get; set; }
-        public List<DomainEvent> DomainEvents { get; set; }
-        public List<Enumeration> Enumerations { get; set; }
-        public List<Query> Queries { get; set; }
-        public List<ViewModel> ViewModels { get; set; }
-        public List<Command> Commands { get; set; }
-        public List<InputModel> InputModels { get; set; }
+
+        public IEnumerable<T> GetTypes<T>() where T : BaseType
+        {
+            return _types.OfType<T>().Where(t => t.GetType() == typeof(T)).ToList().AsReadOnly();
+        }
+
+        public void AddType(BaseType type)
+        {
+            if(!_types.Contains(type))
+                _types.Add(type);
+        }
     }
 }

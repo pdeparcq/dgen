@@ -10,17 +10,12 @@ namespace DGen.Meta.Generators
     {
         public override string StereoType => "viewmodel";
 
-        public override List<ViewModel> GetListFromModule(Module module)
-        {
-            return module.ViewModels;
-        }
-
         public override void GenerateTypes(Element parent, Module module, ITypeRegistry registry)
         {
             base.GenerateTypes(parent, module, registry);
-            GenerateViewModels(module, module.Aggregates);
-            GenerateViewModels(module, module.Entities);
-            GenerateViewModels(module, module.Values);
+            GenerateViewModels(module, module.GetTypes<Aggregate>());
+            GenerateViewModels(module, module.GetTypes<Entity>());
+            GenerateViewModels(module, module.GetTypes<Value>());
         }
 
         private static void GenerateViewModels(Module module, IEnumerable<BaseType> types)
@@ -28,7 +23,7 @@ namespace DGen.Meta.Generators
             foreach (var type in types)
             {
                 // Compact version
-                module.ViewModels.Add(new ViewModel
+                module.AddType(new ViewModel
                 {
                     Module = module,
                     Name = type.Name,
@@ -37,7 +32,7 @@ namespace DGen.Meta.Generators
                     IsCompact = true
                 });
                 // Detail version
-                module.ViewModels.Add(new ViewModel
+                module.AddType(new ViewModel
                 {
                     Module = module,
                     Name = type.Name,

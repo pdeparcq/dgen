@@ -14,7 +14,7 @@ namespace DGen.Generation.Generators.Application
 
         public override IEnumerable<BaseType> GetTypes(Module module)
         {
-            return module.ViewModels.Where(vm => vm.IsCompact);
+            return module.GetTypes<ViewModel>().Where(vm => vm.IsCompact);
         }
 
         public override NamespaceModel GetNamespace(NamespaceModel @namespace)

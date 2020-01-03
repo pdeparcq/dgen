@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using DGen.Generation.CodeModel;
 using DGen.Generation.Extensions;
 using DGen.Meta.MetaModel;
@@ -12,7 +13,7 @@ namespace DGen.Generation.Generators.Application
 
         public override IEnumerable<BaseType> GetTypes(Module module)
         {
-            return module.InputModels;
+            return module.GetTypes<InputModel>();
         }
 
         public override NamespaceModel GetNamespace(NamespaceModel @namespace)

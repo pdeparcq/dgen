@@ -3,6 +3,7 @@ using System.Linq;
 using DGen.Generation.CodeModel;
 using DGen.Meta;
 using DGen.Meta.MetaModel;
+using DGen.Meta.MetaModel.Types;
 
 namespace DGen.Generation.Generators.Infrastructure
 {
@@ -12,7 +13,7 @@ namespace DGen.Generation.Generators.Infrastructure
 
         public override IEnumerable<BaseType> GetTypes(Module module)
         {
-            return module.Aggregates;
+            return module.GetTypes<Aggregate>();
         }
 
         public override NamespaceModel GetNamespace(NamespaceModel @namespace)

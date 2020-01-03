@@ -10,18 +10,13 @@ namespace DGen.Meta.Generators
     {
         public override string StereoType => "inputmodel";
 
-        public override List<InputModel> GetListFromModule(Module module)
-        {
-            return module.InputModels;
-        }
-
         public override void GenerateTypes(Element parent, Module module, ITypeRegistry registry)
         {
             base.GenerateTypes(parent, module, registry);
 
-            foreach (var domainEvent in module.DomainEvents)
+            foreach (var domainEvent in module.GetTypes<DomainEvent>().ToList())
             {
-                module.InputModels.Add(new InputModel
+                module.AddType(new InputModel
                 {
                     Module = module,
                     Name = domainEvent.Name,
@@ -41,11 +36,6 @@ namespace DGen.Meta.Generators
             {
                 inputModel.Source = dependency.Value.Type;
             }
-        }
-
-        public override void CleanUp(Module module)
-        {
-            module.InputModels.RemoveAll(im => module.Commands.All(c => c.Input != im));
         }
     }
 }

@@ -10,11 +10,6 @@ namespace DGen.Meta.Generators
     {
         public override string StereoType => "query";
 
-        public override List<Query> GetListFromModule(Module module)
-        {
-            return module.Queries;
-        }
-
         public override void Generate(Query query, Element element, ITypeRegistry registry)
         {
             base.Generate(query, element, registry);
@@ -35,7 +30,7 @@ namespace DGen.Meta.Generators
                 {
                     var aggregate = aggregateAssociation.Value.Type;
                     query.IsCollection = aggregateAssociation.Value.Element.AssociationEndTo.Multiplicity?.Contains("*") ?? false;
-                    query.Result = query.Module.ViewModels.FirstOrDefault(vm => vm.Target == aggregate && vm.IsCompact == query.IsCollection);          
+                    query.Result = query.Module.GetTypes<ViewModel>().FirstOrDefault(vm => vm.Target == aggregate && vm.IsCompact == query.IsCollection);          
                 }
             }
         }

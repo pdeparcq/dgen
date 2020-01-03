@@ -9,11 +9,7 @@ namespace DGen.Meta.Generators
     public class CommandMetaGenerator : MetaGeneratorBase<Command>
     {
         public override string StereoType => "command";
-        public override List<Command> GetListFromModule(Module module)
-        {
-            return module.Commands;
-        }
-
+        
         public override void Generate(Command command, Element element, ITypeRegistry registry)
         {
             base.Generate(command, element, registry);
@@ -31,7 +27,7 @@ namespace DGen.Meta.Generators
 
                 if (dependency != null)
                 {
-                    command.Input = command.Module.InputModels.FirstOrDefault(i => i.Source == dependency.Value.Type);
+                    command.Input = command.Module.GetTypes<InputModel>().FirstOrDefault(i => i.Source == dependency.Value.Type);
 
                     if (command.Input != null)
                     {

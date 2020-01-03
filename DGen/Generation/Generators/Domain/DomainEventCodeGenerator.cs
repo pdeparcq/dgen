@@ -15,7 +15,7 @@ namespace DGen.Generation.Generators.Domain
         
         public override IEnumerable<BaseType> GetTypes(Module module)
         {
-            return module.DomainEvents;
+            return module.GetTypes<DomainEvent>();
         }
 
         public override NamespaceModel GetNamespace(NamespaceModel @namespace)

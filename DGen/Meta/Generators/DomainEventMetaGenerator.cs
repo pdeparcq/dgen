@@ -30,11 +30,6 @@ namespace DGen.Meta.Generators
             }
         }
 
-        public override List<DomainEvent> GetListFromModule(Module module)
-        {
-            return module.DomainEvents;
-        }
-
         private DomainEventType GenerateDomainEventType(string stereotype)
         {
             if (!Enum.TryParse(stereotype, true, out DomainEventType result))

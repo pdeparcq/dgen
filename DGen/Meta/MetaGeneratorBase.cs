@@ -41,8 +41,6 @@ namespace DGen.Meta
             return t;
         }
 
-        public abstract List<T> GetListFromModule(Module module);
-
         public virtual void Generate(T type, Element e, ITypeRegistry registry)
         {
             // Generate properties from associations
@@ -132,10 +130,9 @@ namespace DGen.Meta
 
         public virtual void GenerateTypes(Element parent, Module module, ITypeRegistry registry)
         {
-            var list = GetListFromModule(module);
             foreach(var element in QueryElements(parent))
             {
-                list.Add(GenerateType(element, module, registry));
+                module.AddType(GenerateType(element, module, registry));
             }
         }
 

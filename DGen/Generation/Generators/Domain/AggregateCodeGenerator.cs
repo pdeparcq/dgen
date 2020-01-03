@@ -14,7 +14,7 @@ namespace DGen.Generation.Generators.Domain
 
         public override IEnumerable<BaseType> GetTypes(Module module)
         {
-            return module.Aggregates;
+            return module.GetTypes<Aggregate>();
         }
 
         public override string GetTypeName(BaseType type)

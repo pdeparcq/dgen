@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using DGen.Generation.CodeModel;
-using DGen.Meta;
 using DGen.Meta.MetaModel;
 using DGen.Meta.MetaModel.Types;
 
@@ -12,7 +12,7 @@ namespace DGen.Generation.Generators.Domain
 
         public override IEnumerable<BaseType> GetTypes(Module module)
         {
-            return module.Enumerations;
+            return module.GetTypes<Enumeration>();
         }
 
         public override string GetTypeName(BaseType type) => type.Name;

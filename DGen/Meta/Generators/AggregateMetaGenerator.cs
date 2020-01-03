@@ -15,10 +15,5 @@ namespace DGen.Meta.Generators
             aggregate.DomainEvents = new List<DomainEvent>();
             return aggregate;
         }
-
-        public override List<Aggregate> GetListFromModule(Module module)
-        {
-            return module.Aggregates;
-        }
     }
 }
