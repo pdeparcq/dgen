@@ -3,7 +3,6 @@ using System.Linq;
 using DGen.Generation.CodeModel;
 using DGen.Generation.Extensions;
 using DGen.Meta;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DGen.Generation.Generators.Domain
 {
@@ -46,7 +45,7 @@ namespace DGen.Generation.Generators.Domain
                         .WithParameters(parameter);
 
                     var property = aggregate.UniqueIdentifier.Denormalized();
-                    if (property.Type.SystemType != null && SystemTypes.Parse(property.Type.Name) == SystemTypes.Guid)
+                    if (property.Type.Resolve(registry) == SystemTypes.Guid)
                     {
                         method.WithBody(builder =>
                         {
@@ -70,19 +69,24 @@ namespace DGen.Generation.Generators.Domain
                                 {
                                     if (aggregate.UniqueIdentifier != null)
                                     {
-                                        var type = aggregate.UniqueIdentifier.Type.Resolve(registry);
-                                        AssignmentExpressionSyntax initializer;
-
-                                        if (type != SystemTypes.Guid)
+                                        if (aggregate.UniqueIdentifier.Type.Resolve(registry) != SystemTypes.Guid)
                                         {
-                                            initializer = domainEvent.Initializer(SystemTypes.DomainEventAggregateRootIdentifierName, @class.GetMethod("GetUniqueIdentifier").Invoke(parameters.First().Expression));
+                                            builder.InvokeMethod(
+                                                SystemTypes.DomainEventPublishMethodName, 
+                                                domainEvent.Construct(
+                                                    parameters.ToExpressions(),
+                                                    domainEvent.Initializer(SystemTypes.DomainEventAggregateRootIdentifierName, @class.GetMethod("GetUniqueIdentifier").Invoke(parameters.First().Expression)))
+                                                );
                                         }
                                         else
                                         {
-                                            initializer = domainEvent.Initializer(SystemTypes.DomainEventAggregateRootIdentifierName, parameters.First().Expression);
+                                            builder.InvokeMethod(
+                                                SystemTypes.DomainEventPublishMethodName,
+                                                domainEvent.Construct(
+                                                    parameters.ToExpressions(),
+                                                    domainEvent.Initializer(SystemTypes.DomainEventAggregateRootIdentifierName, parameters.First().Expression))
+                                                );
                                         }
-
-                                        builder.InvokeMethod(SystemTypes.DomainEventPublishMethodName, domainEvent.Construct(parameters.ToExpressions(), new[] { initializer }.AsEnumerable()));
                                     }
                                     else
                                     {

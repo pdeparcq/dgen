@@ -103,10 +103,10 @@ namespace DGen.Generation.CodeModel
 
         public ExpressionSyntax Construct(params ExpressionSyntax[] parameters)
         {
-            return Construct(parameters, null);
+            return Construct(parameters, new AssignmentExpressionSyntax[] { });
         }
 
-        public ExpressionSyntax Construct(IEnumerable<ExpressionSyntax> parameters, IEnumerable<AssignmentExpressionSyntax> initializer)
+        public ExpressionSyntax Construct(IEnumerable<ExpressionSyntax> parameters, params AssignmentExpressionSyntax[] initializer)
         {
             var expression = SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName(Name),
                 parameters.ToArgumentList(), null);
