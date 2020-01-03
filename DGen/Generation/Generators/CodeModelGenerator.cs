@@ -30,7 +30,8 @@ namespace DGen.Generation.Generators
                 new ViewModelCodeGenerator(),
                 new CompactViewModelCodeGenerator(),
                 new QueryCodeGenerator(),
-                new QueryHandlerCodeGenerator()
+                new QueryHandlerCodeGenerator(),
+                new InputModelCodeGenerator()
             };
         }
 

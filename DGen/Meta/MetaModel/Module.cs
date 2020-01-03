@@ -15,6 +15,8 @@ namespace DGen.Meta.MetaModel
             Enumerations = new List<Enumeration>();
             Queries = new List<Query>();
             ViewModels = new List<ViewModel>();
+            Commands = new List<Command>();
+            InputModels = new List<InputModel>();
         }
 
         public Module ParentModule { get; set; }
@@ -29,5 +31,7 @@ namespace DGen.Meta.MetaModel
         public List<Enumeration> Enumerations { get; set; }
         public List<Query> Queries { get; set; }
         public List<ViewModel> ViewModels { get; set; }
+        public List<Command> Commands { get; set; }
+        public List<InputModel> InputModels { get; set; }
     }
 }

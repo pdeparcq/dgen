@@ -143,5 +143,10 @@ namespace DGen.Meta
         {
             Generate(type as T, e, registry);
         }
+
+        public virtual void CleanUp(Module module)
+        {
+            
+        }
     }
 }

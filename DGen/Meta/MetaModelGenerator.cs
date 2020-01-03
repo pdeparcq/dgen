@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DGen.Meta.Generators;
 using DGen.Meta.MetaModel;
@@ -23,6 +24,8 @@ namespace DGen.Meta
             AddMetaGenerator(new QueryMetaGenerator());
             AddMetaGenerator(new ValueMetaGenerator());
             AddMetaGenerator(new ViewModelMetaGenerator());
+            AddMetaGenerator(new CommandMetaGenerator());
+            AddMetaGenerator(new InputModelMetaGenerator());
         }
 
         private void AddMetaGenerator(IMetaGenerator metaGenerator)
@@ -47,7 +50,22 @@ namespace DGen.Meta
                 _metaGenerators[kv.Value.GetType()].Generate(kv.Value, kv.Key, this);
             }
 
+            // Clean up services
+            foreach (var service in metaModel.Services)
+            {
+                CleanUp(service);
+            }
+
             return metaModel;
+        }
+
+        private void CleanUp(Module module)
+        {
+            foreach (var metaGenerator in _metaGenerators.Values)
+            {
+                metaGenerator.CleanUp(module);
+            }
+            module.Modules.ForEach(CleanUp);
         }
 
         private Service ToService(Element s)

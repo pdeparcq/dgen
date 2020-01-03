@@ -8,6 +8,7 @@ namespace DGen.Meta
     {
         System.Type GeneratedType { get; }
         void GenerateTypes(Element parent, Module module, ITypeRegistry registry);
-        void Generate(BaseType type, Element e, ITypeRegistry registry); 
+        void Generate(BaseType type, Element e, ITypeRegistry registry);
+        void CleanUp(Module module);
     }
 }
