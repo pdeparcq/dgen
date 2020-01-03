@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DGen.Meta.Generators;
+using DGen.Meta.MetaModel;
 using DGen.StarUml;
 
 namespace DGen.Meta
@@ -29,12 +30,12 @@ namespace DGen.Meta
             _metaGenerators[metaGenerator.GeneratedType] = metaGenerator;
         }
 
-        public MetaModel Generate(Element model)
+        public MetaModel.MetaModel Generate(Element model)
         {
             _types = new Dictionary<Element, BaseType>();
             
             // Generate types
-            var metaModel = new MetaModel
+            var metaModel = new MetaModel.MetaModel
             {
                 Name = model.Name,
                 Services = model.OwnedElements?.Where(e => e.Type == ElementType.UMLModel).Select(ToService).ToList()

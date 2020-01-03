@@ -5,6 +5,7 @@ using DGen.Generation.Generators.Application;
 using DGen.Generation.Generators.Domain;
 using DGen.Generation.Generators.Infrastructure;
 using DGen.Meta;
+using DGen.Meta.MetaModel;
 
 namespace DGen.Generation.Generators
 {

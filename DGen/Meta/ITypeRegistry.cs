@@ -1,4 +1,5 @@
-﻿using DGen.StarUml;
+﻿using DGen.Meta.MetaModel;
+using DGen.StarUml;
 
 namespace DGen.Meta
 {

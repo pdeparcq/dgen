@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using DGen.Generation.CodeModel;
 using DGen.Meta;
+using DGen.Meta.MetaModel;
+using DGen.Meta.MetaModel.Types;
 
 namespace DGen.Generation.Generators.Domain
 {

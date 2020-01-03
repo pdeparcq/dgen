@@ -2,6 +2,8 @@
 using DGen.Generation.CodeModel;
 using DGen.Generation.Extensions;
 using DGen.Meta;
+using DGen.Meta.MetaModel;
+using DGen.Meta.MetaModel.Types;
 
 namespace DGen.Generation.Generators.Application
 {

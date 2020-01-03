@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using DGen.Generation.CodeModel;
 using DGen.Meta;
+using DGen.Meta.MetaModel;
+using DGen.Meta.MetaModel.Types;
 using Microsoft.CodeAnalysis.CSharp;
 
 namespace DGen.Generation.Generators.Application

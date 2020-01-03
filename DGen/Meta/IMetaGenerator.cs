@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DGen.Meta.MetaModel;
 using DGen.StarUml;
 
 namespace DGen.Meta

@@ -2,6 +2,8 @@
 using DGen.Generation.Generators;
 using DGen.Meta;
 using System.Linq;
+using DGen.Meta.MetaModel;
+using DGen.Meta.MetaModel.Types;
 
 namespace DGen.Generation.Extensions
 {

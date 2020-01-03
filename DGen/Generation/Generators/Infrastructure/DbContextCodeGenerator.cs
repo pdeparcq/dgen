@@ -2,6 +2,7 @@
 using System.Linq;
 using DGen.Generation.CodeModel;
 using DGen.Meta;
+using DGen.Meta.MetaModel;
 
 namespace DGen.Generation.Generators.Infrastructure
 {
