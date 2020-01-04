@@ -4,6 +4,7 @@ using DGen.Generation.CodeModel;
 using DGen.Generation.Extensions;
 using DGen.Meta.MetaModel;
 using DGen.Meta.MetaModel.Types;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DGen.Generation.Generators.Domain
 {
@@ -64,6 +65,7 @@ namespace DGen.Generation.Generators.Domain
                         @class.AddMethod($"Publish{domainEvent.Name}")
                             .WithParameters(parameters.ToArray())
                             .MakeProtected()
+                            .MakeVirtual()
                             .WithBody(builder =>
                             {
                                 BuildDomainEventPublisher(registry, builder, aggregate, @class, domainEventClass, parameters);
@@ -85,12 +87,18 @@ namespace DGen.Generation.Generators.Domain
                 {
                     var parameters = GenerateDomainEventParameters(registry, command.DomainEvent, aggregate, command.DomainEvent.Type == DomainEventType.Create).ToList();
 
+                    var validatorMethod = @class.AddMethod($"Validate{command.Name}")
+                        .WithParameters(parameters.ToArray())
+                        .MakeProtected()
+                        .MakeVirtual();
+
                     if (command.DomainEvent.Type == DomainEventType.Create)
                     {
                         @class.AddConstructor()
                             .WithParameters(parameters.ToArray())
                             .WithBody(builder =>
                             {
+                                builder.InvokeMethod(validatorMethod.Name, parameters.ToExpressions().ToArray());
                                 builder.InvokeMethod($"Publish{command.DomainEvent.Name}", parameters.ToExpressions().ToArray());
                             });
                     }
@@ -102,6 +110,8 @@ namespace DGen.Generation.Generators.Domain
                             {
                                 var publishParameters = parameters.ToExpressions().ToList();
                                 publishParameters.Insert(0, @class.GetProperty(SystemTypes.AggregateRootIdentifierName).Expression);
+
+                                builder.InvokeMethod(validatorMethod.Name, parameters.ToExpressions().ToArray());
                                 builder.InvokeMethod($"Publish{command.DomainEvent.Name}", publishParameters.ToArray());
                             })
                             .MakeVirtual();
