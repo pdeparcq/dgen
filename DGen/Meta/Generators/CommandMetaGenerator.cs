@@ -23,13 +23,25 @@ namespace DGen.Meta.Generators
             }
             else
             {
-                var dependency = GetDependency<DomainEvent>(element, registry);
+                var domainEvent = GetDependency<DomainEvent>(element, registry);
 
-                if (dependency != null)
+                if (domainEvent != null)
                 {
-                    command.Input = command.Module.GetTypes<InputModel>().FirstOrDefault(i => i.Source == dependency.Value.Type);
-                    command.Aggregate = dependency.Value.Type.Aggregate;
+                    command.DomainEvent = domainEvent.Value.Type;
 
+                    var aggregate = GetDependency<Aggregate>(element, registry);
+
+                    if (aggregate != null)
+                    {
+                        command.MethodName = aggregate.Value.Element.Name ?? command.Name;
+                    }
+                    else
+                    {
+                        command.MethodName = command.Name;
+                    }
+                    
+                    command.Input = command.Module.GetTypes<InputModel>().FirstOrDefault(i => i.Source == domainEvent.Value.Type);
+                    
                     if (command.Input != null)
                     {
                         command.Input.Name = command.Name;

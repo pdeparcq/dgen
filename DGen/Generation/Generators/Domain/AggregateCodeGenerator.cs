@@ -2,7 +2,6 @@
 using System.Linq;
 using DGen.Generation.CodeModel;
 using DGen.Generation.Extensions;
-using DGen.Meta;
 using DGen.Meta.MetaModel;
 using DGen.Meta.MetaModel.Types;
 
@@ -19,7 +18,7 @@ namespace DGen.Generation.Generators.Domain
 
         public override string GetTypeName(BaseType type)
         {
-            return $"{type.Name}Base";
+            return $"{type.Name}";
         }
 
         public override void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
@@ -36,7 +35,6 @@ namespace DGen.Generation.Generators.Domain
                 {
                     @class.AddDomainProperty(p, registry);
                 }
-
 
                 if (aggregate.UniqueIdentifier != null && aggregate.UniqueIdentifier.Type.Resolve(registry) != SystemTypes.Guid)
                 {
@@ -55,76 +53,95 @@ namespace DGen.Generation.Generators.Domain
                         }).MakeVirtual();
                     }
                 }
-                
 
-                foreach(var de in aggregate.DomainEvents)
+                foreach(var domainEvent in aggregate.DomainEvents)
                 {
-                    if (registry.Resolve(Layer, de) is ClassModel domainEvent)
+                    if (registry.Resolve(Layer, domainEvent) is ClassModel domainEventClass)
                     {
-                        var parameters = GenerateDomainEventParameters(registry, de, aggregate).ToList();
+                        var parameters = GenerateDomainEventParameters(registry, domainEvent, aggregate).ToList();
 
                         // Add method for publishing domain event
-                        @class.AddMethod($"Publish{de.Name}")
+                        @class.AddMethod($"Publish{domainEvent.Name}")
                             .WithParameters(parameters.ToArray())
                             .MakeProtected()
                             .WithBody(builder =>
-                                {
-                                    if (aggregate.UniqueIdentifier != null)
-                                    {
-                                        if (aggregate.UniqueIdentifier.Type.Resolve(registry) != SystemTypes.Guid)
-                                        {
-                                            builder.InvokeMethod(
-                                                SystemTypes.DomainEventPublishMethodName, 
-                                                domainEvent.Construct(
-                                                    parameters.ToExpressions(),
-                                                    domainEvent.Initializer(SystemTypes.DomainEventAggregateRootIdentifierName, @class.GetMethod("GetUniqueIdentifier").Invoke(parameters.First().Expression)))
-                                                );
-                                        }
-                                        else
-                                        {
-                                            builder.InvokeMethod(
-                                                SystemTypes.DomainEventPublishMethodName,
-                                                domainEvent.Construct(
-                                                    parameters.ToExpressions(),
-                                                    domainEvent.Initializer(SystemTypes.DomainEventAggregateRootIdentifierName, parameters.First().Expression))
-                                                );
-                                        }
-                                    }
-                                    else
-                                    {
-                                        builder.InvokeMethod(SystemTypes.DomainEventPublishMethodName, domainEvent.Construct(parameters.ToExpressions().ToArray()));
-                                    }
-
-                                });
-
+                            {
+                                BuildDomainEventPublisher(registry, builder, aggregate, @class, domainEventClass, parameters);
+                            });
 
                         // Add method for applying domain event
-                        var @event = new MethodParameter("@event", domainEvent);
+                        var @event = new MethodParameter("@event", domainEventClass);
                         @class.AddMethod(SystemTypes.DomainEventApplyMethodName)
                             .WithParameters(@event)
                             .MakeVirtual()
                             .WithBody(builder =>
                             {
-                                if (de.Type == DomainEventType.Create)
-                                {
-                                    builder.AssignProperty(SystemTypes.AggregateRootIdentifierName, @event.Property(SystemTypes.DomainEventAggregateRootIdentifierName));
-                                }
-                                foreach (var property in de.Properties)
-                                {
-                                    builder.AssignProperty(property.Name, @event.Property(property.Name));
-                                }
+                                BuildDomainEventApply(builder, domainEvent, @event);
                             });
-
-                        if (de.Type == DomainEventType.Create)
-                        {
-                            @class.AddConstructor()
-                                .WithParameters(parameters.ToArray()).WithBody(builder =>
-                                {
-                                    builder.InvokeMethod($"Publish{de.Name}", parameters.ToExpressions().ToArray());
-                                }).MakeProtected();
-                        }
-                    }
+                    }       
                 }
+
+                foreach(var command in aggregate.Module.GetTypes<Command>().Where(c => c.DomainEvent != null && c.DomainEvent.Aggregate == aggregate))
+                {
+                    var parameters = GenerateDomainEventParameters(registry, command.DomainEvent, aggregate).ToList();
+
+                    MethodModel method;
+                    if (command.DomainEvent.Type == DomainEventType.Create)
+                    {
+                        method = @class.AddConstructor();
+                    }
+                    else
+                    {
+                        method = @class.AddMethod(command.MethodName).MakeVirtual();
+                    }
+
+                    method = method.WithParameters(parameters.ToArray())
+                        .WithBody(builder =>
+                        {
+                            builder.InvokeMethod($"Publish{command.DomainEvent.Name}", parameters.ToExpressions().ToArray());
+                        });
+                }
+            }
+        }
+
+        private static void BuildDomainEventApply(BodyBuilder builder, DomainEvent de, MethodParameter @event)
+        {
+            if (de.Type == DomainEventType.Create)
+            {
+                builder.AssignProperty(SystemTypes.AggregateRootIdentifierName, @event.Property(SystemTypes.DomainEventAggregateRootIdentifierName));
+            }
+            foreach (var property in de.Properties)
+            {
+                builder.AssignProperty(property.Name, @event.Property(property.Name));
+            }
+        }
+
+        private static void BuildDomainEventPublisher(ITypeModelRegistry registry, BodyBuilder builder, Aggregate aggregate, ClassModel @class, ClassModel domainEvent, List<MethodParameter> parameters)
+        {
+            if (aggregate.UniqueIdentifier != null)
+            {
+                if (aggregate.UniqueIdentifier.Type.Resolve(registry) != SystemTypes.Guid)
+                {
+                    builder.InvokeMethod(
+                        SystemTypes.DomainEventPublishMethodName,
+                        domainEvent.Construct(
+                            parameters.ToExpressions(),
+                            domainEvent.Initializer(SystemTypes.DomainEventAggregateRootIdentifierName, @class.GetMethod("GetUniqueIdentifier").Invoke(parameters.First().Expression)))
+                        );
+                }
+                else
+                {
+                    builder.InvokeMethod(
+                        SystemTypes.DomainEventPublishMethodName,
+                        domainEvent.Construct(
+                            parameters.ToExpressions(),
+                            domainEvent.Initializer(SystemTypes.DomainEventAggregateRootIdentifierName, parameters.First().Expression))
+                        );
+                }
+            }
+            else
+            {
+                builder.InvokeMethod(SystemTypes.DomainEventPublishMethodName, domainEvent.Construct(parameters.ToExpressions().ToArray()));
             }
         }
 

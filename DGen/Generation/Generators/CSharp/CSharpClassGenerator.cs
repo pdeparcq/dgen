@@ -85,7 +85,8 @@ namespace DGen.Generation.Generators.CSharp
 
             if (!model.IsAbstract)
             {
-                method = method.AddBodyStatements(model.Body.ToArray()) as T;
+                if(model.Body != null)
+                    method = method.AddBodyStatements(model.Body.ToArray()) as T;
             }
             else
             {
