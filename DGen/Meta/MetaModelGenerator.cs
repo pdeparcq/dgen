@@ -36,12 +36,12 @@ namespace DGen.Meta
         public MetaModel.MetaModel Generate(Element model)
         {
             _types = new Dictionary<Element, BaseType>();
-            
+
             // Generate types
             var metaModel = new MetaModel.MetaModel
             {
                 Name = model.Name,
-                Services = model.OwnedElements?.Where(e => e.Type == ElementType.UMLModel).Select(ToService).ToList()
+                Services = model.OwnedElements?.Where(e => e.Type == ElementType.UMLModel).Select(ToService).ToList() ?? new List<Service>()
             };
 
             // Second pass when all types are available
@@ -82,7 +82,7 @@ namespace DGen.Meta
                 Description = m.Documentation
             };
 
-            generated.Modules = m.OwnedElements?.Where(e => e.Type == ElementType.UMLPackage).Select(e => ToModule<Module>(e, generated)).ToList();
+            generated.Modules = m.OwnedElements?.Where(e => e.Type == ElementType.UMLPackage).Select(e => ToModule<Module>(e, generated)).ToList() ?? new List<Module>();
 
             foreach(var metaGenerator in _metaGenerators.Values)
             {
