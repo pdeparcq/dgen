@@ -36,7 +36,19 @@ namespace DGen.Generation.Generators.Domain
                     .WithBaseType(SystemTypes.DomainEvent(@class))
                     .WithAttributes(SystemTypes.Parse("Serializable"));
 
-                @class.AddDomainProperty(domainEvent.Aggregate.UniqueIdentifier, registry);
+                // Generate property for aggregate unique id
+                if(domainEvent.Aggregate.UniqueIdentifier != null)
+                {
+                    @class.AddDomainProperty(new Property { 
+                        Name = domainEvent.Aggregate.Name,
+                        Description = "Unique id of aggregate that throws this event",
+                        Type = new PropertyType
+                        {
+                            Type = domainEvent.Aggregate
+                        }
+                    }, registry);
+                }
+                    
 
                 // Generate properties
                 foreach (var p in domainEvent.Properties)

@@ -155,13 +155,13 @@ namespace DGen.Generation.Generators.Domain
         {
             if(aggregate.UniqueIdentifier != null && includeUniqueId)
             {
-                yield return new MethodParameter(aggregate.UniqueIdentifier.Name, aggregate.UniqueIdentifier.Type.Resolve(registry));
+                yield return new MethodParameter(aggregate.UniqueIdentifier.Name.ToCamelCase(), aggregate.UniqueIdentifier.Type.Resolve(registry));
             }
             foreach (var property in de.Properties)
             {
                 if (property.Type.Type is Aggregate referencedAggregate && referencedAggregate.UniqueIdentifier != null)
                 {
-                    yield return new MethodParameter($"{property.Name}{referencedAggregate.UniqueIdentifier.Name}", referencedAggregate.UniqueIdentifier.Type.Resolve(registry));
+                    yield return new MethodParameter($"{property.Name.ToCamelCase()}{referencedAggregate.UniqueIdentifier.Name}", referencedAggregate.UniqueIdentifier.Type.Resolve(registry));
                 }
                 else
                 {

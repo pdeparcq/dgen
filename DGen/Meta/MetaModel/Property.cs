@@ -33,6 +33,7 @@ namespace DGen.Meta.MetaModel
                 IsIdentifier = IsIdentifier,
                 IsCollection = IsCollection,
                 Name = Name,
+                Description = Description,
                 Type = type
             };
         }
