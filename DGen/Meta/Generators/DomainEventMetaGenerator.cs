@@ -11,11 +11,6 @@ namespace DGen.Meta.Generators
     {
         public override string StereoType => "domainevent";
 
-        protected override bool ShouldGenerateProperty(BaseType resolved, string stereoType)
-        {
-            return resolved != null;
-        }
-
         public override void Generate(DomainEvent domainEvent, Element element, ITypeRegistry registry)
         {
             base.Generate(domainEvent, element, registry);

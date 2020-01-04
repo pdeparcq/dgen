@@ -15,7 +15,7 @@ namespace DGen.Test
     [TestFixture]
     public class SandBox
     {
-        private readonly string _modelFileName = "MyLunch.mdj";
+        private readonly string _modelFileName = "HelloCustomer.mdj";
         private readonly JsonSerializerSettings _serializerSettings;
 
         public SandBox()

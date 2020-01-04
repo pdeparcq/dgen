@@ -36,6 +36,8 @@ namespace DGen.Generation.Generators.Domain
                     .WithBaseType(SystemTypes.DomainEvent(@class))
                     .WithAttributes(SystemTypes.Parse("Serializable"));
 
+                @class.AddDomainProperty(domainEvent.Aggregate.UniqueIdentifier, registry);
+
                 // Generate properties
                 foreach (var p in domainEvent.Properties)
                 {

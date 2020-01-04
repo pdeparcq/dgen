@@ -83,23 +83,29 @@ namespace DGen.Generation.Generators.Domain
 
                 foreach(var command in aggregate.Module.GetTypes<Command>().Where(c => c.DomainEvent != null && c.DomainEvent.Aggregate == aggregate))
                 {
-                    var parameters = GenerateDomainEventParameters(registry, command.DomainEvent, aggregate).ToList();
+                    var parameters = GenerateDomainEventParameters(registry, command.DomainEvent, aggregate, command.DomainEvent.Type == DomainEventType.Create).ToList();
 
-                    MethodModel method;
                     if (command.DomainEvent.Type == DomainEventType.Create)
                     {
-                        method = @class.AddConstructor();
+                        @class.AddConstructor()
+                            .WithParameters(parameters.ToArray())
+                            .WithBody(builder =>
+                            {
+                                builder.InvokeMethod($"Publish{command.DomainEvent.Name}", parameters.ToExpressions().ToArray());
+                            });
                     }
                     else
                     {
-                        method = @class.AddMethod(command.MethodName).MakeVirtual();
+                        @class.AddMethod(command.MethodName)
+                            .WithParameters(parameters.ToArray())
+                            .WithBody(builder =>
+                            {
+                                var publishParameters = parameters.ToExpressions().ToList();
+                                publishParameters.Insert(0, @class.GetProperty(SystemTypes.AggregateRootIdentifierName).Expression);
+                                builder.InvokeMethod($"Publish{command.DomainEvent.Name}", publishParameters.ToArray());
+                            })
+                            .MakeVirtual();
                     }
-
-                    method = method.WithParameters(parameters.ToArray())
-                        .WithBody(builder =>
-                        {
-                            builder.InvokeMethod($"Publish{command.DomainEvent.Name}", parameters.ToExpressions().ToArray());
-                        });
                 }
             }
         }
@@ -145,14 +151,17 @@ namespace DGen.Generation.Generators.Domain
             }
         }
 
-        private static IEnumerable<MethodParameter> GenerateDomainEventParameters(ITypeModelRegistry registry, DomainEvent de, Aggregate aggregate)
+        private static IEnumerable<MethodParameter> GenerateDomainEventParameters(ITypeModelRegistry registry, DomainEvent de, Aggregate aggregate, bool includeUniqueId = true)
         {
-
+            if(aggregate.UniqueIdentifier != null && includeUniqueId)
+            {
+                yield return new MethodParameter(aggregate.UniqueIdentifier.Name, aggregate.UniqueIdentifier.Type.Resolve(registry));
+            }
             foreach (var property in de.Properties)
             {
-                if (property.Type.Type == aggregate && aggregate.UniqueIdentifier != null)
+                if (property.Type.Type is Aggregate referencedAggregate && referencedAggregate.UniqueIdentifier != null)
                 {
-                    yield return new MethodParameter(aggregate.UniqueIdentifier.Name, aggregate.UniqueIdentifier.Type.Resolve(registry));
+                    yield return new MethodParameter($"{property.Name}{referencedAggregate.UniqueIdentifier.Name}", referencedAggregate.UniqueIdentifier.Type.Resolve(registry));
                 }
                 else
                 {
