@@ -78,6 +78,11 @@ namespace DGen.Generation.CodeModel
             return new ClassModel(KledexCommandNamespace, "Command");
         }
 
+        internal static ClassModel CommandResponse()
+        {
+            return new ClassModel(KledexCommandNamespace, "CommandResponse");
+        }
+
         public static ClassModel CommandHandler(TypeModel command)
         {
             return new ClassModel(KledexCommandNamespace, "ICommandHandler").WithGenericTypes(command);

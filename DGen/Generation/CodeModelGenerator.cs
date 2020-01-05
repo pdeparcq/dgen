@@ -31,7 +31,8 @@ namespace DGen.Generation
                 new QueryCodeGenerator(),
                 new QueryHandlerCodeGenerator(),
                 new InputModelCodeGenerator(),
-                new CommandCodeGenerator()
+                new CommandCodeGenerator(),
+                new CommandHandlerCodeGenerator()
             };
         }
 
