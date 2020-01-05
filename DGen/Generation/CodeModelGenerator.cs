@@ -4,10 +4,9 @@ using DGen.Generation.CodeModel;
 using DGen.Generation.Generators.Application;
 using DGen.Generation.Generators.Domain;
 using DGen.Generation.Generators.Infrastructure;
-using DGen.Meta;
 using DGen.Meta.MetaModel;
 
-namespace DGen.Generation.Generators
+namespace DGen.Generation
 {
     public class CodeModelGenerator : ITypeModelRegistry
     {
@@ -21,7 +20,7 @@ namespace DGen.Generation.Generators
                 // Domain
                 new DomainEventCodeGenerator(),
                 new AggregateCodeGenerator(),
-                new Domain.EntityCodeGenerator(),
+                new EntityCodeGenerator(),
                 new EnumerationCodeGenerator(),
                 new ValueCodeGenerator(),
                 // Infrastructure
@@ -53,7 +52,7 @@ namespace DGen.Generation.Generators
 
                 foreach (var layer in _generators.GroupBy(g => g.Layer))
                 {
-                    if(!_types.ContainsKey(layer.Key))
+                    if (!_types.ContainsKey(layer.Key))
                         _types[layer.Key] = new Dictionary<BaseType, List<TypeModel>>();
                     PrepareModule(service, serviceModel.AddLayer(layer.Key), layer.ToList());
                 }
@@ -81,7 +80,7 @@ namespace DGen.Generation.Generators
                 foreach (var type in generator.GetTypes(module))
                 {
                     var name = generator.GetTypeName(type);
-                    if(name != null)
+                    if (name != null)
                     {
                         var model = generator.PrepareType(@namespace, type);
                         Register(generator.Layer, type, model.WithDescription(type.Description));
@@ -101,14 +100,14 @@ namespace DGen.Generation.Generators
             foreach (var generator in generators)
             {
                 generator.GenerateModule(module, model, this);
-                
-                foreach(var type in generator.GetTypes(module))
+
+                foreach (var type in generator.GetTypes(module))
                 {
                     var resolved = Resolve(generator.Layer, type, generator.GetTypeName(type));
-                    if(resolved != null)
+                    if (resolved != null)
                     {
                         generator.GenerateType(type, resolved, this);
-                    }  
+                    }
                 }
             }
 

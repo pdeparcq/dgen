@@ -1,12 +1,9 @@
-﻿using Newtonsoft.Json;
-using NUnit.Framework;
-using System;
+﻿using NUnit.Framework;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.IO;
 using DGen.Meta;
 using DGen.StarUml;
-using DGen.Generation.Generators;
 using DGen.Generation;
 using DGen.Generation.Generators.CSharp;
 

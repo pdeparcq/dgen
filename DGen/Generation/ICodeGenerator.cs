@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using DGen.Generation.CodeModel;
 
-namespace DGen.Generation.Generators
+namespace DGen.Generation
 {
     public interface ICodeGenerator
     {

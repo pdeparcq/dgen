@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using DGen.Generation.CodeModel;
 using DGen.Generation.Extensions;
-using DGen.Generation.Generators;
 
 namespace DGen.Generation
 {

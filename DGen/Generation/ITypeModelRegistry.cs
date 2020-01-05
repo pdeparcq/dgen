@@ -1,9 +1,8 @@
 ﻿using DGen.Generation.CodeModel;
-using DGen.Meta;
 using System.Linq;
 using DGen.Meta.MetaModel;
 
-namespace DGen.Generation.Generators
+namespace DGen.Generation
 {
     public interface ITypeModelRegistry
     {

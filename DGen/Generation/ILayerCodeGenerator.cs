@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using DGen.Generation.CodeModel;
-using DGen.Meta;
 using DGen.Meta.MetaModel;
 
-namespace DGen.Generation.Generators
+namespace DGen.Generation
 {
     public interface ILayerCodeGenerator
     {
