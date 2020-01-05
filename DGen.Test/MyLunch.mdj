@@ -2405,6 +2405,120 @@
 								}
 							],
 							"stereotype": "command"
+						},
+						{
+							"_type": "UMLClass",
+							"_id": "AAAAAAFvcH0acX/jOkE=",
+							"_parent": {
+								"$ref": "AAAAAAFu9epnW3SVxfA="
+							},
+							"name": "ChangeRestaurantName",
+							"ownedElements": [
+								{
+									"_type": "UMLDependency",
+									"_id": "AAAAAAFvcH1lFICymSo=",
+									"_parent": {
+										"$ref": "AAAAAAFvcH0acX/jOkE="
+									},
+									"source": {
+										"$ref": "AAAAAAFvcH0acX/jOkE="
+									},
+									"target": {
+										"$ref": "AAAAAAFvCUcaQNpJfWA="
+									}
+								},
+								{
+									"_type": "UMLDependency",
+									"_id": "AAAAAAFvcH15fID/2Jw=",
+									"_parent": {
+										"$ref": "AAAAAAFvcH0acX/jOkE="
+									},
+									"name": "ChangeName",
+									"source": {
+										"$ref": "AAAAAAFvcH0acX/jOkE="
+									},
+									"target": {
+										"$ref": "AAAAAAFu9epnW3SVxfA="
+									}
+								}
+							],
+							"stereotype": "command"
+						},
+						{
+							"_type": "UMLClass",
+							"_id": "AAAAAAFvcH3474N8Klo=",
+							"_parent": {
+								"$ref": "AAAAAAFu9epnW3SVxfA="
+							},
+							"name": "ChangeRestaurantContactInfo",
+							"ownedElements": [
+								{
+									"_type": "UMLDependency",
+									"_id": "AAAAAAFvcH46iYRTiV8=",
+									"_parent": {
+										"$ref": "AAAAAAFvcH3474N8Klo="
+									},
+									"source": {
+										"$ref": "AAAAAAFvcH3474N8Klo="
+									},
+									"target": {
+										"$ref": "AAAAAAFvCUk9Gdq2vtc="
+									}
+								},
+								{
+									"_type": "UMLDependency",
+									"_id": "AAAAAAFvcH5PD4SjX5g=",
+									"_parent": {
+										"$ref": "AAAAAAFvcH3474N8Klo="
+									},
+									"name": "ChangeContactInfo",
+									"source": {
+										"$ref": "AAAAAAFvcH3474N8Klo="
+									},
+									"target": {
+										"$ref": "AAAAAAFu9epnW3SVxfA="
+									}
+								}
+							],
+							"stereotype": "command"
+						},
+						{
+							"_type": "UMLClass",
+							"_id": "AAAAAAFvcH7p4IZ1/dU=",
+							"_parent": {
+								"$ref": "AAAAAAFu9epnW3SVxfA="
+							},
+							"name": "CloseRestaurant",
+							"ownedElements": [
+								{
+									"_type": "UMLDependency",
+									"_id": "AAAAAAFvcH9RUoj2EpQ=",
+									"_parent": {
+										"$ref": "AAAAAAFvcH7p4IZ1/dU="
+									},
+									"source": {
+										"$ref": "AAAAAAFvcH7p4IZ1/dU="
+									},
+									"target": {
+										"$ref": "AAAAAAFvCUvhfdsIttA="
+									}
+								},
+								{
+									"_type": "UMLDependency",
+									"_id": "AAAAAAFvcH9gzYlbUPE=",
+									"_parent": {
+										"$ref": "AAAAAAFvcH7p4IZ1/dU="
+									},
+									"name": "Close",
+									"source": {
+										"$ref": "AAAAAAFvcH7p4IZ1/dU="
+									},
+									"target": {
+										"$ref": "AAAAAAFu9epnW3SVxfA="
+									}
+								}
+							],
+							"stereotype": "command"
 						}
 					],
 					"stereotype": "aggregate",
@@ -4086,9 +4200,9 @@
 											"font": "Arial;13;0",
 											"left": 432,
 											"top": -160,
-											"width": 70.7890625,
+											"width": 101.86083984375,
 											"height": 13,
-											"text": "(from Menu)"
+											"text": "(from Restaurant)"
 										},
 										{
 											"_type": "LabelView",
@@ -4939,9 +5053,9 @@
 											"font": "Arial;13;0",
 											"left": 32,
 											"top": 112,
-											"width": 70.7890625,
+											"width": 101.86083984375,
 											"height": 13,
-											"text": "(from Menu)"
+											"text": "(from Restaurant)"
 										},
 										{
 											"_type": "LabelView",
@@ -5305,9 +5419,9 @@
 											"font": "Arial;13;0",
 											"left": -128,
 											"top": -80,
-											"width": 70.7890625,
+											"width": 101.86083984375,
 											"height": 13,
-											"text": "(from Menu)"
+											"text": "(from Restaurant)"
 										},
 										{
 											"_type": "LabelView",
@@ -6063,120 +6177,6 @@
 							}
 						}
 					]
-				},
-				{
-					"_type": "UMLClass",
-					"_id": "AAAAAAFvcH0acX/jOkE=",
-					"_parent": {
-						"$ref": "AAAAAAFu9ekhNW2WIuw="
-					},
-					"name": "ChangeRestaurantName",
-					"ownedElements": [
-						{
-							"_type": "UMLDependency",
-							"_id": "AAAAAAFvcH1lFICymSo=",
-							"_parent": {
-								"$ref": "AAAAAAFvcH0acX/jOkE="
-							},
-							"source": {
-								"$ref": "AAAAAAFvcH0acX/jOkE="
-							},
-							"target": {
-								"$ref": "AAAAAAFvCUcaQNpJfWA="
-							}
-						},
-						{
-							"_type": "UMLDependency",
-							"_id": "AAAAAAFvcH15fID/2Jw=",
-							"_parent": {
-								"$ref": "AAAAAAFvcH0acX/jOkE="
-							},
-							"name": "ChangeName",
-							"source": {
-								"$ref": "AAAAAAFvcH0acX/jOkE="
-							},
-							"target": {
-								"$ref": "AAAAAAFu9epnW3SVxfA="
-							}
-						}
-					],
-					"stereotype": "command"
-				},
-				{
-					"_type": "UMLClass",
-					"_id": "AAAAAAFvcH3474N8Klo=",
-					"_parent": {
-						"$ref": "AAAAAAFu9ekhNW2WIuw="
-					},
-					"name": "ChangeRestaurantContactInfo",
-					"ownedElements": [
-						{
-							"_type": "UMLDependency",
-							"_id": "AAAAAAFvcH46iYRTiV8=",
-							"_parent": {
-								"$ref": "AAAAAAFvcH3474N8Klo="
-							},
-							"source": {
-								"$ref": "AAAAAAFvcH3474N8Klo="
-							},
-							"target": {
-								"$ref": "AAAAAAFvCUk9Gdq2vtc="
-							}
-						},
-						{
-							"_type": "UMLDependency",
-							"_id": "AAAAAAFvcH5PD4SjX5g=",
-							"_parent": {
-								"$ref": "AAAAAAFvcH3474N8Klo="
-							},
-							"name": "ChangeContactInfo",
-							"source": {
-								"$ref": "AAAAAAFvcH3474N8Klo="
-							},
-							"target": {
-								"$ref": "AAAAAAFu9epnW3SVxfA="
-							}
-						}
-					],
-					"stereotype": "command"
-				},
-				{
-					"_type": "UMLClass",
-					"_id": "AAAAAAFvcH7p4IZ1/dU=",
-					"_parent": {
-						"$ref": "AAAAAAFu9ekhNW2WIuw="
-					},
-					"name": "CloseRestaurant",
-					"ownedElements": [
-						{
-							"_type": "UMLDependency",
-							"_id": "AAAAAAFvcH9RUoj2EpQ=",
-							"_parent": {
-								"$ref": "AAAAAAFvcH7p4IZ1/dU="
-							},
-							"source": {
-								"$ref": "AAAAAAFvcH7p4IZ1/dU="
-							},
-							"target": {
-								"$ref": "AAAAAAFvCUvhfdsIttA="
-							}
-						},
-						{
-							"_type": "UMLDependency",
-							"_id": "AAAAAAFvcH9gzYlbUPE=",
-							"_parent": {
-								"$ref": "AAAAAAFvcH7p4IZ1/dU="
-							},
-							"name": "Close",
-							"source": {
-								"$ref": "AAAAAAFvcH7p4IZ1/dU="
-							},
-							"target": {
-								"$ref": "AAAAAAFu9epnW3SVxfA="
-							}
-						}
-					],
-					"stereotype": "command"
 				}
 			]
 		},
