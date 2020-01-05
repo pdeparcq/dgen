@@ -9,53 +9,37 @@ using System.Text.RegularExpressions;
 
 namespace DGen.Generation.Generators.CSharp
 {
-    public class CSharpClassGenerator
+    public class CSharpInterfaceGenerator<I, T> where I : InterfaceModel where T : TypeDeclarationSyntax
     {
         private static readonly Regex AutoPropRegex = new Regex(@"\s*\{\s*get;\s*set;\s*}\s");
         private static readonly Regex AutoPropReadOnlyRegex = new Regex(@"\s*\{\s*get;\s*private set;\s*}\s");
 
         private readonly SyntaxGenerator _syntaxGenerator;
 
-        public CSharpClassGenerator(SyntaxGenerator syntaxGenerator)
+        public CSharpInterfaceGenerator(SyntaxGenerator syntaxGenerator)
         {
             _syntaxGenerator = syntaxGenerator;
         }
 
-        public string Generate(ClassModel model)
+        public string Generate(I model)
         {
             var @namespace = _syntaxGenerator.NamespaceDeclaration(model.Namespace.FullName) as NamespaceDeclarationSyntax;
-            var @class = _syntaxGenerator.ClassDeclaration(model.Name, accessibility: Accessibility.Public) as ClassDeclarationSyntax;
+            var @interface = _syntaxGenerator.ClassDeclaration(model.Name, accessibility: Accessibility.Public) as T;
 
             if (model.Description != null)
-                @class = @class.WithLeadingTrivia(ToDocumentation(model.Description));
+                @interface = @interface.WithLeadingTrivia(ToDocumentation(model.Description));
 
-            if (model.IsAbstract)
-                @class = @class.AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword));
+            @interface = GenerateImplementedInterfaces(model, @interface);
+            @interface = GenerateTypeAttributes(model, @interface);
+            @interface = GenerateProperties(model, @interface);
+            @interface = GenerateMethods(model, @interface);
 
-            @class = GenerateBaseType(model, @class);
-            @class = GenerateImplementedInterfaces(model, @class);
-            @class = GenerateTypeAttributes(model, @class);
-            @class = GenerateConstructors(model, @class);
-            @class = GenerateProperties(model, @class);
-            @class = GenerateMethods(model, @class);
-
-            var compileUnit = GenerateCompileUnit(model, @class, @namespace);
+            var compileUnit = GenerateCompileUnit(model, @interface, @namespace);
 
             return FormatAutoPropertiesOnOneLine(compileUnit.NormalizeWhitespace().ToFullString());
         }
 
-        private ClassDeclarationSyntax GenerateConstructors(ClassModel model, ClassDeclarationSyntax @class)
-        {
-            foreach (var c in model.Constructors)
-            {
-                var constructor = _syntaxGenerator.ConstructorDeclaration(c.Name, accessibility: c.Accessability) as ConstructorDeclarationSyntax;
-                constructor = GenerateMethod(c, constructor);
-                @class = @class.AddMembers(constructor);
-            }
-            return @class;
-        }     
-
-        private ClassDeclarationSyntax GenerateMethods(ClassModel model, ClassDeclarationSyntax @class)
+        private T GenerateMethods(I model, T @interface)
         {
             foreach (var m in model.Methods)
             {
@@ -63,50 +47,50 @@ namespace DGen.Generation.Generators.CSharp
 
                 method = GenerateMethod(m, method);
 
-                @class = @class.AddMembers(method);
+                @interface = @interface.AddMembers(method) as T;
             }
-            return @class;
+            return @interface;
         }
 
-        private T GenerateMethod<T>(MethodModel model, T method) where T : BaseMethodDeclarationSyntax
+        private M GenerateMethod<M>(MethodModel model, M method) where M : BaseMethodDeclarationSyntax
         {
             method = GenerateMemberAttributes(model, method);
 
             if (model.IsVirtual)
-                method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.VirtualKeyword)) as T;
+                method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.VirtualKeyword)) as M;
 
             if (model.IsAbstract)
-                method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword)) as T;
+                method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword)) as M;
 
             foreach (var p in model.Parameters)
             {
                 var parameter = _syntaxGenerator.ParameterDeclaration(p.Name, p.Type.Syntax) as ParameterSyntax;
-                method = method.AddParameterListParameters(parameter) as T;
+                method = method.AddParameterListParameters(parameter) as M;
             }
 
             if (!model.IsAbstract)
             {
                 if(model.Body != null)
-                    method = method.AddBodyStatements(model.Body.ToArray()) as T;
+                    method = method.AddBodyStatements(model.Body.ToArray()) as M;
             }
             else
             {
-                method = method.WithBody(null).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)) as T;
+                method = method.WithBody(null).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)) as M;
             }
 
             return method;
         }
 
-        private SyntaxNode GenerateCompileUnit(ClassModel model, ClassDeclarationSyntax @class, NamespaceDeclarationSyntax @namespace)
+        private SyntaxNode GenerateCompileUnit(I model, T @interface, NamespaceDeclarationSyntax @namespace)
         {
-            @namespace = @namespace.AddMembers(@class);
+            @namespace = @namespace.AddMembers(@interface);
             var declarations = model.Usings.OrderBy(u => u.FullName).Select(u => _syntaxGenerator.NamespaceImportDeclaration(u.FullName)).ToList();
             declarations.Add(@namespace);
 
             return _syntaxGenerator.CompilationUnit(declarations);
         }
 
-        private ClassDeclarationSyntax GenerateProperties(ClassModel model, ClassDeclarationSyntax @class)
+        private T GenerateProperties(I model, T @interface)
         {
             foreach (var p in model.Properties)
             {
@@ -124,48 +108,39 @@ namespace DGen.Generation.Generators.CSharp
                 if (p.Description != null)
                     property = property.WithLeadingTrivia(ToDocumentation(p.Description));
 
-                @class = @class.AddMembers(property);
+                @interface = @interface.AddMembers(property) as T;
             }
-            return @class;
+            return @interface;
         }
 
-        private ClassDeclarationSyntax GenerateBaseType(ClassModel model, ClassDeclarationSyntax @class)
+        private T GenerateImplementedInterfaces(I model, T @interface)
         {
-            if (model.BaseType != null)
+            foreach(var i in model.ImplementedInterfaces)
             {
-                @class = _syntaxGenerator.AddBaseType(@class, model.BaseType.Syntax) as ClassDeclarationSyntax;
+                @interface = _syntaxGenerator.AddInterfaceType(@interface, i.Syntax) as T;
             }
-            return @class;
+            return @interface;
         }
 
-        private ClassDeclarationSyntax GenerateImplementedInterfaces(ClassModel model, ClassDeclarationSyntax @class)
-        {
-            foreach(var @interface in model.ImplementedInterfaces)
-            {
-                @class = _syntaxGenerator.AddInterfaceType(@class, @interface.Syntax) as ClassDeclarationSyntax;
-            }
-            return @class;
-        }
-
-        private T GenerateTypeAttributes<T>(ClassModel model, T type) where T : TypeDeclarationSyntax
+        private T GenerateTypeAttributes(I model, T type)
         {
             foreach (var a in model.Attributes)
             {
-                type = type.AddAttributeLists(GenerateAttributeList(a)) as T;
+                type = type.AddAttributeLists(GenerateAttributeList(a as I)) as T;
             }
             return type;
         }
 
-        private T GenerateMemberAttributes<T>(MethodModel model, T member) where T : MemberDeclarationSyntax
+        private M GenerateMemberAttributes<M>(MethodModel model, M member) where M : MemberDeclarationSyntax
         {
             foreach (var a in model.Attributes)
             {
-                member = member.AddAttributeLists(GenerateAttributeList(a)) as T;
+                member = member.AddAttributeLists(GenerateAttributeList(a as I)) as M;
             }
             return member;
         }
 
-        private static AttributeListSyntax GenerateAttributeList(InterfaceModel a)
+        private static AttributeListSyntax GenerateAttributeList(I a)
         {
             var attribute = SyntaxFactory.Attribute(SyntaxFactory.ParseName(a.Name));
             var attributeList = SyntaxFactory.AttributeList();

@@ -15,7 +15,7 @@ namespace DGen.Generation.CodeModel
         public string Name { get; }
         public TypeModel ReturnType { get; private set; }
         public List<MethodParameter> Parameters { get; }
-        public List<ClassModel> Attributes { get; }
+        public List<InterfaceModel> Attributes { get; }
         public List<StatementSyntax> Body { get; private set; }
         public List<TypeModel> UsedTypes { get; }
         public ExpressionSyntax Expression => SyntaxFactory.IdentifierName(Name);
@@ -47,7 +47,7 @@ namespace DGen.Generation.CodeModel
             Interface = @interface;
             Name = name;
             Parameters = new List<MethodParameter>();
-            Attributes = new List<ClassModel>();
+            Attributes = new List<InterfaceModel>();
             UsedTypes = new List<TypeModel>();
             Accessability = Accessibility.Public;
         }
@@ -119,7 +119,7 @@ namespace DGen.Generation.CodeModel
             return Parameters.SingleOrDefault(p => p.Name.Equals(name, comparisonType));
         }
 
-        public MethodModel WithAttributes(params ClassModel[] attributes)
+        public MethodModel WithAttributes(params InterfaceModel[] attributes)
         {
             Attributes.AddRange(attributes);
 

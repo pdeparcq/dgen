@@ -11,7 +11,7 @@ namespace DGen.Generation.CodeModel
     {
         public List<InterfaceModel> ImplementedInterfaces { get; }
         public List<TypeModel> GenericTypes { get; }
-        public List<ClassModel> Attributes { get; }
+        public List<InterfaceModel> Attributes { get; }
         public List<PropertyModel> Properties { get; }
         public List<MethodModel> Methods { get; }
         public bool IsGeneric => GenericTypes.Any();
@@ -37,7 +37,7 @@ namespace DGen.Generation.CodeModel
         {
             ImplementedInterfaces = new List<InterfaceModel>();
             GenericTypes = new List<TypeModel>();
-            Attributes = new List<ClassModel>();
+            Attributes = new List<InterfaceModel>();
             Properties = new List<PropertyModel>();
             Methods = new List<MethodModel>();
         }
@@ -57,7 +57,7 @@ namespace DGen.Generation.CodeModel
             return this;
         }
 
-        public InterfaceModel WithAttributes(params ClassModel[] attributes)
+        public InterfaceModel WithAttributes(params InterfaceModel[] attributes)
         {
             Attributes.AddRange(attributes);
 
