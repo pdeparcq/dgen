@@ -14,46 +14,22 @@ namespace DGen.Test
 {
     [TestFixture]
     public class SandBox
-    {
-        private readonly string _modelFileName = "MyLunch.mdj";
-        private readonly JsonSerializerSettings _serializerSettings;
-
-        public SandBox()
+    {    
+        [Test]
+        public async Task CanGenerateCodeForMyLunch()
         {
-            _serializerSettings = new JsonSerializerSettings
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            };
+            await GenerateCodeFromModel("MyLunch.mdj");
         }
 
         [Test]
-        public void CanReadStarUmlModel()
+        public async Task CanGenerateCodeForHelloCustomer()
         {
-            var model = new StarUmlReader().Read(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _modelFileName));
-            Console.WriteLine(JsonConvert.SerializeObject(model, Formatting.Indented, _serializerSettings));
+            await GenerateCodeFromModel("HelloCustomer.mdj");
         }
 
-        [Test]
-        public void CanGenerateMetaModel()
+        private async Task GenerateCodeFromModel(string fileName)
         {
-            var model = new StarUmlReader().Read(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _modelFileName));
-            var metaModel = new MetaModelGenerator().Generate(model);
-            //Console.WriteLine(JsonConvert.SerializeObject(metaModel, Formatting.Indented, _serializerSettings));
-        }
-
-        [Test]
-        public void CanGenerateApplicationModel()
-        {
-            var model = new StarUmlReader().Read(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _modelFileName));
-            var metaModel = new MetaModelGenerator().Generate(model);
-            var application = new CodeModelGenerator().Generate(metaModel);
-            //Console.WriteLine(JsonConvert.SerializeObject(metaModel, Formatting.Indented, _serializerSettings));
-        }
-
-        [Test]
-        public async Task CanGenerateCodeFromMetaModel()
-        {
-            var model = new StarUmlReader().Read(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), _modelFileName));
+            var model = new StarUmlReader().Read(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), fileName));
             var metaModel = new MetaModelGenerator().Generate(model);
             var application = new CodeModelGenerator().Generate(metaModel);
             await new CodeGenerator(new CSharpCodeGenerator()).Generate(application, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
