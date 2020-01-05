@@ -68,9 +68,9 @@ namespace DGen.Generation.CodeModel
             return new ClassModel(KledexQueryNamespace, "IQuery").WithGenericTypes(result);
         }
 
-        public static ClassModel QueryHandler(TypeModel query, TypeModel result)
+        public static InterfaceModel QueryHandler(TypeModel query, TypeModel result)
         {
-            return new ClassModel(KledexQueryNamespace, "IQueryHandler").WithGenericTypes(query, result);
+            return new InterfaceModel(KledexQueryNamespace, "IQueryHandler").WithGenericTypes(query, result);
         }
 
         internal static ClassModel Command()
@@ -83,9 +83,9 @@ namespace DGen.Generation.CodeModel
             return new ClassModel(KledexCommandNamespace, "CommandResponse");
         }
 
-        public static ClassModel CommandHandler(TypeModel command)
+        public static InterfaceModel CommandHandler(TypeModel command)
         {
-            return new ClassModel(KledexCommandNamespace, "ICommandHandler").WithGenericTypes(command);
+            return new InterfaceModel(KledexCommandNamespace, "ICommandHandler").WithGenericTypes(command);
         }
 
     }

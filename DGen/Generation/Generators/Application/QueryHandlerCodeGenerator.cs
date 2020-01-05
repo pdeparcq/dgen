@@ -36,7 +36,7 @@ namespace DGen.Generation.Generators.Application
                 var queryType = registry.Resolve(Layer, query);
                 var queryResultType = registry.Resolve(Layer, viewModel);
 
-                @class = @class.WithBaseType(SystemTypes.QueryHandler(queryType, queryResultType));
+                @class = @class.WithImplementedInterfaces(SystemTypes.QueryHandler(queryType, queryResultType));
 
                 var handler = @class.AddMethod("Handle")
                     .WithParameters(new MethodParameter("query", queryType))

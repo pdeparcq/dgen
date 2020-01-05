@@ -33,6 +33,7 @@ namespace DGen.Generation.Generators.CSharp
                 @class = @class.AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword));
 
             @class = GenerateBaseType(model, @class);
+            @class = GenerateImplementedInterfaces(model, @class);
             @class = GenerateTypeAttributes(model, @class);
             @class = GenerateConstructors(model, @class);
             @class = GenerateProperties(model, @class);
@@ -133,6 +134,15 @@ namespace DGen.Generation.Generators.CSharp
             if (model.BaseType != null)
             {
                 @class = _syntaxGenerator.AddBaseType(@class, model.BaseType.Syntax) as ClassDeclarationSyntax;
+            }
+            return @class;
+        }
+
+        private ClassDeclarationSyntax GenerateImplementedInterfaces(ClassModel model, ClassDeclarationSyntax @class)
+        {
+            foreach(var @interface in model.ImplementedInterfaces)
+            {
+                @class = _syntaxGenerator.AddInterfaceType(@class, @interface.Syntax) as ClassDeclarationSyntax;
             }
             return @class;
         }

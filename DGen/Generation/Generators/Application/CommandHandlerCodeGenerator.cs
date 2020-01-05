@@ -36,7 +36,7 @@ namespace DGen.Generation.Generators.Application
             {
                 var commandType = registry.Resolve(Layer, command);
 
-                @class = @class.WithBaseType(SystemTypes.CommandHandler(commandType));
+                @class = @class.WithImplementedInterfaces(SystemTypes.CommandHandler(commandType));
 
                 var handler = @class.AddMethod("Handle")
                     .WithParameters(new MethodParameter("command", commandType))
