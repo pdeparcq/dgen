@@ -35,17 +35,17 @@ namespace DGen.Generation.CodeModel
 
         public BodyBuilder AssignProperty(string propertyName, ExpressionSyntax expression)
         {
-            if (Method.Class.HasProperty(propertyName))
-                return Assign(Method.Class.GetProperty(propertyName).Expression, expression);
+            if (Method.Interface.HasProperty(propertyName))
+                return Assign(Method.Interface.GetProperty(propertyName).Expression, expression);
 
             return this;
         }
 
         public BodyBuilder InvokeMethod(string methodName, params ExpressionSyntax[] parameters)
         {
-            if (Method.Class.HasMethod(methodName))
+            if (Method.Interface.HasMethod(methodName))
             {
-                return Execute(Method.Class.GetMethod(methodName).Invoke(parameters));
+                return Execute(Method.Interface.GetMethod(methodName).Invoke(parameters));
             }
 
             return this;

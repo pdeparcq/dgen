@@ -11,7 +11,7 @@ namespace DGen.Generation.CodeModel
 {
     public class MethodModel
     {
-        public ClassModel Class { get; }
+        public InterfaceModel Interface { get; }
         public string Name { get; }
         public TypeModel ReturnType { get; private set; }
         public List<MethodParameter> Parameters { get; }
@@ -39,12 +39,12 @@ namespace DGen.Generation.CodeModel
             }
         }
 
-        public MethodModel(ClassModel @class, string name)
+        public MethodModel(InterfaceModel @interface, string name)
         {
-            Guard.ArgumentNotNull(() => @class);
+            Guard.ArgumentNotNull(() => @interface);
             Guard.ArgumentNotNullOrEmpty(() => name);
 
-            Class = @class;
+            Interface = @interface;
             Name = name;
             Parameters = new List<MethodParameter>();
             Attributes = new List<ClassModel>();
@@ -105,7 +105,7 @@ namespace DGen.Generation.CodeModel
 
         public MethodModel WithPropertyParameters()
         {
-            return WithParameters(Class.Properties.Select(p => new MethodParameter(p.Name.ToCamelCase(), p.Type))
+            return WithParameters(Interface.Properties.Select(p => new MethodParameter(p.Name.ToCamelCase(), p.Type))
                 .ToArray());
         }
 

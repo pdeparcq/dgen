@@ -8,27 +8,18 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DGen.Generation.CodeModel
 {
-    public class ClassModel : TypeModel
+    public class ClassModel : InterfaceModel
     {
         public ClassModel BaseType { get; private set; }
-        public List<TypeModel> GenericTypes { get; }
-        public List<ClassModel> Attributes { get; }
-        public List<PropertyModel> Properties { get; }
         public List<MethodModel> Constructors { get; }
-        public List<MethodModel> Methods { get; }
         public bool IsAbstract => Methods.Any(m => m.IsAbstract) || Constructors.Any(c => c.Accessability == Accessibility.Protected);
-        public bool IsGeneric => GenericTypes.Any();
 
-        public IEnumerable<NamespaceModel> Usings
+        public override IEnumerable<NamespaceModel> Usings
         {
             get
             {
-                var usings = Properties
-                    .SelectMany(p => p.Usings)
-                    .Concat(Constructors.SelectMany(m => m.Usings))
-                    .Concat(Methods.SelectMany(m => m.Usings))
-                    .Concat(GenericTypes.Select(t => t.Namespace))
-                    .Concat(Attributes.Select(t => t.Namespace))
+                var usings = base.Usings
+                    .Concat(Constructors.SelectMany(c => c.Usings))
                     .ToList();
 
                 if (BaseType != null)
@@ -44,25 +35,7 @@ namespace DGen.Generation.CodeModel
         public ClassModel(NamespaceModel @namespace, string name)
             : base(@namespace, name)
         {
-            GenericTypes = new List<TypeModel>();
-            Attributes = new List<ClassModel>();
-            Properties = new List<PropertyModel>();
             Constructors = new List<MethodModel>();
-            Methods = new List<MethodModel>();
-        }
-
-        public ClassModel WithGenericTypes(params TypeModel[] types)
-        {
-            GenericTypes.AddRange(types);
-
-            return this;
-        }
-
-        public ClassModel WithAttributes(params ClassModel[] attributes)
-        {
-            Attributes.AddRange(attributes);
-
-            return this;
         }
 
         public ClassModel WithBaseType(ClassModel baseType)
@@ -72,26 +45,29 @@ namespace DGen.Generation.CodeModel
             return this;
         }
 
-        public PropertyModel AddProperty(string name, TypeModel type)
+        public new ClassModel WithImplementedInterfaces(params InterfaceModel[] interfaces)
         {
-            var property = Properties.FirstOrDefault(p => p.Name == name && p.Type == type);
-            if(property == null)
-            {
-                property = new PropertyModel(name, type);
-                Properties.Add(property);
-            }
-            return property;
+            return base.WithImplementedInterfaces(interfaces) as ClassModel;
         }
 
-        public bool HasProperty(string name, StringComparison comparisonType = StringComparison.InvariantCultureIgnoreCase)
+        public new ClassModel WithGenericTypes(params TypeModel[] types)
         {
-            return GetProperty(name, comparisonType) != null;
+            return base.WithGenericTypes(types) as ClassModel;
         }
 
-        public PropertyModel GetProperty(string name, StringComparison comparisonType = StringComparison.InvariantCultureIgnoreCase)
+        public new ClassModel WithAttributes(params ClassModel[] attributes)
         {
-            return Properties.SingleOrDefault(p => p.Name.Equals(name, comparisonType)) ??
-                   BaseType?.GetProperty(name, comparisonType);
+            return base.WithAttributes(attributes) as ClassModel;
+        }
+
+        public override PropertyModel GetProperty(string name, StringComparison comparisonType = StringComparison.InvariantCultureIgnoreCase)
+        {
+            return base.GetProperty(name, comparisonType) ?? BaseType?.GetProperty(name, comparisonType);
+        }
+
+        public override MethodModel GetMethod(string name, StringComparison comparisonType = StringComparison.InvariantCultureIgnoreCase)
+        {
+            return base.GetMethod(name, comparisonType) ?? BaseType?.GetMethod(name, comparisonType);
         }
 
         public MethodModel AddConstructor()
@@ -126,35 +102,5 @@ namespace DGen.Generation.CodeModel
         {
             return SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, GetProperty(name).Expression, expression);
         }
-
-        public MethodModel AddMethod(string name)
-        {
-            var method = new MethodModel(this, name);
-            Methods.Add(method);
-            return method;
-        }
-
-        public bool HasMethod(string name, StringComparison comparisonType = StringComparison.InvariantCultureIgnoreCase)
-        {
-            return GetMethod(name, comparisonType) != null;
-        }
-
-        public MethodModel GetMethod(string name, StringComparison comparisonType = StringComparison.InvariantCultureIgnoreCase)
-        {
-            return Methods.SingleOrDefault(m => m.Name.Equals(name, comparisonType)) ?? BaseType?.GetMethod(name, comparisonType);
-        }
-
-        public override TypeSyntax Syntax
-        {
-            get
-            {
-                if (GenericTypes.Any())
-                {
-                    return SyntaxFactory.ParseTypeName($"{Name}<{string.Join(",", GenericTypes.Select(t => t.Name))}>");
-                }
-                return base.Syntax;
-            }
-        }
-        
     }
 }
