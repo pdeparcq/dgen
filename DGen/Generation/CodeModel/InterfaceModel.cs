@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -22,6 +21,7 @@ namespace DGen.Generation.CodeModel
             {
                 var usings = Properties
                     .SelectMany(p => p.Usings)
+                    .Concat(ImplementedInterfaces.Select(i => i.Namespace))
                     .Concat(ImplementedInterfaces.SelectMany(i => i.Usings))
                     .Concat(Methods.SelectMany(m => m.Usings))
                     .Concat(GenericTypes.Select(t => t.Namespace))
