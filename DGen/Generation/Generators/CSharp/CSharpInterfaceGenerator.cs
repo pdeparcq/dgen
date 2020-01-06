@@ -62,7 +62,7 @@ namespace DGen.Generation.Generators.CSharp
             return @interface;
         }
 
-        private M GenerateMethod<M>(MethodModel model, M method) where M : BaseMethodDeclarationSyntax
+        protected M GenerateMethod<M>(MethodModel model, M method) where M : BaseMethodDeclarationSyntax
         {
             method = GenerateMemberAttributes(model, method);
 
