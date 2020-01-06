@@ -14,7 +14,7 @@ namespace DGen.Generation.Generators.CSharp
         private static readonly Regex AutoPropRegex = new Regex(@"\s*\{\s*get;\s*set;\s*}\s");
         private static readonly Regex AutoPropReadOnlyRegex = new Regex(@"\s*\{\s*get;\s*private set;\s*}\s");
 
-        private readonly SyntaxGenerator _syntaxGenerator;
+        protected readonly SyntaxGenerator _syntaxGenerator;
 
         public CSharpInterfaceGenerator(SyntaxGenerator syntaxGenerator)
         {
@@ -24,7 +24,14 @@ namespace DGen.Generation.Generators.CSharp
         public string Generate(I model)
         {
             var @namespace = _syntaxGenerator.NamespaceDeclaration(model.Namespace.FullName) as NamespaceDeclarationSyntax;
-            var @interface = _syntaxGenerator.ClassDeclaration(model.Name, accessibility: Accessibility.Public) as T;
+            var @interface = GenerateInterface(model);
+            var compileUnit = GenerateCompileUnit(model, @interface, @namespace);
+            return FormatAutoPropertiesOnOneLine(compileUnit.NormalizeWhitespace().ToFullString());
+        }
+
+        protected virtual T GenerateInterface(I model)
+        {
+            var @interface = GenerateDeclaration(model);
 
             if (model.Description != null)
                 @interface = @interface.WithLeadingTrivia(ToDocumentation(model.Description));
@@ -34,9 +41,12 @@ namespace DGen.Generation.Generators.CSharp
             @interface = GenerateProperties(model, @interface);
             @interface = GenerateMethods(model, @interface);
 
-            var compileUnit = GenerateCompileUnit(model, @interface, @namespace);
+            return @interface;
+        }
 
-            return FormatAutoPropertiesOnOneLine(compileUnit.NormalizeWhitespace().ToFullString());
+        protected virtual T GenerateDeclaration(I model)
+        {
+            return _syntaxGenerator.InterfaceDeclaration(model.Name, accessibility: Accessibility.Public) as T;
         }
 
         private T GenerateMethods(I model, T @interface)

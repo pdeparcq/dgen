@@ -9,39 +9,29 @@ using System.Text.RegularExpressions;
 
 namespace DGen.Generation.Generators.CSharp
 {
-    public class CSharpClassGenerator
+    public class CSharpClassGenerator : CSharpInterfaceGenerator<ClassModel, ClassDeclarationSyntax>
     {
-        private static readonly Regex AutoPropRegex = new Regex(@"\s*\{\s*get;\s*set;\s*}\s");
-        private static readonly Regex AutoPropReadOnlyRegex = new Regex(@"\s*\{\s*get;\s*private set;\s*}\s");
-
-        private readonly SyntaxGenerator _syntaxGenerator;
-
-        public CSharpClassGenerator(SyntaxGenerator syntaxGenerator)
+      
+        public CSharpClassGenerator(SyntaxGenerator syntaxGenerator) : base(syntaxGenerator)
         {
-            _syntaxGenerator = syntaxGenerator;
         }
 
-        public string Generate(ClassModel model)
+        protected override ClassDeclarationSyntax GenerateInterface(ClassModel model)
         {
-            var @namespace = _syntaxGenerator.NamespaceDeclaration(model.Namespace.FullName) as NamespaceDeclarationSyntax;
-            var @class = _syntaxGenerator.ClassDeclaration(model.Name, accessibility: Accessibility.Public) as ClassDeclarationSyntax;
-
-            if (model.Description != null)
-                @class = @class.WithLeadingTrivia(ToDocumentation(model.Description));
+            var @class = base.GenerateInterface(model);
 
             if (model.IsAbstract)
                 @class = @class.AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword));
 
-            @class = GenerateBaseType(model, @class);
-            @class = GenerateImplementedInterfaces(model, @class);
-            @class = GenerateTypeAttributes(model, @class);
+            @class = GenerateBaseType(model, @class);       
             @class = GenerateConstructors(model, @class);
-            @class = GenerateProperties(model, @class);
-            @class = GenerateMethods(model, @class);
+            
+            return @class;
+        }
 
-            var compileUnit = GenerateCompileUnit(model, @class, @namespace);
-
-            return FormatAutoPropertiesOnOneLine(compileUnit.NormalizeWhitespace().ToFullString());
+        protected override ClassDeclarationSyntax GenerateDeclaration(ClassModel model)
+        {
+            return _syntaxGenerator.ClassDeclaration(model.Name, accessibility: Accessibility.Public) as ClassDeclarationSyntax;
         }
 
         private ClassDeclarationSyntax GenerateConstructors(ClassModel model, ClassDeclarationSyntax @class)
@@ -176,13 +166,6 @@ namespace DGen.Generation.Generators.CSharp
         private static SyntaxTrivia ToDocumentation(string text)
         {
             return SyntaxFactory.Comment($"/* {text} */");
-        }
-
-        private string FormatAutoPropertiesOnOneLine(string str)
-        {
-            str = AutoPropRegex.Replace(str, " { get; set; }");
-            str = AutoPropReadOnlyRegex.Replace(str, " { get; private set; }");
-            return str;
         }
     }
 }
