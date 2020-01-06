@@ -72,9 +72,14 @@ namespace DGen.Generation.CodeModel
 
         public MethodModel AddConstructor()
         {
-            var constructor = new MethodModel(this, Name);
+            var constructor = new MethodModel(this, Name).MakePublic();
             Constructors.Add(constructor);
             return constructor;
+        }
+
+        public override MethodModel AddMethod(string name)
+        {
+            return base.AddMethod(name).MakePublic();
         }
 
         public ExpressionSyntax Construct(params ExpressionSyntax[] parameters)

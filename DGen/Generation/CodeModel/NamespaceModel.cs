@@ -14,6 +14,7 @@ namespace DGen.Generation.CodeModel
         public List<TypeModel> Types { get; set; }
         public IEnumerable<TypeModel> AllTypes => Namespaces.SelectMany(ns => ns.AllTypes).Concat(Types);
         public IReadOnlyCollection<ClassModel> Classes => Types.OfType<ClassModel>().ToList().AsReadOnly();
+        public IReadOnlyCollection<InterfaceModel> Interfaces => Types.OfType<InterfaceModel>().Where(i => i.GetType() == typeof(InterfaceModel)).ToList().AsReadOnly();
         public IReadOnlyCollection<EnumerationModel> Enumerations => Types.OfType<EnumerationModel>().ToList().AsReadOnly();
 
         public NamespaceModel(NamespaceModel parent, string name)
@@ -57,6 +58,17 @@ namespace DGen.Generation.CodeModel
                 Types.Add(e);
             }
             return e;
+        }
+
+        public InterfaceModel AddInterface(string name)
+        {
+            var i = Interfaces.FirstOrDefault(i => i.Name == name);
+            if (i == null)
+            {
+                i = new InterfaceModel(this, name);
+                Types.Add(i);
+            }
+            return i;
         }
     }
 }

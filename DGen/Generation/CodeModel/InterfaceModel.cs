@@ -85,7 +85,7 @@ namespace DGen.Generation.CodeModel
             return Properties.SingleOrDefault(p => p.Name.Equals(name, comparisonType));
         }
 
-        public MethodModel AddMethod(string name)
+        public virtual MethodModel AddMethod(string name)
         {
             var method = new MethodModel(this, name);
             Methods.Add(method);

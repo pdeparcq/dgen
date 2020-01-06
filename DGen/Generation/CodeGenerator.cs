@@ -63,6 +63,10 @@ namespace DGen.Generation
             {
                 await _codeGenerator.GenerateClassFile(@class, di);
             }
+            else if (type is InterfaceModel @interface)
+            {
+                await _codeGenerator.GenerateInterfaceFile(@interface, di);
+            }
             else if (type is EnumerationModel enumeration)
             {
                 await _codeGenerator.GenerateEnumFile(enumeration, di);

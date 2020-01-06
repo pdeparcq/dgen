@@ -3,9 +3,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
-using System;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace DGen.Generation.Generators.CSharp
 {
@@ -43,7 +40,20 @@ namespace DGen.Generation.Generators.CSharp
                 @class = @class.AddMembers(constructor);
             }
             return @class;
-        }     
+        }
+
+        protected override M GenerateMethod<M>(MethodModel model, M method)
+        {
+            method = base.GenerateMethod(model, method);
+
+            if (model.IsVirtual)
+                method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.VirtualKeyword)) as M;
+
+            if (model.IsAbstract)
+                method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword)) as M;
+
+            return method;
+        }
 
         private ClassDeclarationSyntax GenerateBaseType(ClassModel model, ClassDeclarationSyntax @class)
         {

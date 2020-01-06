@@ -49,13 +49,19 @@ namespace DGen.Generation.CodeModel
             Parameters = new List<MethodParameter>();
             Attributes = new List<InterfaceModel>();
             UsedTypes = new List<TypeModel>();
-            Accessability = Accessibility.Public;
+            Accessability = Accessibility.NotApplicable;
         }
-
 
         public MethodModel MakeVirtual()
         {
             IsVirtual = true;
+
+            return this;
+        }
+
+        public MethodModel MakePublic()
+        {
+            Accessability = Accessibility.Public;
 
             return this;
         }

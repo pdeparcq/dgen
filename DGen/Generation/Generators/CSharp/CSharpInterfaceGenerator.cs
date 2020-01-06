@@ -62,15 +62,9 @@ namespace DGen.Generation.Generators.CSharp
             return @interface;
         }
 
-        protected M GenerateMethod<M>(MethodModel model, M method) where M : BaseMethodDeclarationSyntax
+        protected virtual M GenerateMethod<M>(MethodModel model, M method) where M : BaseMethodDeclarationSyntax
         {
             method = GenerateMemberAttributes(model, method);
-
-            if (model.IsVirtual)
-                method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.VirtualKeyword)) as M;
-
-            if (model.IsAbstract)
-                method = method.AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword)) as M;
 
             foreach (var p in model.Parameters)
             {
@@ -80,7 +74,7 @@ namespace DGen.Generation.Generators.CSharp
 
             if (!model.IsAbstract)
             {
-                if(model.Body != null)
+                if (model.Body != null)
                     method = method.AddBodyStatements(model.Body.ToArray()) as M;
             }
             else

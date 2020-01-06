@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using DGen.Generation.CodeModel;
 using DGen.Meta.MetaModel;
 using DGen.Meta.MetaModel.Types;
@@ -9,7 +9,6 @@ namespace DGen.Generation.Generators.Application
     public class CommandHandlerCodeGenerator : LayerCodeGenerator
     {
         public override string Layer => "Application";
-
 
         public override IEnumerable<BaseType> GetTypes(Module module)
         {
@@ -28,6 +27,15 @@ namespace DGen.Generation.Generators.Application
 
         public override void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
+            foreach (var aggregate in module.GetTypes<Aggregate>())
+            {
+                var @interface = @namespace.AddInterface($"I{aggregate.Name}Service");
+
+                foreach (var command in module.GetTypes<Command>().Where(c => c.DomainEvent?.Aggregate == aggregate))
+                {
+                    @interface.AddMethod(command.Name);
+                }
+            }
         }
 
         public override void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
