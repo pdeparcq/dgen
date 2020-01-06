@@ -14,11 +14,13 @@ namespace DGen.Generation.Generators.CSharp
     {
         private readonly SyntaxGenerator _syntaxGenerator;
         private readonly CSharpClassGenerator _classGenerator;
+        private readonly CSharpInterfaceGenerator<InterfaceModel, InterfaceDeclarationSyntax> _interfaceGenerator;
 
         public CSharpCodeGenerator()
         {
             _syntaxGenerator = SyntaxGenerator.GetGenerator(new AdhocWorkspace(), LanguageNames.CSharp);
             _classGenerator = new CSharpClassGenerator(_syntaxGenerator);
+            _interfaceGenerator = new CSharpInterfaceGenerator<InterfaceModel, InterfaceDeclarationSyntax>(_syntaxGenerator);
         }
 
         public IEnumerable<string> CodeFileExtensions
@@ -47,6 +49,14 @@ namespace DGen.Generation.Generators.CSharp
                     .Select(l => _syntaxGenerator.EnumMember(l.Name) as EnumMemberDeclarationSyntax).ToArray());
                 var ns = _syntaxGenerator.NamespaceDeclaration(enumeration.Namespace.FullName, enumDeclaration) as NamespaceDeclarationSyntax;
                 await sw.WriteAsync(ns.NormalizeWhitespace().ToFullString());
+            }
+        }
+
+        public async Task GenerateInterfaceFile(InterfaceModel @interface, DirectoryInfo di)
+        {
+            using (var sw = File.CreateText(Path.Combine(di.FullName, $"{@interface.Name}.cs")))
+            {
+                await sw.WriteAsync(_interfaceGenerator.Generate(@interface));
             }
         }
 

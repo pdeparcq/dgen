@@ -10,6 +10,7 @@ namespace DGen.Generation
         IEnumerable<string> CodeFileExtensions { get; }
         Task GenerateService(ServiceModel service, DirectoryInfo di);
         Task GenerateLayer(NamespaceModel layer, DirectoryInfo di);
+        Task GenerateInterfaceFile(InterfaceModel @interface, DirectoryInfo di);
         Task GenerateClassFile(ClassModel @class, DirectoryInfo di);
         Task GenerateEnumFile(EnumerationModel enumeration, DirectoryInfo di);
     }
