@@ -70,5 +70,13 @@ namespace DGen.Generation.CodeModel
             }
             return i;
         }
+
+        public bool HasParent(NamespaceModel @namespace)
+        {
+            if (Parent == null)
+                return false;
+
+            return Parent == @namespace || Parent.HasParent(@namespace);
+        }
     }
 }

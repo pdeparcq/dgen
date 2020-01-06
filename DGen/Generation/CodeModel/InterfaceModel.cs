@@ -28,7 +28,7 @@ namespace DGen.Generation.CodeModel
                     .Concat(Attributes.Select(t => t.Namespace))
                     .ToList();
 
-                return usings.Where(n => n != Namespace).Distinct();
+                return usings.Where(n => n != Namespace && !Namespace.HasParent(n)).Distinct();
             }
         }
 
