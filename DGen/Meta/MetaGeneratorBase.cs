@@ -59,6 +59,7 @@ namespace DGen.Meta
                 type.Properties.AddRange(e.Attributes.Where(p => p.Type == ElementType.UMLAttribute).Select(p => new Property
                 {
                     IsIdentifier = p.Stereotype?.ToLower() == "id",
+                    IsCollection = p.Multiplicity?.Contains("*") ?? false,
                     Name = p.Name,
                     Description = p.Documentation,
                     Type = new PropertyType

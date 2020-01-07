@@ -35,7 +35,7 @@ namespace DGen.Generation.CodeModel
 
         public BodyBuilder AssignProperty(string propertyName, ExpressionSyntax expression)
         {
-            if (Method.Interface.HasProperty(propertyName))
+            if (Method.Interface.HasProperty(propertyName) && expression != null)
                 return Assign(Method.Interface.GetProperty(propertyName).Expression, expression);
 
             return this;
