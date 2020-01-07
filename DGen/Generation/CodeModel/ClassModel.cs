@@ -55,7 +55,7 @@ namespace DGen.Generation.CodeModel
             return base.WithGenericTypes(types) as ClassModel;
         }
 
-        public new ClassModel WithAttributes(params ClassModel[] attributes)
+        public new ClassModel WithAttributes(params InterfaceModel[] attributes)
         {
             return base.WithAttributes(attributes) as ClassModel;
         }
