@@ -10,6 +10,8 @@ namespace DGen.Meta
     {
         public abstract string StereoType { get; }
 
+        protected virtual ElementType ElementType => ElementType.UMLClass;
+
         public Type GeneratedType => typeof(T);
 
         public virtual IEnumerable<Element> QueryElements(Element parent)
@@ -21,7 +23,7 @@ namespace DGen.Meta
                 {
                     elements.AddRange(QueryElements(element));
                 }
-                elements.AddRange(parent.OwnedElements.Where(e => e.Type == ElementType.UMLClass && e.Stereotype?.ToLower() == StereoType.ToLower()));
+                elements.AddRange(parent.OwnedElements.Where(e => e.Type == ElementType && e.Stereotype?.ToLower() == StereoType.ToLower()));
             }
             return elements;
         }

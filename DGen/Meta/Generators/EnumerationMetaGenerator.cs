@@ -10,10 +10,7 @@ namespace DGen.Meta.Generators
     {
         public override string StereoType => "enumeration";
 
-        public override IEnumerable<Element> QueryElements(Element parent)
-        {
-            return parent.OwnedElements?.Where(e => e.Type == ElementType.UMLEnumeration) ?? new List<Element>();
-        }
+        protected override ElementType ElementType => ElementType.UMLEnumeration;
 
         public override void Generate(Enumeration type, Element element, ITypeRegistry registry)
         {
