@@ -41,7 +41,7 @@ namespace DGen.Generation.Generators.Domain
                 {
                     var parameter = new MethodParameter("id", aggregate.UniqueIdentifier.Type.Resolve(registry));
 
-                    var method = @class.AddMethod("GetUniqueIdentifier")
+                    var method = @class.AddMethod("ToGuid")
                         .WithReturnType(SystemTypes.Guid)
                         .WithParameters(parameter);
 
@@ -51,8 +51,14 @@ namespace DGen.Generation.Generators.Domain
                         method.WithBody(builder =>
                         {
                             builder.Return(parameter.Property(aggregate.UniqueIdentifier.Type.Type.Properties.First().Name));
-                        }).MakeVirtual();
+                        }).MakeProtected().MakeVirtual();
                     }
+
+                    @class.AddMethod("FromGuid")
+                        .WithReturnType(aggregate.UniqueIdentifier.Type.Resolve(registry))
+                        .WithParameters(new MethodParameter("id", SystemTypes.Guid))
+                        .WithBody(builder => { builder.ThrowNotImplemented(); })
+                        .MakeProtected().MakeVirtual();
                 }
 
                 foreach(var domainEvent in aggregate.DomainEvents)
@@ -109,7 +115,12 @@ namespace DGen.Generation.Generators.Domain
                             .WithBody(builder =>
                             {
                                 var publishParameters = parameters.ToExpressions().ToList();
-                                publishParameters.Insert(0, @class.GetProperty(SystemTypes.AggregateRootIdentifierName).Expression);
+
+                                publishParameters.Insert(0,
+                                    aggregate.UniqueIdentifier.Type.Resolve(registry) == SystemTypes.Guid
+                                        ? @class.GetProperty(SystemTypes.AggregateRootIdentifierName).Expression
+                                        : @class.GetMethod("FromGuid").Invoke(@class
+                                            .GetProperty(SystemTypes.AggregateRootIdentifierName).Expression));
 
                                 builder.InvokeMethod(validatorMethod.Name, parameters.ToExpressions().ToArray());
                                 builder.InvokeMethod($"Publish{command.DomainEvent.Name}", publishParameters.ToArray());
@@ -142,7 +153,7 @@ namespace DGen.Generation.Generators.Domain
                         SystemTypes.DomainEventPublishMethodName,
                         domainEvent.Construct(
                             parameters.ToExpressions(),
-                            domainEvent.Initializer(SystemTypes.DomainEventAggregateRootIdentifierName, @class.GetMethod("GetUniqueIdentifier").Invoke(parameters.First().Expression)))
+                            domainEvent.Initializer(SystemTypes.DomainEventAggregateRootIdentifierName, @class.GetMethod("ToGuid").Invoke(parameters.First().Expression)))
                         );
                 }
                 else
