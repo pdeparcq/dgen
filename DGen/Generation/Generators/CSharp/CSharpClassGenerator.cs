@@ -20,10 +20,16 @@ namespace DGen.Generation.Generators.CSharp
             if (model.IsAbstract)
                 @class = @class.AddModifiers(SyntaxFactory.Token(SyntaxKind.AbstractKeyword));
 
-            @class = GenerateBaseType(model, @class);       
-            @class = GenerateConstructors(model, @class);
-            
+            @class = GenerateBaseType(model, @class);
+
             return @class;
+        }
+
+
+        protected override ClassDeclarationSyntax GenerateMethods(ClassModel model, ClassDeclarationSyntax @class)
+        {
+            @class = GenerateConstructors(model, @class);
+            return base.GenerateMethods(model, @class);
         }
 
         protected override ClassDeclarationSyntax GenerateDeclaration(ClassModel model)

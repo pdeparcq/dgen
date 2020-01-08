@@ -49,7 +49,7 @@ namespace DGen.Generation.Generators.CSharp
             return _syntaxGenerator.InterfaceDeclaration(model.Name, accessibility: Accessibility.Public) as T;
         }
 
-        private T GenerateMethods(I model, T @interface)
+        protected virtual T GenerateMethods(I model, T @interface)
         {
             foreach (var m in model.Methods)
             {
