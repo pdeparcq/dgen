@@ -169,14 +169,7 @@ namespace DGen.Generation.Generators.Domain
             }
             foreach (var property in de.Properties)
             {
-                if (property.Type.Type is Aggregate referencedAggregate && referencedAggregate.UniqueIdentifier != null)
-                {
-                    yield return new MethodParameter($"{property.Name.ToCamelCase()}{referencedAggregate.UniqueIdentifier.Name}", referencedAggregate.UniqueIdentifier.Type.Resolve(registry));
-                }
-                else
-                {
-                    yield return new MethodParameter(property.Name.ToCamelCase(), property.Type.Resolve(registry));
-                }
+                yield return new MethodParameter(property.GetDomainName().ToCamelCase(), property.GetDomainType(registry));
             }
         }
     }
