@@ -42,7 +42,7 @@ namespace DGen.Generation.Generators.CSharp
             foreach (var c in model.Constructors)
             {
                 var constructor = _syntaxGenerator.ConstructorDeclaration(c.Name, accessibility: c.Accessability) as ConstructorDeclarationSyntax;
-                constructor = GenerateMethod(c, constructor);
+                constructor = base.GenerateMethod(c, constructor);
                 @class = @class.AddMembers(constructor);
             }
             return @class;

@@ -20,7 +20,7 @@ namespace DGen.Generation.Generators.Domain
 
         public override NamespaceModel GetNamespace(NamespaceModel @namespace)
         {
-            return @namespace.AddNamespace("DomainEvents");
+            return @namespace.AddNamespace("Events");
         }
 
         public override void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)

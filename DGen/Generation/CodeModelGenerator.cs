@@ -23,6 +23,8 @@ namespace DGen.Generation
                 new EntityCodeGenerator(),
                 new EnumerationCodeGenerator(),
                 new ValueCodeGenerator(),
+                new ServiceInterfaceGenerator(),
+                new ServiceCodeGenerator(),
                 // Infrastructure
                 new DbContextCodeGenerator(),
                 // Application

@@ -27,15 +27,7 @@ namespace DGen.Generation.Generators.Application
 
         public override void GenerateModule(Module module, NamespaceModel @namespace, ITypeModelRegistry registry)
         {
-            foreach (var aggregate in module.GetTypes<Aggregate>())
-            {
-                var @interface = @namespace.AddInterface($"I{aggregate.Name}Service");
-
-                foreach (var command in module.GetTypes<Command>().Where(c => c.DomainEvent?.Aggregate == aggregate))
-                {
-                    @interface.AddMethod(command.Name);
-                }
-            }
+            
         }
 
         public override void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)

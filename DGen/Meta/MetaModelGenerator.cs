@@ -26,6 +26,7 @@ namespace DGen.Meta
             AddMetaGenerator(new ViewModelMetaGenerator());
             AddMetaGenerator(new CommandMetaGenerator());
             AddMetaGenerator(new InputModelMetaGenerator());
+            AddMetaGenerator(new ServiceMetaGenerator());
         }
 
         private void AddMetaGenerator(IMetaGenerator metaGenerator)

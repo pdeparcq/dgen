@@ -63,6 +63,11 @@ namespace DGen.Generation.CodeModel
             return @class;
         }
 
+        public static InterfaceModel Repository(TypeModel aggregate)
+        {
+            return new InterfaceModel(KledexDomainNamespace, "IRepository").WithGenericTypes(aggregate);
+        }
+
         public static ClassModel Query(TypeModel result)
         {
             return new ClassModel(KledexQueryNamespace, "IQuery").WithGenericTypes(result);
