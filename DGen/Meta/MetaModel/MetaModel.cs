@@ -6,10 +6,10 @@ namespace DGen.Meta.MetaModel
     {
         public MetaModel()
         {
-            Services = new List<Service>();
+            Services = new List<Module>();
         }
 
         public string Name { get; set; }
-        public List<Service> Services { get; set; }
+        public List<Module> Services { get; set; }
     }
 }

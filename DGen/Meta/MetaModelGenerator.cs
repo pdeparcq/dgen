@@ -41,7 +41,7 @@ namespace DGen.Meta
             var metaModel = new MetaModel.MetaModel
             {
                 Name = model.Name,
-                Services = model.OwnedElements?.Where(e => e.Type == ElementType.UMLModel).Select(ToService).ToList() ?? new List<Service>()
+                Services = model.OwnedElements?.Where(e => e.Type == ElementType.UMLModel).Select(e => ToModule(e, null)).ToList() ?? new List<Module>()
             };
 
             // Second pass when all types are available
@@ -68,21 +68,16 @@ namespace DGen.Meta
             module.Modules.ForEach(CleanUp);
         }
 
-        private Service ToService(Element s)
+        private Module ToModule(Element m, Module parent = null)
         {
-            return ToModule<Service>(s);
-        }
-
-        private T ToModule<T>(Element m, Module parent = null) where T : Module, new()
-        {
-            var generated = new T()
+            var generated = new Module()
             {
                 Name = m.Name,
                 ParentModule = parent,
                 Description = m.Documentation
             };
 
-            generated.Modules = m.OwnedElements?.Where(e => e.Type == ElementType.UMLPackage).Select(e => ToModule<Module>(e, generated)).ToList() ?? new List<Module>();
+            generated.Modules = m.OwnedElements?.Where(e => e.Type == ElementType.UMLPackage).Select(e => ToModule(e, generated)).ToList() ?? new List<Module>();
 
             foreach(var metaGenerator in _metaGenerators.Values)
             {
