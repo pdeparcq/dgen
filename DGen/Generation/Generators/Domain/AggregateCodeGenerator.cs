@@ -88,46 +88,6 @@ namespace DGen.Generation.Generators.Domain
                             });
                     }       
                 }
-
-                foreach(var command in aggregate.Module.GetTypes<Command>().Where(c => c.DomainEvent != null && c.DomainEvent.Aggregate == aggregate))
-                {
-                    var parameters = GenerateDomainEventParameters(registry, command.DomainEvent, aggregate, command.DomainEvent.Type == DomainEventType.Create).ToList();
-
-                    var validatorMethod = @class.AddMethod($"Validate{command.Name}")
-                        .WithParameters(parameters.ToArray())
-                        .MakeProtected()
-                        .MakeVirtual();
-
-                    if (command.DomainEvent.Type == DomainEventType.Create)
-                    {
-                        @class.AddConstructor()
-                            .WithParameters(parameters.ToArray())
-                            .WithBody(builder =>
-                            {
-                                builder.InvokeMethod(validatorMethod.Name, parameters.ToExpressions().ToArray());
-                                builder.InvokeMethod($"Publish{command.DomainEvent.Name}", parameters.ToExpressions().ToArray());
-                            });
-                    }
-                    else
-                    {
-                        @class.AddMethod(command.MethodName)
-                            .WithParameters(parameters.ToArray())
-                            .WithBody(builder =>
-                            {
-                                var publishParameters = parameters.ToExpressions().ToList();
-
-                                publishParameters.Insert(0,
-                                    aggregate.UniqueIdentifier.Type.Resolve(registry) == SystemTypes.Guid
-                                        ? @class.GetProperty(SystemTypes.AggregateRootIdentifierName).Expression
-                                        : @class.GetMethod("FromGuid").Invoke(@class
-                                            .GetProperty(SystemTypes.AggregateRootIdentifierName).Expression));
-
-                                builder.InvokeMethod(validatorMethod.Name, parameters.ToExpressions().ToArray());
-                                builder.InvokeMethod($"Publish{command.DomainEvent.Name}", publishParameters.ToArray());
-                            })
-                            .MakeVirtual();
-                    }
-                }
             }
         }
 

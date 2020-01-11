@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DGen.Generation.CodeModel;
+using DGen.Generation.Extensions;
 using DGen.Meta.MetaModel;
 using DGen.Meta.MetaModel.Types;
 
@@ -12,7 +13,7 @@ namespace DGen.Generation.Generators.Application
 
         public override IEnumerable<BaseType> GetTypes(Module module)
         {
-            return module.GetTypes<Command>();
+            return module.GetTypes<Command>().Where(c => c.Service != null);
         }
 
         public override NamespaceModel GetNamespace(NamespaceModel @namespace)
@@ -34,9 +35,20 @@ namespace DGen.Generation.Generators.Application
         {
             if(type is Command command && model is ClassModel @class)
             {
+                var serviceInterface = registry.Resolve("Domain", command.Service, $"I{command.Service.Name}");
+
                 var commandType = registry.Resolve(Layer, command);
 
                 @class = @class.WithImplementedInterfaces(SystemTypes.CommandHandler(commandType));
+
+                @class.AddProperty(command.Service.Name, serviceInterface).MakeReadOnly();
+
+                @class.AddConstructor()
+                    .WithPropertyParameters()
+                    .WithBody(builder =>
+                    {
+                        builder.AssignPropertiesFromParameters();
+                    });
 
                 var handler = @class.AddMethod("Handle")
                     .WithParameters(new MethodParameter("command", commandType))

@@ -14,40 +14,7 @@ namespace DGen.Meta.Generators
         {
             base.Generate(command, element, registry);
 
-            var association = GetAssociation<InputModel>(element, registry);
-
-            if (association != null)
-            {
-                command.Input = association.Value.Type;
-                command.IsCollection = association.Value.Element.AssociationEndTo.Multiplicity?.Contains("*") ?? false;
-            }
-            else
-            {
-                var domainEvent = GetDependency<DomainEvent>(element, registry);
-
-                if (domainEvent != null)
-                {
-                    command.DomainEvent = domainEvent.Value.Type;
-
-                    var aggregate = GetDependency<Aggregate>(element, registry);
-
-                    if (aggregate != null)
-                    {
-                        command.MethodName = aggregate.Value.Element.Name ?? command.Name;
-                    }
-                    else
-                    {
-                        command.MethodName = command.Name;
-                    }
-                    
-                    command.Input = command.Module.GetTypes<InputModel>().FirstOrDefault(i => i.Source == domainEvent.Value.Type);
-                    
-                    if (command.Input != null)
-                    {
-                        command.Input.Name = command.Name;
-                    }
-                }
-            }
+            command.Service = GetDependency<Service>(element, registry)?.Type;
         }
 
         protected override bool ShouldGenerateProperty(BaseType resolved, string stereoType)

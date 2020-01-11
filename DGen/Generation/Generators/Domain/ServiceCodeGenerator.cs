@@ -31,7 +31,6 @@ namespace DGen.Generation.Generators.Domain
             if(type is Service service && model is ClassModel @class)
             {
                 var @interface = registry.Resolve(Layer, type, $"I{type.Name}") as InterfaceModel;
-                var parameters = new List<MethodParameter>();
 
                 @class = @class.WithImplementedInterfaces(@interface);
 
@@ -41,12 +40,10 @@ namespace DGen.Generation.Generators.Domain
 
                     @class.AddProperty($"{repository.Name}Repository", repositoryType)
                         .MakeReadOnly();
-
-                    parameters.Add(new MethodParameter($"{repository.Name.ToCamelCase()}Repository", repositoryType));
                 }
 
                 @class.AddConstructor()
-                    .WithParameters(parameters.ToArray())
+                    .WithPropertyParameters()
                     .WithBody(builder =>
                     {
                         builder.AssignPropertiesFromParameters();
