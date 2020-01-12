@@ -18,10 +18,12 @@ namespace DGen.StarUml
         UMLEnumeration,
         UMLEnumerationLiteral,
         UMLClassDiagram,
-        UMLAttribute
+        UMLAttribute,
+        UMLOperation,
+        UMLParameter
     }
 
-    public class AttributeType
+    public class MemberType
     {
         public string SystemType { get; set; }
         public ElementReference ReferenceType { get; set; }
@@ -53,9 +55,18 @@ namespace DGen.StarUml
         [JsonProperty(PropertyName = "attributes")]
         public List<Element> Attributes { get; set; }
 
+        [JsonProperty(PropertyName = "operations")]
+        public List<Element> Operations { get; set; }
+
+        [JsonProperty(PropertyName = "parameters")]
+        public List<Element> Parameters { get; set; }
+
+        [JsonProperty(PropertyName = "direction")]
+        public string ParameterDirection { get; set; }
+
         [JsonProperty(PropertyName = "type")]
         [JsonConverter(typeof(AttributeTypeConverter))]
-        public AttributeType AttributeType { get; set; }
+        public MemberType MemberType { get; set; }
 
         [JsonProperty(PropertyName = "literals")]
         public List<Element> Literals { get; set; }

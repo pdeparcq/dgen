@@ -42,7 +42,7 @@ namespace DGen.Generation.Generators.Domain
                     @class.AddDomainProperty(new Property { 
                         Name = domainEvent.Aggregate.Name,
                         Description = "Unique id of aggregate that throws this event",
-                        Type = new PropertyType
+                        Type = new MetaType
                         {
                             Type = domainEvent.Aggregate
                         }

@@ -7,6 +7,7 @@ namespace DGen.Meta.MetaModel
         public BaseType()
         {
             Properties = new List<Property>();
+            Methods = new List<MetaMethod>();
         }
 
         public Module Module { get; set; }
@@ -14,5 +15,6 @@ namespace DGen.Meta.MetaModel
         public string FullName => $"{Module.FullName}.{Name}";
         public string Description { get; set; }
         public List<Property> Properties { get; set; }
+        public List<MetaMethod> Methods { get; set; }
     }
 }

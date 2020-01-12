@@ -88,6 +88,17 @@ namespace DGen.Generation.Generators.Domain
                             });
                     }       
                 }
+
+                foreach(var metaMethod in aggregate.Methods)
+                {
+                    var method = @class.AddMethod(metaMethod.Name)
+                        .WithParameters(metaMethod.Parameters.Select(p => new MethodParameter(p.Name, p.Type.Resolve(registry))).ToArray());
+                    
+                    if(metaMethod.Return != null)
+                    {
+                        method = method.WithReturnType(metaMethod.Return.Type.Resolve(registry));
+                    }
+                }
             }
         }
 

@@ -50,6 +50,28 @@ namespace DGen.Meta
 
             // Generate properties from attributes
             GenerateAttributeProperties(type, e, registry);
+
+            // Generate methods from operations
+            GenerateOperationMethods(type, e, registry);
+        }
+
+        private void GenerateOperationMethods(T type, Element element, ITypeRegistry registry)
+        {
+            if(element.Operations != null && element.Operations.Any())
+            {
+                type.Methods.AddRange(element.Operations.Where(o => o.Type == ElementType.UMLOperation).Select(o =>
+                {
+                    var method = new MetaMethod(o.Name);
+                    o.Parameters?.ForEach(p => method.AddParameter(new MetaParameter
+                    {
+                        Name = p.Name,
+                        Type = ToMetaType(registry, p.MemberType),
+                        IsCollection = p.Multiplicity?.Contains("*") ?? false,
+                        IsReturn = p.ParameterDirection != null ? p.ParameterDirection == "return" : false
+                    }));
+                    return method;
+                }));
+            }
         }
 
         private static void GenerateAttributeProperties(T type, Element e, ITypeRegistry registry)
@@ -62,14 +84,20 @@ namespace DGen.Meta
                     IsCollection = p.Multiplicity?.Contains("*") ?? false,
                     Name = p.Name,
                     Description = p.Documentation,
-                    Type = new PropertyType
-                    {
-                        SystemType = p.AttributeType?.SystemType,
-                        Type = registry.Resolve(p.AttributeType?.ReferenceType?.Element)
-                    }
+                    Type = ToMetaType(registry, p.MemberType)
                 }));
             }
         }
+
+        private static MetaType ToMetaType(ITypeRegistry registry, MemberType type)
+        {
+            return new MetaType
+            {
+                SystemType = type?.SystemType,
+                Type = registry.Resolve(type?.ReferenceType?.Element)
+            };
+        }
+
 
         private void GenerateAssociationProperties(T type, Element element, ITypeRegistry registry)
         {
@@ -86,7 +114,7 @@ namespace DGen.Meta
                             IsCollection = association.AssociationEndTo.Multiplicity?.Contains("*") ?? false,
                             Name = association.AssociationEndTo.Name ?? resolved.Name,
                             Description = association.Documentation,
-                            Type = new PropertyType
+                            Type = new MetaType
                             {
                                 Type = resolved
                             }
