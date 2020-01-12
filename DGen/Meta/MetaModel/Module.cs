@@ -25,10 +25,12 @@ namespace DGen.Meta.MetaModel
             return _types.OfType<T>().Where(t => t.GetType() == typeof(T)).ToList().AsReadOnly();
         }
 
-        public void AddType(BaseType type)
+        public T AddType<T>(T type) where T : BaseType
         {
             if(!_types.Contains(type))
                 _types.Add(type);
+
+            return type;
         }
     }
 }
