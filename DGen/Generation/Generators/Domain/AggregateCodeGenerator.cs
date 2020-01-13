@@ -4,7 +4,6 @@ using DGen.Generation.CodeModel;
 using DGen.Generation.Extensions;
 using DGen.Meta.MetaModel;
 using DGen.Meta.MetaModel.Types;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DGen.Generation.Generators.Domain
 {
@@ -61,7 +60,7 @@ namespace DGen.Generation.Generators.Domain
                         .MakeProtected().MakeVirtual();
                 }
 
-                foreach(var domainEvent in aggregate.DomainEvents)
+                foreach(var domainEvent in aggregate.Module.GetTypes<DomainEvent>().Where(e => e.Aggregate == aggregate))
                 {
                     if (registry.Resolve(Layer, domainEvent) is ClassModel domainEventClass)
                     {
@@ -104,10 +103,8 @@ namespace DGen.Generation.Generators.Domain
 
         private static void BuildDomainEventApply(BodyBuilder builder, DomainEvent de, MethodParameter @event)
         {
-            if (de.Type == DomainEventType.Create)
-            {
-                builder.AssignProperty(SystemTypes.AggregateRootIdentifierName, @event.Property(SystemTypes.DomainEventAggregateRootIdentifierName));
-            }
+            builder.AssignProperty(SystemTypes.AggregateRootIdentifierName, @event.Property(SystemTypes.DomainEventAggregateRootIdentifierName));
+
             foreach (var property in de.Properties)
             {
                 builder.AssignProperty(property.Name, @event.Property(property.Name));
