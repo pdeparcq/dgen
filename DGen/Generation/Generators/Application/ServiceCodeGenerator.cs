@@ -5,7 +5,7 @@ using DGen.Generation.Extensions;
 using DGen.Meta.MetaModel;
 using DGen.Meta.MetaModel.Types;
 
-namespace DGen.Generation.Generators.Domain
+namespace DGen.Generation.Generators.Application
 {
     public class ServiceCodeGenerator : LayerCodeGenerator
     {
@@ -28,13 +28,13 @@ namespace DGen.Generation.Generators.Domain
 
         public override void GenerateType(BaseType type, TypeModel model, ITypeModelRegistry registry)
         {
-            if(type is Service service && model is ClassModel @class)
+            if (type is Service service && model is ClassModel @class)
             {
                 var @interface = registry.Resolve(Layer, type, $"I{type.Name}") as InterfaceModel;
 
                 @class = @class.WithImplementedInterfaces(@interface);
 
-                if(service.AggregateRepository != null)
+                if (service.AggregateRepository != null)
                 {
                     var repositoryType = SystemTypes.Repository(registry.Resolve("Domain", service.AggregateRepository));
 
@@ -42,7 +42,7 @@ namespace DGen.Generation.Generators.Domain
                         .MakeReadOnly();
                 }
 
-                foreach(var repository in service.QueryRepositories)
+                foreach (var repository in service.QueryRepositories)
                 {
                     var repositoryType = SystemTypes.Queryable(registry.Resolve("Infrastructure", repository));
 
