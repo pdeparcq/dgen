@@ -1,7 +1,9 @@
 ﻿using DGen.Generation.CodeModel;
+using DGen.Generation.Extensions;
 using DGen.Meta.MetaModel;
 using DGen.Meta.MetaModel.Types;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DGen.Generation.Generators.Application
 {
@@ -29,7 +31,8 @@ namespace DGen.Generation.Generators.Application
             {
                 foreach (var method in service.Methods)
                 {
-                    @interface.AddMethod(method.Name);
+                    @interface.AddMethod(method.Name)
+                        .WithParameters(method.Parameters.Select(p => new MethodParameter(p.Name, p.Type.Resolve(registry))).ToArray());
                 }
             }
         }
