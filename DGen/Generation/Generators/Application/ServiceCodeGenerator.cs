@@ -34,6 +34,12 @@ namespace DGen.Generation.Generators.Application
 
                 @class = @class.WithImplementedInterfaces(@interface);
 
+                foreach(var method in @interface.Methods)
+                {
+                    @class.AddMethod(method.Name).WithParameters(method.Parameters.ToArray())
+                        .WithReturnType(method.ReturnType);
+                }
+
                 if (service.AggregateRepository != null)
                 {
                     var repositoryType = SystemTypes.Repository(registry.Resolve("Domain", service.AggregateRepository));

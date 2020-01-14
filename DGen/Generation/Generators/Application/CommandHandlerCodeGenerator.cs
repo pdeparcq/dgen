@@ -62,6 +62,7 @@ namespace DGen.Generation.Generators.Application
                             if(method != null)
                             {
                                 builder.InvokePropertyMethod(command.Service.Name, command.ServiceMethod);
+                                builder.Return(SystemTypes.CommandResponse().Construct());
                             }
                             else
                             {

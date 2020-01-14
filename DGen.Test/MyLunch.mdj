@@ -9,7 +9,7 @@
 			"_parent": {
 				"$ref": "AAAAAAFF+h6SjaM2Hec="
 			},
-			"name": "Menu",
+			"name": "Selection",
 			"ownedElements": [
 				{
 					"_type": "UMLClassDiagram",
@@ -77,7 +77,7 @@
 											"top": 16,
 											"width": 189.30615234375,
 											"height": 13,
-											"text": "(from Menu)"
+											"text": "(from Selection)"
 										},
 										{
 											"_type": "LabelView",
@@ -1191,9 +1191,9 @@
 											"font": "Arial;13;0",
 											"left": -80,
 											"top": 64,
-											"width": 70.7890625,
+											"width": 91.7490234375,
 											"height": 13,
-											"text": "(from Menu)"
+											"text": "(from Selection)"
 										},
 										{
 											"_type": "LabelView",
@@ -2923,9 +2923,9 @@
 											"font": "Arial;13;0",
 											"left": -224,
 											"top": 64,
-											"width": 70.7890625,
+											"width": 91.7490234375,
 											"height": 13,
-											"text": "(from Menu)"
+											"text": "(from Selection)"
 										},
 										{
 											"_type": "LabelView",
@@ -3214,9 +3214,9 @@
 											"font": "Arial;13;0",
 											"left": 160,
 											"top": -32,
-											"width": 70.7890625,
+											"width": 91.7490234375,
 											"height": 13,
-											"text": "(from Menu)"
+											"text": "(from Selection)"
 										},
 										{
 											"_type": "LabelView",
