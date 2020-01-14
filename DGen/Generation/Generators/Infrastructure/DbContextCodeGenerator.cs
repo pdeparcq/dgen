@@ -16,6 +16,11 @@ namespace DGen.Generation.Generators.Infrastructure
             return module.GetTypes<Aggregate>();
         }
 
+        public override string GetTypeName(BaseType type)
+        {
+            return $"{type.Name}Data";
+        }
+
         public override NamespaceModel GetNamespace(NamespaceModel @namespace)
         {
             return @namespace.AddNamespace("Entities");

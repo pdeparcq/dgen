@@ -20,9 +20,9 @@ namespace DGen.Generation.CodeModel
         {
             get
             {
-                if(Type is ClassModel @class && @class.IsGeneric)
+                if(Type is InterfaceModel @interface && @interface.IsGeneric)
                 {
-                    foreach(var type in @class.GenericTypes)
+                    foreach(var type in @interface.GenericTypes)
                     {
                         yield return type.Namespace;
                     }
