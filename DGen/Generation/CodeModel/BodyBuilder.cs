@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DGen.Generation.Extensions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -37,6 +38,16 @@ namespace DGen.Generation.CodeModel
         {
             if (Method.Interface.HasProperty(propertyName) && expression != null)
                 return Assign(Method.Interface.GetProperty(propertyName).Expression, expression);
+
+            return this;
+        }
+
+        public BodyBuilder InvokePropertyMethod(string propertyName, string methodName, params ExpressionSyntax[] parameters)
+        {
+            if (Method.Interface.GetProperty(propertyName) is PropertyModel property)
+            {
+                return Execute(property.InvokeMethod(methodName, parameters));
+            }
 
             return this;
         }

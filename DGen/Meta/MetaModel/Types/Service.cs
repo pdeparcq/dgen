@@ -6,9 +6,12 @@ namespace DGen.Meta.MetaModel.Types
     {
         public Service()
         {
-            Repositories = new List<Aggregate>();
+            QueryRepositories = new List<Aggregate>();
+            Services = new List<Service>();
         }
 
-        public List<Aggregate> Repositories { get; set; }
+        public Aggregate AggregateRepository { get; set; }
+        public List<Aggregate> QueryRepositories { get; private set; }
+        public List<Service> Services { get; private set; }
     }
 }

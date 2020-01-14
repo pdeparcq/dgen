@@ -9,7 +9,7 @@ namespace DGen.Generation.Generators.Domain
 {
     public class ServiceCodeGenerator : LayerCodeGenerator
     {
-        public override string Layer => "Domain";
+        public override string Layer => "Application";
 
 
         public override NamespaceModel GetNamespace(NamespaceModel @namespace)
@@ -34,11 +34,27 @@ namespace DGen.Generation.Generators.Domain
 
                 @class = @class.WithImplementedInterfaces(@interface);
 
-                foreach(var repository in service.Repositories)
+                if(service.AggregateRepository != null)
                 {
-                    var repositoryType = SystemTypes.Repository(registry.Resolve(Layer, repository));
+                    var repositoryType = SystemTypes.Repository(registry.Resolve("Domain", service.AggregateRepository));
 
-                    @class.AddProperty($"{repository.Name}Repository", repositoryType)
+                    @class.AddProperty($"{service.AggregateRepository.Name}Repository", repositoryType)
+                        .MakeReadOnly();
+                }
+
+                foreach(var repository in service.QueryRepositories)
+                {
+                    var repositoryType = SystemTypes.Queryable(registry.Resolve("Infrastructure", repository));
+
+                    @class.AddProperty($"{repository.Name}Query", repositoryType)
+                        .MakeReadOnly();
+                }
+
+                foreach (var s in service.Services)
+                {
+                    var serviceType = registry.Resolve(Layer, s, $"I{s.Name}") as InterfaceModel;
+
+                    @class.AddProperty(s.Name, serviceType)
                         .MakeReadOnly();
                 }
 

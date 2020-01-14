@@ -7,6 +7,7 @@ namespace DGen.Generation.CodeModel
     {
         private static NamespaceModel SystemNamespace = new NamespaceModel(null, "System");
         private static NamespaceModel SystemGenericCollectionsNamespace;
+        private static NamespaceModel SystemLinqNamespace;
         private static NamespaceModel NewtonsoftJson = new NamespaceModel(null, "Newtonsoft").AddNamespace("Json");
         private static NamespaceModel KledexNamespace = new NamespaceModel(null, "Kledex");
         private static NamespaceModel KledexDomainNamespace;
@@ -22,6 +23,7 @@ namespace DGen.Generation.CodeModel
         static SystemTypes()
         {
             SystemGenericCollectionsNamespace = SystemNamespace.AddNamespace("Collections").AddNamespace("Generic");
+            SystemLinqNamespace = SystemNamespace.AddNamespace("Linq");
             KledexDomainNamespace = KledexNamespace.AddNamespace("Domain");
             KledexQueryNamespace = KledexNamespace.AddNamespace("Queries");
             KledexCommandNamespace = KledexNamespace.AddNamespace("Commands");
@@ -66,6 +68,11 @@ namespace DGen.Generation.CodeModel
         public static InterfaceModel Repository(TypeModel aggregate)
         {
             return new InterfaceModel(KledexDomainNamespace, "IRepository").WithGenericTypes(aggregate);
+        }
+
+        public static InterfaceModel Queryable(TypeModel entity)
+        {
+            return new InterfaceModel(SystemLinqNamespace, "IQueryable").WithGenericTypes(entity);
         }
 
         public static ClassModel Query(TypeModel result)

@@ -7,7 +7,7 @@ namespace DGen.Generation.Generators.Domain
 {
     public class ServiceInterfaceGenerator : LayerCodeGenerator
     {
-        public override string Layer => "Domain";
+        public override string Layer => "Application";
 
         public override NamespaceModel GetNamespace(NamespaceModel @namespace)
         {
@@ -32,7 +32,10 @@ namespace DGen.Generation.Generators.Domain
         {
             if (type is Service service && model is InterfaceModel @interface)
             {
-                //TODO
+                foreach(var method in service.Methods)
+                {
+                    @interface.AddMethod(method.Name);
+                }
             }
         }
 

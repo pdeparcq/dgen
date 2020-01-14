@@ -35,7 +35,7 @@ namespace DGen.Generation.Generators.Application
         {
             if(type is Command command && model is ClassModel @class)
             {
-                var serviceInterface = registry.Resolve("Domain", command.Service, $"I{command.Service.Name}");
+                var serviceInterface = registry.Resolve(Layer, command.Service, $"I{command.Service.Name}");
 
                 var commandType = registry.Resolve(Layer, command);
 
@@ -53,7 +53,26 @@ namespace DGen.Generation.Generators.Application
                 var handler = @class.AddMethod("Handle")
                     .WithParameters(new MethodParameter("command", commandType))
                     .WithReturnType(SystemTypes.CommandResponse())
-                    .WithBody(builder => { builder.ThrowNotImplemented(); });
+                    .WithBody(builder => 
+                    {
+                        if(command.ServiceMethod != null)
+                        {
+                            var method = command.Service.Methods.SingleOrDefault(m => m.Name == command.ServiceMethod);
+
+                            if(method != null)
+                            {
+                                builder.InvokePropertyMethod(command.Service.Name, command.ServiceMethod);
+                            }
+                            else
+                            {
+                                builder.ThrowNotImplemented();
+                            }
+                        }
+                        else
+                        {
+                            builder.ThrowNotImplemented();
+                        }     
+                    });
             }
         }
 
