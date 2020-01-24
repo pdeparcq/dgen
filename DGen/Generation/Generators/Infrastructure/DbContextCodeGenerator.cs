@@ -36,6 +36,8 @@ namespace DGen.Generation.Generators.Infrastructure
                 {
                     @class.AddProperty($"{aggregate.Name}Set", SystemTypes.DbSet(registry.Resolve(Layer, aggregate)));
                 }
+
+                registry.Register(Layer, module, @class);
             }  
         }
 

@@ -12,6 +12,7 @@ namespace DGen.Generation
     {
         private readonly List<ILayerCodeGenerator> _generators;
         private Dictionary<string, Dictionary<BaseType, List<TypeModel>>> _types;
+        private Dictionary<string, Dictionary<Module, List<TypeModel>>> _moduleTypes;
 
         public CodeModelGenerator()
         {
@@ -23,11 +24,11 @@ namespace DGen.Generation
                 new EntityCodeGenerator(),
                 new EnumerationCodeGenerator(),
                 new ValueCodeGenerator(),
-                new ServiceInterfaceGenerator(),
-                new ServiceCodeGenerator(),
                 // Infrastructure
                 new DbContextCodeGenerator(),
                 // Application
+                new ServiceInterfaceGenerator(),
+                new ServiceCodeGenerator(),
                 new ViewModelCodeGenerator(),
                 new CompactViewModelCodeGenerator(),
                 new QueryCodeGenerator(),
@@ -49,6 +50,8 @@ namespace DGen.Generation
         private void PrepareServices(MetaModel model, ApplicationModel application)
         {
             _types = new Dictionary<string, Dictionary<BaseType, List<TypeModel>>>();
+            _moduleTypes = new Dictionary<string, Dictionary<Module, List<TypeModel>>>();
+
             foreach (var service in model.Services)
             {
                 var serviceModel = application.AddService(service.Name);
@@ -57,6 +60,9 @@ namespace DGen.Generation
                 {
                     if (!_types.ContainsKey(layer.Key))
                         _types[layer.Key] = new Dictionary<BaseType, List<TypeModel>>();
+                    if (!_moduleTypes.ContainsKey(layer.Key))
+                        _moduleTypes[layer.Key] = new Dictionary<Module, List<TypeModel>>();
+
                     PrepareModule(service, serviceModel.AddLayer(layer.Key), layer.ToList());
                 }
             }
@@ -142,9 +148,33 @@ namespace DGen.Generation
             return null;
         }
 
+        public void Register(string layer, Module module, TypeModel model)
+        {
+            if (!_moduleTypes[layer].ContainsKey(module))
+            {
+                _moduleTypes[layer][module] = new List<TypeModel>();
+            }
+            _moduleTypes[layer][module].Add(model);
+        }
+
+        public TypeModel Resolve(string layer, Module module, string name = null)
+        {
+            if (_moduleTypes.ContainsKey(layer) && _moduleTypes[layer].ContainsKey(module))
+            {
+                var types = _moduleTypes[layer][module];
+                if (name != null)
+                    return types.FirstOrDefault(t => t.Name == name);
+                else
+                    return types.FirstOrDefault();
+            }
+            return null;
+        }
+
         public IQueryable<T> GetAllBaseTypes<T>(string layer) where T : BaseType
         {
             return _types[layer].Keys.OfType<T>().AsQueryable();
         }
+
+        
     }
 }

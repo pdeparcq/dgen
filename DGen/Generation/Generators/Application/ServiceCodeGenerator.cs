@@ -48,12 +48,16 @@ namespace DGen.Generation.Generators.Application
                         .MakeReadOnly();
                 }
 
-                foreach (var repository in service.QueryRepositories)
+                if (service.QueryRepositories.Any())
                 {
-                    var repositoryType = SystemTypes.Queryable(registry.Resolve("Infrastructure", repository));
-
-                    @class.AddProperty($"{repository.Name}Query", repositoryType)
+                    @class.AddProperty($"Database", registry.Resolve("Infrastructure", service.Module))
                         .MakeReadOnly();
+
+                    foreach(var aggregate in service.QueryRepositories)
+                    {
+                        @class.AddProperty($"{aggregate.Name}Query", SystemTypes.Queryable(registry.Resolve("Infrastructure", aggregate)))
+                            .MakeReadOnly();
+                    }
                 }
 
                 foreach (var s in service.Services)
