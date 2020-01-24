@@ -76,7 +76,8 @@ namespace DGen.Generation.Generators.CSharp
                         ),
                     new XElement("ItemGroup", 
                         new XElement("PackageReference", new XAttribute("Include", "Kledex"), new XAttribute("Version", "2.3.0")),
-                        new XElement("PackageReference", new XAttribute("Include", "Newtonsoft.Json"), new XAttribute("Version", "12.0.3"))
+                        new XElement("PackageReference", new XAttribute("Include", "Newtonsoft.Json"), new XAttribute("Version", "12.0.3")),
+                        new XElement("PackageReference", new XAttribute("Include", "Microsoft.EntityFrameworkCore"), new XAttribute("Version", "3.0.1"))
                         ),
                     new XElement("ItemGroup",
                         service.Dependencies.Select(s => new XElement("ProjectReference", new XAttribute("Include", $"..\\{s.Name}\\{s.Name}.Generated.csproj")))
