@@ -6,7 +6,7 @@ namespace DGen.Generation.Extensions
 {
     public static class PropertyTypeExtensions
     {
-        public static TypeModel Resolve(this PropertyType type, ITypeModelRegistry registry, string layer = "Domain")
+        public static TypeModel Resolve(this MetaType type, ITypeModelRegistry registry, string layer = "Domain")
         {
             if(type.SystemType != null)
             {

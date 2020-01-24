@@ -23,10 +23,10 @@ namespace DGen.Meta
             AddMetaGenerator(new EnumerationMetaGenerator());
             AddMetaGenerator(new QueryMetaGenerator());
             AddMetaGenerator(new ValueMetaGenerator());
-            AddMetaGenerator(new ViewModelMetaGenerator());
-            AddMetaGenerator(new CommandMetaGenerator());
+            AddMetaGenerator(new ViewModelMetaGenerator());      
             AddMetaGenerator(new InputModelMetaGenerator());
             AddMetaGenerator(new ServiceMetaGenerator());
+            AddMetaGenerator(new CommandMetaGenerator());
         }
 
         private void AddMetaGenerator(IMetaGenerator metaGenerator)

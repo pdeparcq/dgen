@@ -1,18 +1,15 @@
 ﻿using DGen.Generation.CodeModel;
+using DGen.Generation.Extensions;
 using DGen.Meta.MetaModel;
 using DGen.Meta.MetaModel.Types;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace DGen.Generation.Generators.Domain
+namespace DGen.Generation.Generators.Application
 {
     public class ServiceInterfaceGenerator : LayerCodeGenerator
     {
-        public override string Layer => "Domain";
-
-        public override NamespaceModel GetNamespace(NamespaceModel @namespace)
-        {
-            return @namespace.AddNamespace("Services");
-        }
+        public override string Layer => "Application";
 
         public override string GetTypeName(BaseType type)
         {
@@ -32,7 +29,11 @@ namespace DGen.Generation.Generators.Domain
         {
             if (type is Service service && model is InterfaceModel @interface)
             {
-                //TODO
+                foreach (var method in service.Methods)
+                {
+                    @interface.AddMethod(method.Name)
+                        .WithParameters(method.Parameters.Select(p => new MethodParameter(p.Name, p.Type.Resolve(registry))).ToArray());
+                }
             }
         }
 

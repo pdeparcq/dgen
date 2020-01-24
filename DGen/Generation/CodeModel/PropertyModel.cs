@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
+using DGen.Generation.Extensions;
 
 namespace DGen.Generation.CodeModel
 {
@@ -18,9 +20,9 @@ namespace DGen.Generation.CodeModel
         {
             get
             {
-                if(Type is ClassModel @class && @class.IsGeneric)
+                if(Type is InterfaceModel @interface && @interface.IsGeneric)
                 {
-                    foreach(var type in @class.GenericTypes)
+                    foreach(var type in @interface.GenericTypes)
                     {
                         yield return type.Namespace;
                     }
@@ -50,6 +52,15 @@ namespace DGen.Generation.CodeModel
             IsReadOnly = true;
 
             return this;
+        }
+
+        public ExpressionSyntax InvokeMethod(string methodName, ExpressionSyntax[] parameters)
+        {
+            if (Type is InterfaceModel @interface && @interface.GetMethod(methodName) is MethodModel method)
+            {
+                return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Expression, method.Expression as SimpleNameSyntax), parameters.ToArgumentList());
+            }
+            return null;
         }
     }
 }
