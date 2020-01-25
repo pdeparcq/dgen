@@ -11,8 +11,9 @@ namespace DGen.Generation.CodeModel
     {
         public string Name { get; }
         public string Description { get; private set; }
-        public TypeModel Type { get; }
-        public bool IsReadOnly { get; set; }
+        public TypeModel Type => Getter.ReturnType;
+        public MethodModel Getter { get; }
+        public MethodModel Setter { get; }
 
         public ExpressionSyntax Expression => SyntaxFactory.IdentifierName(Name);
 
@@ -31,13 +32,14 @@ namespace DGen.Generation.CodeModel
             }
         }
 
-        public PropertyModel(string name, TypeModel type)
+        public PropertyModel(InterfaceModel @interface, string name, TypeModel type)
         {
             Guard.ArgumentNotNullOrEmpty(() => name);
             Guard.ArgumentNotNull(() => type);
 
             Name = name;
-            Type = type;
+            Getter = new MethodModel(@interface, $"Get{name}").WithReturnType(type).MakePublic();
+            Setter = new MethodModel(@interface, $"Set{name}").WithParameters(new MethodParameter("value", type));
         }
 
         public PropertyModel WithDescription(string description)
@@ -47,9 +49,23 @@ namespace DGen.Generation.CodeModel
             return this;
         }
 
+        public PropertyModel WithGetter(Action<BodyBuilder> build)
+        {
+            Getter.WithBody(build);
+
+            return this;
+        }
+
+        public PropertyModel WithSetter(Action<BodyBuilder> build)
+        {
+            Setter.WithBody(build);
+
+            return this;
+        }
+
         public PropertyModel MakeReadOnly()
         {
-            IsReadOnly = true;
+            Setter.MakePrivate();
 
             return this;
         }

@@ -69,7 +69,7 @@ namespace DGen.Generation.CodeModel
             var property = Properties.FirstOrDefault(p => p.Name == name && p.Type == type);
             if(property == null)
             {
-                property = new PropertyModel(name, type);
+                property = new PropertyModel(this, name, type);
                 Properties.Add(property);
             }
             return property;

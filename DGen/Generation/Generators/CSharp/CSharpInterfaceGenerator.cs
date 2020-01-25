@@ -98,16 +98,11 @@ namespace DGen.Generation.Generators.CSharp
         {
             foreach (var p in model.Properties)
             {
-                var property = SyntaxFactory.PropertyDeclaration(p.Type.Syntax, p.Name)
-                                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                                    .AddAccessorListAccessors(SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)));
-                
-                var setter = SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)) as AccessorDeclarationSyntax;
-                
-                if (p.IsReadOnly)
-                    setter = setter.AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword));
+                var property = _syntaxGenerator.PropertyDeclaration(p.Name, p.Type.Syntax, p.Getter.Accessability) as PropertyDeclarationSyntax;
 
-                property = property.AddAccessorListAccessors(setter);
+                property = property.WithAccessorList(null);
+                property = property.AddAccessorListAccessors(_syntaxGenerator.GetAccessorDeclaration(Accessibility.NotApplicable, p.Getter.Body) as AccessorDeclarationSyntax);
+                property = property.AddAccessorListAccessors(_syntaxGenerator.SetAccessorDeclaration(p.Setter.Accessability, p.Setter.Body) as AccessorDeclarationSyntax);
 
                 if (p.Description != null)
                     property = property.WithLeadingTrivia(ToDocumentation(p.Description));
