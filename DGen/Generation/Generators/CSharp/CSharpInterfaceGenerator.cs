@@ -101,8 +101,12 @@ namespace DGen.Generation.Generators.CSharp
                 var property = _syntaxGenerator.PropertyDeclaration(p.Name, p.Type.Syntax, p.Getter.Accessability) as PropertyDeclarationSyntax;
 
                 property = property.WithAccessorList(null);
-                property = property.AddAccessorListAccessors(_syntaxGenerator.GetAccessorDeclaration(Accessibility.NotApplicable, p.Getter.Body) as AccessorDeclarationSyntax);
-                property = property.AddAccessorListAccessors(_syntaxGenerator.SetAccessorDeclaration(p.Setter.Accessability, p.Setter.Body) as AccessorDeclarationSyntax);
+
+                if(p.Getter != null)
+                    property = property.AddAccessorListAccessors(_syntaxGenerator.GetAccessorDeclaration(Accessibility.NotApplicable, p.Getter.Body) as AccessorDeclarationSyntax);
+
+                if(p.Setter != null)
+                    property = property.AddAccessorListAccessors(_syntaxGenerator.SetAccessorDeclaration(p.Setter.Accessability, p.Setter.Body) as AccessorDeclarationSyntax);
 
                 if (p.Description != null)
                     property = property.WithLeadingTrivia(ToDocumentation(p.Description));

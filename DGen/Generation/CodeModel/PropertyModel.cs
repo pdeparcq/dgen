@@ -13,7 +13,7 @@ namespace DGen.Generation.CodeModel
         public string Description { get; private set; }
         public TypeModel Type => Getter.ReturnType;
         public MethodModel Getter { get; }
-        public MethodModel Setter { get; }
+        public MethodModel Setter { get; private set; }
 
         public ExpressionSyntax Expression => SyntaxFactory.IdentifierName(Name);
 
@@ -63,9 +63,16 @@ namespace DGen.Generation.CodeModel
             return this;
         }
 
+        public PropertyModel WithoutSetter()
+        {
+            Setter = null;
+
+            return this;
+        }
+
         public PropertyModel MakeReadOnly()
         {
-            Setter.MakePrivate();
+            Setter?.MakePrivate();
 
             return this;
         }
@@ -76,7 +83,16 @@ namespace DGen.Generation.CodeModel
             {
                 return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Expression, method.Expression as SimpleNameSyntax), parameters.ToArgumentList());
             }
-            return null;
+            throw new ArgumentException();
+        }
+
+        public ExpressionSyntax AccessProperty(string propertyName)
+        {
+            if (Type is InterfaceModel @interface && @interface.GetProperty(propertyName) is PropertyModel property)
+            {
+                return SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, Expression, property.Expression as SimpleNameSyntax);
+            }
+            throw new ArgumentException();
         }
     }
 }

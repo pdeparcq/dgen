@@ -58,15 +58,19 @@ namespace DGen.Generation.Generators.Application
                 if (service.QueryRepositories.Any())
                 {
                     var databaseContext = registry.Resolve("Infrastructure", service.Module);
-                    var property = @class.AddProperty($"Database", databaseContext)
+                    var databaseProperty = @class.AddProperty($"Database", databaseContext)
                         .MakeReadOnly();
 
-                    constructorParameters.Add(new MethodParameter(property.Name.ToCamelCase(), databaseContext));
+                    constructorParameters.Add(new MethodParameter(databaseProperty.Name.ToCamelCase(), databaseContext));
 
                     foreach (var aggregate in service.QueryRepositories)
                     {
                         @class.AddProperty($"{aggregate.Name}Query", SystemTypes.Queryable(registry.Resolve("Infrastructure", aggregate)))
-                            .MakeReadOnly();
+                            .WithGetter(builder =>
+                            {
+                                builder.Return(databaseProperty.AccessProperty($"{aggregate.Name}Set"));
+                            })
+                            .WithoutSetter();
                     }
                 }
 
