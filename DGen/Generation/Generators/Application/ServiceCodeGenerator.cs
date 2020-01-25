@@ -40,36 +40,50 @@ namespace DGen.Generation.Generators.Application
                         .WithReturnType(method.ReturnType);
                 }
 
+
+                var constructorParameters = new List<MethodParameter>();
+
+                // Create property for aggregate repository 
                 if (service.AggregateRepository != null)
                 {
                     var repositoryType = SystemTypes.Repository(registry.Resolve("Domain", service.AggregateRepository));
 
-                    @class.AddProperty($"{service.AggregateRepository.Name}Repository", repositoryType)
+                    var property = @class.AddProperty($"{service.AggregateRepository.Name}Repository", repositoryType)
                         .MakeReadOnly();
+
+                    constructorParameters.Add(new MethodParameter(property.Name.ToCamelCase(), repositoryType));
                 }
 
+                // Create properties for query repositories
                 if (service.QueryRepositories.Any())
                 {
-                    @class.AddProperty($"Database", registry.Resolve("Infrastructure", service.Module))
+                    var databaseContext = registry.Resolve("Infrastructure", service.Module);
+                    var property = @class.AddProperty($"Database", databaseContext)
                         .MakeReadOnly();
 
-                    foreach(var aggregate in service.QueryRepositories)
+                    constructorParameters.Add(new MethodParameter(property.Name.ToCamelCase(), databaseContext));
+
+                    foreach (var aggregate in service.QueryRepositories)
                     {
                         @class.AddProperty($"{aggregate.Name}Query", SystemTypes.Queryable(registry.Resolve("Infrastructure", aggregate)))
                             .MakeReadOnly();
                     }
                 }
 
+                // Create properties for services
                 foreach (var s in service.Services)
                 {
                     var serviceType = registry.Resolve(Layer, s, $"I{s.Name}") as InterfaceModel;
 
-                    @class.AddProperty(s.Name, serviceType)
+                    var property = @class.AddProperty(s.Name, serviceType)
                         .MakeReadOnly();
+
+                    constructorParameters.Add(new MethodParameter(property.Name.ToCamelCase(), serviceType));
                 }
 
+                // Generate constructor
                 @class.AddConstructor()
-                    .WithPropertyParameters()
+                    .WithParameters(constructorParameters.ToArray())
                     .WithBody(builder =>
                     {
                         builder.AssignPropertiesFromParameters();
