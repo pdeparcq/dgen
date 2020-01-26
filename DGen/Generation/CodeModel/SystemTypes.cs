@@ -125,7 +125,7 @@ namespace DGen.Generation.CodeModel
 
         public static InterfaceModel CommandHandler(TypeModel command)
         {
-            return new InterfaceModel(KledexCommandNamespace, "ICommandHandler").WithGenericTypes(command);
+            return new InterfaceModel(KledexCommandNamespace, "ICommandHandlerAsync").WithGenericTypes(command);
         }
 
     }

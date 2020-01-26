@@ -50,9 +50,9 @@ namespace DGen.Generation.Generators.Application
                         builder.AssignPropertiesFromParameters();
                     });
 
-                var handler = @class.AddMethod("Handle")
+                var handler = @class.AddMethod("HandleAsync")
                     .WithParameters(new MethodParameter("command", commandType))
-                    .WithReturnType(SystemTypes.CommandResponse())
+                    .WithReturnType(SystemTypes.Task(SystemTypes.CommandResponse()))
                     .WithBody(builder => 
                     {
                         if(command.ServiceMethod != null)
@@ -61,8 +61,8 @@ namespace DGen.Generation.Generators.Application
 
                             if(method != null)
                             {
-                                builder.InvokePropertyMethod(command.Service.Name, command.ServiceMethod);
-                                builder.Return(SystemTypes.CommandResponse().Construct());
+                                //TODO: execute service method en return command response with domain events
+                                builder.ThrowNotImplemented();
                             }
                             else
                             {
