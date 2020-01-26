@@ -4,7 +4,7 @@ using DGen.Meta.MetaModel;
 
 namespace DGen.Generation.Extensions
 {
-    public static class PropertyTypeExtensions
+    public static class MetaTypeExtensions
     {
         public static TypeModel Resolve(this MetaType type, ITypeModelRegistry registry, string layer = "Domain")
         {

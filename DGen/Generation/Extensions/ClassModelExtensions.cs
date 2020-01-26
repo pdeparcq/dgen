@@ -34,7 +34,7 @@ namespace DGen.Generation.Extensions
             }
 
             if (property.IsCollection)
-                propertyType = SystemTypes.GenericList(propertyType);
+                propertyType = SystemTypes.List(propertyType);
 
             @class.AddProperty(property.Name, propertyType)
                 .WithDescription(property.Description);

@@ -220,7 +220,7 @@
 											"top": 423,
 											"width": 399,
 											"height": 13,
-											"text": "+Register(name: string, contact: EmailAddress)",
+											"text": "«constructor»+Register(name: string, contact: EmailAddress)",
 											"horizontalAlignment": 0
 										},
 										{
@@ -3742,6 +3742,7 @@
 								"$ref": "AAAAAAFu9epnW3SVxfA="
 							},
 							"name": "Register",
+							"stereotype": "constructor",
 							"parameters": [
 								{
 									"_type": "UMLParameter",

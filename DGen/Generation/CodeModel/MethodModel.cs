@@ -33,7 +33,7 @@ namespace DGen.Generation.CodeModel
                     .ToList();
 
                 if (ReturnType != null)
-                    usings.Add(ReturnType.Namespace);
+                    usings.AddRange(ReturnType.Usings);
 
                 return usings;
             }

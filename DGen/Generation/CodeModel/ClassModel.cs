@@ -28,7 +28,7 @@ namespace DGen.Generation.CodeModel
                     usings.Add(BaseType.Namespace);
                 }
 
-                return usings.Where(n => n != Namespace && !Namespace.HasParent(n)).Distinct();
+                return usings.Distinct();
             }
         }
 

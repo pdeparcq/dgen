@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Guards;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -13,6 +14,13 @@ namespace DGen.Generation.CodeModel
         public string Description { get; private set; }
         public ExpressionSyntax Expression => SyntaxFactory.IdentifierName(Name);
         public virtual TypeSyntax Syntax => SyntaxFactory.ParseTypeName(Name);
+
+        public virtual IEnumerable<NamespaceModel> Usings {
+            get
+            {
+                yield return Namespace;
+            }
+        }
 
         protected TypeModel(NamespaceModel @namespace, string name)
         {

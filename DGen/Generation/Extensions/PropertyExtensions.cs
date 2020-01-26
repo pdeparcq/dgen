@@ -31,7 +31,7 @@ namespace DGen.Generation.Extensions
             }
 
             if (property.IsCollection)
-                return SystemTypes.GenericList(propertyType);
+                return SystemTypes.List(propertyType);
 
             return propertyType;
         }

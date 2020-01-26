@@ -31,8 +31,10 @@ namespace DGen.Generation.Generators.Application
             {
                 foreach (var method in service.Methods)
                 {
-                    @interface.AddMethod(method.Name)
-                        .WithParameters(method.Parameters.Select(p => new MethodParameter(p.Name, p.Type.Resolve(registry))).ToArray());
+                    var serviceMethod = @interface.AddMethod(method.Name)
+                        .WithParameters(method.Parameters.Select(p => GenerateMethodParameter(registry, p)).ToArray());
+
+                    serviceMethod = serviceMethod.WithReturnType(SystemTypes.Task(GenerateReturnType(registry, method)));
                 }
             }
         }
@@ -40,6 +42,30 @@ namespace DGen.Generation.Generators.Application
         public override IEnumerable<BaseType> GetTypes(Module module)
         {
             return module.GetTypes<Service>();
+        }
+
+        private static MethodParameter GenerateMethodParameter(ITypeModelRegistry registry, MetaParameter p)
+        {
+            return new MethodParameter(p.GetDomainName(), p.GetDomainType(registry));
+        }
+
+        private static TypeModel GenerateReturnType(ITypeModelRegistry registry, MetaMethod method)
+        {
+            TypeModel returnType = null;
+
+            if (method.Return != null)
+            {
+                if (method.Return.Type.Type is Aggregate && !method.Return.IsCollection)
+                {
+                    returnType = SystemTypes.Enumerable(SystemTypes.DomainEvent());
+                }
+                else
+                {
+                    returnType = method.Return.GetDomainType(registry);
+                }
+            }
+
+            return returnType;
         }
     }
 }

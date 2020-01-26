@@ -25,6 +25,7 @@ namespace DGen.Meta.MetaModel
         public string Name { get; set; }
         public MetaParameter Return => _parameters.SingleOrDefault(p => p.IsReturn);
         public IReadOnlyCollection<MetaParameter> Parameters => _parameters.Where(p => !p.IsReturn).ToList().AsReadOnly();
+        public bool IsConstructor { get; set; }
 
         public void AddParameter(MetaParameter parameter)
         {

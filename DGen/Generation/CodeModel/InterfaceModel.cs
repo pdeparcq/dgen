@@ -15,20 +15,21 @@ namespace DGen.Generation.CodeModel
         public List<MethodModel> Methods { get; }
         public bool IsGeneric => GenericTypes.Any();
 
-        public virtual IEnumerable<NamespaceModel> Usings
+        public override IEnumerable<NamespaceModel> Usings
         {
             get
             {
-                var usings = Properties
+                var usings = base.Usings;
+
+                usings = usings.Concat(Properties
                     .SelectMany(p => p.Usings)
                     .Concat(ImplementedInterfaces.Select(i => i.Namespace))
                     .Concat(ImplementedInterfaces.SelectMany(i => i.Usings))
                     .Concat(Methods.SelectMany(m => m.Usings))
-                    .Concat(GenericTypes.Select(t => t.Namespace))
-                    .Concat(Attributes.Select(t => t.Namespace))
-                    .ToList();
+                    .Concat(GenericTypes.SelectMany(t => t.Usings))
+                    .Concat(Attributes.Select(t => t.Namespace)));
 
-                return usings.Where(n => n != Namespace && !Namespace.HasParent(n)).Distinct();
+                return usings.Distinct();
             }
         }
 
@@ -108,7 +109,13 @@ namespace DGen.Generation.CodeModel
             {
                 if (GenericTypes.Any())
                 {
-                    return SyntaxFactory.ParseTypeName($"{Name}<{string.Join(",", GenericTypes.Select(t => t.Name))}>");
+                    return SyntaxFactory.GenericName(
+                        SyntaxFactory.Identifier(Name),
+                        SyntaxFactory.TypeArgumentList(
+                            SyntaxFactory.SeparatedList(
+                                GenericTypes.Select(t => t.Syntax))
+                            )
+                        );
                 }
                 return base.Syntax;
             }

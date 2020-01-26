@@ -62,6 +62,7 @@ namespace DGen.Meta
                 type.Methods.AddRange(element.Operations.Where(o => o.Type == ElementType.UMLOperation).Select(o =>
                 {
                     var method = new MetaMethod(o.Name);
+                    method.IsConstructor = o.Stereotype?.ToLower() == "constructor";
                     o.Parameters?.ForEach(p => method.AddParameter(new MetaParameter
                     {
                         Name = p.Name,

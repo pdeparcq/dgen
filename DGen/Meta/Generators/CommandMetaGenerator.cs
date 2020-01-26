@@ -24,6 +24,7 @@ namespace DGen.Meta.Generators
 
                 var method = command.Service.Methods.SingleOrDefault(m => m.Name == command.ServiceMethod);
 
+                // Try to create service method for corresponding aggregate method
                 if(method == null && command.Service.AggregateRepository != null)
                 {
                     method = command.Service.AggregateRepository.Methods.FirstOrDefault(m => m.Name == command.ServiceMethod);
@@ -31,15 +32,29 @@ namespace DGen.Meta.Generators
                     if (method != null)
                     {
                         var serviceMethod = new MetaMethod(method.Name);
+
+                        // Return aggregate
                         serviceMethod.AddParameter(new MetaParameter
                         {
-                            Name = command.Service.AggregateRepository.Name.ToCamelCase(),
+                            IsReturn = true,
                             Type = new MetaType { Type = command.Service.AggregateRepository }
                         });
+
+                        // Don't pass aggregate when the aggregate needs to be constructed...
+                        if (!method.IsConstructor)
+                        {
+                            serviceMethod.AddParameter(new MetaParameter
+                            {
+                                Name = command.Service.AggregateRepository.Name.ToCamelCase(),
+                                Type = new MetaType { Type = command.Service.AggregateRepository }
+                            });
+                        }        
+
                         foreach(var p in method.Parameters)
                         {
                             serviceMethod.AddParameter(p);
                         }
+
                         command.Service.Methods.Add(serviceMethod);
                     }
                 }

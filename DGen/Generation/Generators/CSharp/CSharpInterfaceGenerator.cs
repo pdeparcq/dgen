@@ -88,7 +88,7 @@ namespace DGen.Generation.Generators.CSharp
         private SyntaxNode GenerateCompileUnit(I model, T @interface, NamespaceDeclarationSyntax @namespace)
         {
             @namespace = @namespace.AddMembers(@interface);
-            var declarations = model.Usings.OrderBy(u => u.FullName).Select(u => _syntaxGenerator.NamespaceImportDeclaration(u.FullName)).ToList();
+            var declarations = model.Usings.Where(n => n != model.Namespace && !model.Namespace.HasParent(n)).OrderBy(u => u.FullName).Select(u => _syntaxGenerator.NamespaceImportDeclaration(u.FullName)).ToList();
             declarations.Add(@namespace);
 
             return _syntaxGenerator.CompilationUnit(declarations);

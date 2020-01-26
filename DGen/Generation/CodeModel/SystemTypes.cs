@@ -8,6 +8,7 @@ namespace DGen.Generation.CodeModel
         private static NamespaceModel SystemNamespace = new NamespaceModel(null, "System");
         private static NamespaceModel SystemGenericCollectionsNamespace;
         private static NamespaceModel SystemLinqNamespace;
+        private static NamespaceModel SystemThreadingTasksNamespace;
         private static NamespaceModel EntitityFrameworkCoreNamespace = new NamespaceModel(null, "Microsoft").AddNamespace("EntityFrameworkCore");
         private static NamespaceModel NewtonsoftJson = new NamespaceModel(null, "Newtonsoft").AddNamespace("Json");
         private static NamespaceModel KledexNamespace = new NamespaceModel(null, "Kledex");
@@ -25,6 +26,7 @@ namespace DGen.Generation.CodeModel
         {
             SystemGenericCollectionsNamespace = SystemNamespace.AddNamespace("Collections").AddNamespace("Generic");
             SystemLinqNamespace = SystemNamespace.AddNamespace("Linq");
+            SystemThreadingTasksNamespace = SystemNamespace.AddNamespace("Threading").AddNamespace("Tasks");
             KledexDomainNamespace = KledexNamespace.AddNamespace("Domain");
             KledexQueryNamespace = KledexNamespace.AddNamespace("Queries");
             KledexCommandNamespace = KledexNamespace.AddNamespace("Commands");
@@ -36,9 +38,24 @@ namespace DGen.Generation.CodeModel
             return new ClassModel(EntitityFrameworkCoreNamespace, "DbSet").WithGenericTypes(type);
         }
 
-        public static ClassModel GenericList(TypeModel type)
+        public static ClassModel List(TypeModel type)
         {
             return new ClassModel(SystemGenericCollectionsNamespace, "List").WithGenericTypes(type);
+        }
+
+        public static ClassModel Enumerable(TypeModel type)
+        {
+            return new ClassModel(SystemGenericCollectionsNamespace, "IEnumerable").WithGenericTypes(type);
+        }
+
+        public static ClassModel Task(TypeModel type = null)
+        {
+            var @class = new ClassModel(SystemThreadingTasksNamespace, "Task");
+
+            if (type != null)
+                @class = @class.WithGenericTypes(type);
+
+            return @class;
         }
 
         public static ClassModel Parse(string name)
@@ -62,6 +79,11 @@ namespace DGen.Generation.CodeModel
             @class.AddMethod(DomainEventPublishMethodName);
             @class.AddProperty(AggregateRootIdentifierName, Parse("Guid"));
             return @class;
+        }
+
+        public static InterfaceModel DomainEvent()
+        {
+            return new InterfaceModel(KledexDomainNamespace, "IDomainEvent");
         }
 
         public static ClassModel DomainEvent(TypeModel type)
