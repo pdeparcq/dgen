@@ -18,12 +18,6 @@ namespace DGen.Test
             await GenerateCodeFromModel("MyLunch.mdj");
         }
 
-        [Test]
-        public async Task CanGenerateCodeForHelloCustomer()
-        {
-            await GenerateCodeFromModel("HelloCustomer.mdj");
-        }
-
         private async Task GenerateCodeFromModel(string fileName)
         {
             var model = new StarUmlReader().Read(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), fileName));
